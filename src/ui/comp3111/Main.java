@@ -38,7 +38,7 @@ public class Main extends Application {
 	private static final int SCENE_NUM = 2;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" };
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - HELLO WORLD", "Sample Line Chart Screen" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
