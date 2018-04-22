@@ -329,8 +329,8 @@ public class Main extends Application {
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
 			initEventHandlers(); // link up the event handlers
-//			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
-			putSceneOnStage(SCENE_INIT_SCREEN); 
+			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
+//			putSceneOnStage(SCENE_INIT_SCREEN); 
 		} catch (Exception e) {
 
 			e.printStackTrace(); // exception handling: print the error message on the console
