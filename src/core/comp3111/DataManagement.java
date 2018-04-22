@@ -1,5 +1,10 @@
 package core.comp3111;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class DataManagement {
 	private int num_table;
@@ -25,7 +30,27 @@ public class DataManagement {
     }
     
     public void importCSV(File file) {
-		
+    	System.out.println("Importing CSV....");
+    	Scanner inputStream;
+    	List<List<String>> lines = new ArrayList<>();
+        try{
+            inputStream = new Scanner(file);
+            while(inputStream.hasNextLine()) {
+            	String line = inputStream.nextLine();
+            	Scanner lineScanner = new Scanner(line);
+            	lineScanner.useDelimiter(",");
+            	System.out.println("next: ");
+            	 while(lineScanner.hasNext()){
+                     String line_item= lineScanner.next();
+                     System.out.print(":"+line_item);
+                 }
+            	 lineScanner.close();
+            }
+            inputStream.close();
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        
     }
     
     public DataTable createDataTable() {

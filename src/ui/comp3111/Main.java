@@ -1,6 +1,9 @@
 package ui.comp3111;
 
+import java.io.File;
+
 import core.comp3111.DataColumn;
+import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
@@ -36,6 +39,7 @@ public class Main extends Application {
 	// Hint: Use java.util.List interface and its implementation classes (e.g.
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
+	private static DataManagement dataManagementInstance = DataManagement.getInstance();
 
 	// Attributes: Scene and Stage
 	private static final int SCENE_NUM = 3;
@@ -339,6 +343,9 @@ public class Main extends Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		launch(args);
+//		String fileName= "read_ex.csv";
+//        File file= new File(fileName);
+//        dataManagementInstance.importCSV(file);
+        launch(args);
 	}
 }
