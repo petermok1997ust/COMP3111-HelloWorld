@@ -346,6 +346,8 @@ public class Main extends Application {
 //		String fileName= "read_ex.csv";
 //        File file= new File(fileName);
 //        dataManagementInstance.importCSV(file);
-        launch(args);
+//		dataManagementInstance.loadProject(null);
+//		dataManagementInstance.exportTableToCSV(null, "hello");
+		launch(args);
 	}
 }

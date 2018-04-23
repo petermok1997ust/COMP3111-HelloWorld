@@ -2,6 +2,7 @@ package core.comp3111;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 2D array of data values with the following requirements: (1) There are 0 to
@@ -125,6 +126,9 @@ public class DataTable {
 		return dc.get(entry.getKey()).getSize();
 	}
 
+	public Set<String> getKeys() {
+		return dc.keySet();
+	}
 	// attribute: A java.util.Map interface
 	// KeyType: String
 	// ValueType: DataColumn
