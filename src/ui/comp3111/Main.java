@@ -1,10 +1,15 @@
 package ui.comp3111;
 
+import java.io.File;
+
 import core.comp3111.DataColumn;
+import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -12,6 +17,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -33,12 +39,14 @@ public class Main extends Application {
 	// Hint: Use java.util.List interface and its implementation classes (e.g.
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
+	private static DataManagement dataManagementInstance = DataManagement.getInstance();
 
 	// Attributes: Scene and Stage
-	private static final int SCENE_NUM = 2;
+	private static final int SCENE_NUM = 3;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" };
+	private static final int SCENE_INIT_SCREEN = 2;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" , "Init Screen"};
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -56,6 +64,10 @@ public class Main extends Application {
 	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
 
+	// Screen 3: Init
+	private Button initImport, initTransform, initSave, initLoad;
+	private Label initDataSet, initChart;
+	
 	/**
 	 * create all scenes in this application
 	 */
@@ -63,6 +75,7 @@ public class Main extends Application {
 		scenes = new Scene[SCENE_NUM];
 		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 400, 500);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
+		scenes[SCENE_INIT_SCREEN] = new Scene(paneInitScreen(), 600, 600);
 		for (Scene s : scenes) {
 			if (s != null)
 				// Assumption: all scenes share the same stylesheet
@@ -235,6 +248,54 @@ public class Main extends Application {
 
 		return pane;
 	}
+	
+	private Pane paneInitScreen() {
+
+		initDataSet = new Label("DataSets");
+		initChart = new Label("Charts");
+		initImport = new Button("Import CSV");
+		initTransform = new Button("Transform");
+		initSave = new Button("Save");
+		initLoad = new Button("Load");
+		
+		ListView<String> chartList = new ListView<String>();
+		ObservableList<String> chartItems =FXCollections.observableArrayList (
+		    "bar", "pie");
+		chartList.setItems(chartItems);
+
+		
+		ListView<String> dataList = new ListView<String>();
+		ObservableList<String> dataItems =FXCollections.observableArrayList (
+		    "set 1", "set 2");
+		dataList.setItems(dataItems);
+
+		// Layout the UI components
+
+
+		HBox chartButtons = new HBox(10);
+		chartButtons.getChildren().addAll(initLoad, initSave);
+		HBox dataButtons = new HBox(10);
+		dataButtons.getChildren().addAll(initImport, initTransform);
+		VBox dataSets = new VBox(10);
+		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons);
+		VBox charts = new VBox(10);
+		charts.getChildren().addAll(initChart, chartList, chartButtons);
+		
+		HBox hc = new HBox(10);
+		hc.getChildren().addAll(dataSets, charts);
+		hc.setAlignment(Pos.CENTER);
+		
+
+		BorderPane pane = new BorderPane();
+		pane.setCenter(hc);
+//
+//		// Apply style to the GUI components
+//		btSampleLineChart.getStyleClass().add("menu-button");
+//		lbMainScreenTitle.getStyleClass().add("menu-title");
+//		pane.getStyleClass().add("screen-background");
+
+		return pane;
+	}
 
 	/**
 	 * This method is used to pick anyone of the scene on the stage. It handles the
@@ -269,7 +330,7 @@ public class Main extends Application {
 			initScenes(); // initialize the scenes
 			initEventHandlers(); // link up the event handlers
 			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
-
+//			putSceneOnStage(SCENE_INIT_SCREEN); 
 		} catch (Exception e) {
 
 			e.printStackTrace(); // exception handling: print the error message on the console
@@ -282,6 +343,11 @@ public class Main extends Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+//		String fileName= "read_ex.csv";
+//        File file= new File(fileName);
+//        dataManagementInstance.importCSV(file);
+//		dataManagementInstance.loadProject(null);
+//		dataManagementInstance.exportTableToCSV(null, "hello");
 		launch(args);
 	}
 }
