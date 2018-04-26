@@ -1,6 +1,8 @@
 package ui.comp3111;
 
 import java.io.File;
+import java.util.List;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import core.comp3111.DataColumn;
@@ -69,7 +71,8 @@ public class Main extends Application {
 	// Screen 3: Init
 	private Button initImport, initExport, initSave, initLoad;
 	private Label initDataSet, initChart;
-	
+	static ObservableList<String> chartItems;
+	static ObservableList<String> dataItems;
 	/**
 	 * create all scenes in this application
 	 */
@@ -288,14 +291,12 @@ public class Main extends Application {
         });
 		
 		ListView<String> chartList = new ListView<String>();
-		ObservableList<String> chartItems =FXCollections.observableArrayList (
-		    "bar", "pie");
+		chartItems =FXCollections.observableArrayList ();
 		chartList.setItems(chartItems);
 
 		
 		ListView<String> dataList = new ListView<String>();
-		ObservableList<String> dataItems =FXCollections.observableArrayList (
-		    "set 1", "set 2");
+		dataItems =FXCollections.observableArrayList ();
 		dataList.setItems(dataItems);
 
 		// Layout the UI components
@@ -366,17 +367,28 @@ public class Main extends Application {
 		}
 	}
 
+	public static void setDataItem(List<String> list) {
+		dataItems.clear();
+		for(int i = 0; i<list.size();i++)
+			dataItems.add(list.get(i));
+	}
+	
+	public static void setDataItem(String name) {
+			dataItems.add(name);
+	}
+	
+	
+	public static void setDataObj(DataManagement dataObj) {
+		dataManagementInstance = dataObj;
+		setDataItem(dataObj.getTableName());
+	}
+	
 	/**
 	 * main method - only use if running via command line
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		String fileName= "read_ex.csv";
-//        File file= new File(fileName);
-//        dataManagementInstance.importCSV(file);
-//		dataManagementInstance.loadProject(null);
-//		dataManagementInstance.exportTableToCSV(null, "hello.csv", "C:\\");
 		launch(args);
 	}
 }

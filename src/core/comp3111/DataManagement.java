@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import ui.comp3111.Main;
+
 public class DataManagement implements Serializable{
 	/**
 	 *
@@ -25,6 +27,7 @@ public class DataManagement implements Serializable{
 	private int num_chart;
 	private List<DataTable> table_array;
 	private List<Chart> chart_array;
+	private List<String> table_name;
 	private static DataManagement management_instance = null;
 	private static final String COMMA = ",";
 	private static final String NEW_LINE = "\n";
@@ -41,6 +44,7 @@ public class DataManagement implements Serializable{
 		chart_array = null;
 		table_array = new ArrayList<DataTable>();
 		chart_array = new ArrayList<Chart>();
+		table_name = new ArrayList<String>();
 	}
 
 	private void setInstance(DataManagement dataManagementObj) {
@@ -95,7 +99,10 @@ public class DataManagement implements Serializable{
 //		for(int i=0; i < list.size(); i++ )
 //			System.out.println(list.get(i));
 		createDataTable(list, num_row, num_col);	
-		
+		num_table++;
+		String name = "dataset"+num_table;
+		table_name.add(name);
+		Main.setDataItem(name);
 	}
 
 	public void exportTableToCSV(DataTable table, File file) {
@@ -148,7 +155,7 @@ public class DataManagement implements Serializable{
 
 	public void saveProject(File file) {
 		try {
-			this.num_chart = 10;
+//			this.num_chart = 10;
 			DataManagement projectObj = null;
 			projectObj = DataManagement.getInstance();
 			//      System.out.println(path);
@@ -158,8 +165,8 @@ public class DataManagement implements Serializable{
 			oos.flush();
 			oos.close();
 			//      this.num_chart = 0;
-			System.out.println("obj1: " + projectObj.num_chart);
-			System.out.println("this: " + this.num_chart);
+//			System.out.println("obj1: " + projectObj.num_chart);
+//			System.out.println("this: " + this.num_chart);
 		} catch (Exception e) {
 			System.out.println("Error while Saving !!!");
 			e.printStackTrace();
@@ -174,7 +181,8 @@ public class DataManagement implements Serializable{
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			load_object = (DataManagement) ois.readObject();
 			ois.close();
-			System.out.println("obj: " + load_object.num_chart);
+			Main.setDataObj(load_object);
+			System.out.println("obj: " + load_object.num_table);
 		} catch (Exception e) {
 			System.out.println("Error while loading Project !!!");
 			e.printStackTrace();
@@ -255,6 +263,10 @@ public class DataManagement implements Serializable{
 		}
 		return isNum;
 
+	}
+	
+	public List<String> getTableName() {
+		return table_name;
 	}
 
 	public List<DataTable> getDataTables(){
