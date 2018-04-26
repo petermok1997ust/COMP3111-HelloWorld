@@ -1,12 +1,14 @@
 package ui.comp3111;
 
 import java.io.File;
-
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import core.comp3111.DataColumn;
 import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
+import core.comp3111.UIController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -65,7 +67,7 @@ public class Main extends Application {
 	private Button btLineChartBackMain = null;
 
 	// Screen 3: Init
-	private Button initImport, initTransform, initSave, initLoad;
+	private Button initImport, initExport, initSave, initLoad;
 	private Label initDataSet, initChart;
 	
 	/**
@@ -253,10 +255,37 @@ public class Main extends Application {
 
 		initDataSet = new Label("DataSets");
 		initChart = new Label("Charts");
-		initImport = new Button("Import CSV");
-		initTransform = new Button("Transform");
+		initImport = new Button("Import");
+		initExport = new Button("Export");
 		initSave = new Button("Save");
 		initLoad = new Button("Load");
+		
+		initImport.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitImportBtn();
+            }
+        });
+		
+		initLoad.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitLoadBtn();
+            }
+        });
+		
+		initSave.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitSaveBtn();
+            }
+        });
+		initExport.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitExportBtn();
+            }
+        });
 		
 		ListView<String> chartList = new ListView<String>();
 		ObservableList<String> chartItems =FXCollections.observableArrayList (
@@ -275,7 +304,7 @@ public class Main extends Application {
 		HBox chartButtons = new HBox(10);
 		chartButtons.getChildren().addAll(initLoad, initSave);
 		HBox dataButtons = new HBox(10);
-		dataButtons.getChildren().addAll(initImport, initTransform);
+		dataButtons.getChildren().addAll(initImport, initExport);
 		VBox dataSets = new VBox(10);
 		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons);
 		VBox charts = new VBox(10);
@@ -329,8 +358,8 @@ public class Main extends Application {
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
 			initEventHandlers(); // link up the event handlers
-			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
-//			putSceneOnStage(SCENE_INIT_SCREEN); 
+//			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
+			putSceneOnStage(SCENE_INIT_SCREEN); 
 		} catch (Exception e) {
 
 			e.printStackTrace(); // exception handling: print the error message on the console
@@ -347,7 +376,7 @@ public class Main extends Application {
 //        File file= new File(fileName);
 //        dataManagementInstance.importCSV(file);
 //		dataManagementInstance.loadProject(null);
-//		dataManagementInstance.exportTableToCSV(null, "hello");
+//		dataManagementInstance.exportTableToCSV(null, "hello.csv", "C:\\");
 		launch(args);
 	}
 }
