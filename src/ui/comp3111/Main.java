@@ -22,6 +22,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
@@ -29,6 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -76,6 +78,17 @@ public class Main extends Application {
 	private static ObservableList<String> chartItems;
 	private static ObservableList<String> dataItems;
 	private static ListView<String> dataList;
+	public static final String string_zero = "Zero";
+	public static final String string_median = "Median";
+	public static final String string_mean = "Mean";
+	private static final ObservableList<String> options = 
+		    FXCollections.observableArrayList(
+		    	string_zero,
+		    	string_median,
+		    	string_mean
+		    );
+	private static final ComboBox<String> comboBox = new ComboBox<String>(options);
+	
 	/**
 	 * create all scenes in this application
 	 */
@@ -258,7 +271,7 @@ public class Main extends Application {
 	}
 	
 	private Pane paneInitScreen() {
-
+	
 		initDataSet = new Label("DataSets");
 		initChart = new Label("Charts");
 		initImport = new Button("Import");
@@ -309,8 +322,10 @@ public class Main extends Application {
 		chartButtons.getChildren().addAll(initLoad, initSave);
 		HBox dataButtons = new HBox(10);
 		dataButtons.getChildren().addAll(initImport, initExport);
+		//data list
 		VBox dataSets = new VBox(10);
 		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons);
+		//chart list
 		VBox charts = new VBox(10);
 		charts.getChildren().addAll(initChart, chartList, chartButtons);
 		
@@ -318,14 +333,20 @@ public class Main extends Application {
 		hc.getChildren().addAll(dataSets, charts);
 		hc.setAlignment(Pos.CENTER);
 		
+		//combo box
 
+		comboBox.getSelectionModel().selectFirst();
+		Text num_handle_text = new Text(10, 50, "Replace empty numeric data with: ");
+		HBox num_handle = new HBox(20);
+		num_handle.getChildren().addAll(num_handle_text, comboBox);
+		num_handle.setAlignment(Pos.CENTER);
+		//UI
+		VBox vb = new VBox(20);
+		vb.getChildren().addAll(hc, num_handle);
 		BorderPane pane = new BorderPane();
-		pane.setCenter(hc);
-//
-//		// Apply style to the GUI components
-//		btSampleLineChart.getStyleClass().add("menu-button");
-//		lbMainScreenTitle.getStyleClass().add("menu-title");
-//		pane.getStyleClass().add("screen-background");
+		pane.setCenter(vb);
+		
+
 
 		return pane;
 	}
@@ -387,8 +408,13 @@ public class Main extends Application {
 	}
 	
 	public static int getSelectedDataIdx() {
-		System.out.println("Selected: "+dataList.getSelectionModel().getSelectedIndex());
+		System.out.println("Selected dataset index: "+dataList.getSelectionModel().getSelectedIndex());
 		return dataList.getSelectionModel().getSelectedIndex();
+	}
+	
+	public static String getSelectedNumHandle() {
+		System.out.println("Selected number handling: "+comboBox.getSelectionModel().getSelectedItem());
+		return comboBox.getSelectionModel().getSelectedItem();
 	}
 	
 	

@@ -12,9 +12,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import ui.comp3111.Main;
 
@@ -33,8 +36,6 @@ public class DataManagement implements Serializable{
 	private static final String NEW_LINE = "\n";
 	private static final String EMPTY_STRING = "";
 
-	//	private static final int TABLE = 1000;
-	//	private static final int CHART = 1001;
 
 	//constructor
 	private DataManagement() {
@@ -47,14 +48,14 @@ public class DataManagement implements Serializable{
 		table_name = new ArrayList<String>();
 	}
 
-	private void setInstance(DataManagement dataManagementObj) {
-		management_instance.num_chart = dataManagementObj.num_chart;
-		management_instance.num_table = dataManagementObj.num_table;
-		//    System.arraycopy( dataManagementObj.table_array, 0, management_instance.table_array, 0, dataManagementObj.table_array.length );
-		//    System.arraycopy( dataManagementObj.chart_array, 0, management_instance.chart_array, 0, dataManagementObj.chart_array.length );
-		management_instance.table_array = dataManagementObj.table_array;
-		management_instance.chart_array = dataManagementObj.chart_array;
-	}
+//	private void setInstance(DataManagement dataManagementObj) {
+//		management_instance.num_chart = dataManagementObj.num_chart;
+//		management_instance.num_table = dataManagementObj.num_table;
+//		//    System.arraycopy( dataManagementObj.table_array, 0, management_instance.table_array, 0, dataManagementObj.table_array.length );
+//		//    System.arraycopy( dataManagementObj.chart_array, 0, management_instance.chart_array, 0, dataManagementObj.chart_array.length );
+//		management_instance.table_array = dataManagementObj.table_array;
+//		management_instance.chart_array = dataManagementObj.chart_array;
+//	}
 
 	//singleton getInstance
 	public static DataManagement getInstance()
@@ -208,6 +209,9 @@ public class DataManagement implements Serializable{
 				columns.add(new Number[num_row]);
 		}
 		
+		//save problematic columns;
+		boolean[] problematic_col = new boolean[num_col];
+		int num_problem = 0;
 		//add items into the columns
 		for(int j = num_col; j < list.size(); j++) {
 			//idx in column
@@ -218,19 +222,25 @@ public class DataManagement implements Serializable{
 					((String[]) columns.get(j%isNum.length))[idx] = list.get(j);
 				}catch(Exception e) {
 					//null string
-					((String[]) columns.get(j%isNum.length))[idx] = "";	
+					((String[]) columns.get(j%isNum.length))[idx] = EMPTY_STRING;	
 				}
 			}else{
 				try {
 					((Number[]) columns.get(j%isNum.length))[idx] = Float.parseFloat(list.get(j));
 				}catch(Exception e) {
 					//null number for missing data handling
-					((Number[]) columns.get(j%isNum.length))[idx] = null;	
+					((Number[]) columns.get(j%isNum.length))[idx] = null;
+					problematic_col[j%isNum.length] = true;
+					num_problem++;
 				}
 			}
 		}
-		
-//		System.out.println(((String[])columns.get(0))[0]);
+		System.out.println("");
+		if(num_problem>0) {
+		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
+		handleMissingData(columns, problematic_col);
+		System.out.println("Finished Handling");
+		}
 		//create column
 		DataTable t = new DataTable();
 		for(int i=0; i <columns.size(); i++) {
@@ -276,6 +286,58 @@ public class DataManagement implements Serializable{
 		return table_array;
 	}
 
+	public void handleMissingData(List<Object> columns, boolean[] problematic_col) {
+		for(int i=0; i<problematic_col.length;i++) {
+			if(problematic_col[i]) {
+				handleNumColumnByCase((Number[])columns.get(i));
+			}
+		}
+	}
+	
+	public void handleNumColumnByCase(Number[] numbers) {
+		String handleType = Main.getSelectedNumHandle();
+		switch(handleType) {
+		case Main.string_zero:
+			fillAllMissingWith(numbers, 0);
+			break;
+		case Main.string_mean:
+			Float num_of_valid_col = 0f;
+			Float total = 0f;
+			for(int i=0;i<numbers.length;i++) {
+				if(numbers[i] != null) {
+					total+=(Float)numbers[i];
+					num_of_valid_col++;
+				}
+			}
+			double mean = (double)(total/num_of_valid_col);
+			fillAllMissingWith(numbers, mean);
+			break;
+		case Main.string_median:
+			List<Float> list = new ArrayList<Float>();
+			for(int i=0;i<numbers.length;i++) {
+				if(numbers[i] != null) {
+					list.add((Float) numbers[i]);
+				}
+			}
+			Collections.sort(list);
+			double median = 0;
+			int idx = list.size()/2;
+			if(list.size()%2 == 0) {
+				median = (double) (list.get(idx - 1) + list.get(idx))/2;
+			}else {
+				median = (double) list.get((list.size()+1)/2-1);
+			}
 
+			fillAllMissingWith(numbers, median);
+			break;
+		}
+	}
+
+	public void fillAllMissingWith(Number[] numbers, double num) {
+		for(int i =0; i<numbers.length;i++) {
+			if(numbers[i] == null)
+				numbers[i] = num;
+		}
+	}
 
 }
