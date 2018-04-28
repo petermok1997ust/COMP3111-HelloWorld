@@ -1,5 +1,6 @@
 package core.comp3111;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
  * @author cspeter
  *
  */
-public class DataTable {
+public class DataTable implements Serializable{
 
 	/**
 	 * Construct - Create an empty DataTable
@@ -108,7 +109,7 @@ public class DataTable {
 	 */
 	public int getNumCol() {
 		return dc.size();
-	}
+	}	
 
 	/**
 	 * Return the number of row of the data table. This data structure ensures that

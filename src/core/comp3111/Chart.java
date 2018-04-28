@@ -1,5 +1,7 @@
 package core.comp3111;
 
-public class Chart {
+import java.io.Serializable;
+
+public class Chart implements Serializable{
 
 }
