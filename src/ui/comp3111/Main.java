@@ -12,6 +12,8 @@ import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 import core.comp3111.UIController;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -71,8 +73,9 @@ public class Main extends Application {
 	// Screen 3: Init
 	private Button initImport, initExport, initSave, initLoad;
 	private Label initDataSet, initChart;
-	static ObservableList<String> chartItems;
-	static ObservableList<String> dataItems;
+	private static ObservableList<String> chartItems;
+	private static ObservableList<String> dataItems;
+	private static ListView<String> dataList;
 	/**
 	 * create all scenes in this application
 	 */
@@ -295,7 +298,7 @@ public class Main extends Application {
 		chartList.setItems(chartItems);
 
 		
-		ListView<String> dataList = new ListView<String>();
+		dataList = new ListView<String>();
 		dataItems =FXCollections.observableArrayList ();
 		dataList.setItems(dataItems);
 
@@ -382,6 +385,11 @@ public class Main extends Application {
 		dataManagementInstance = dataObj;
 		setDataItem(dataObj.getTableName());
 	}
+	
+	public static int getSelectedDataIdx() {
+		return dataList.getSelectionModel().getSelectedIndex();
+	}
+	
 	
 	/**
 	 * main method - only use if running via command line
