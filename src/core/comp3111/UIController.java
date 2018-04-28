@@ -5,6 +5,7 @@ import java.io.File;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import ui.comp3111.Main;
 
 public class UIController {
 	private static DataManagement dataManagementInstance = DataManagement.getInstance();
@@ -35,8 +36,11 @@ public class UIController {
 	
 	public static void onClickInitExportBtn(){
 		File directoryObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, true);
-		if(directoryObtained != null)
-			dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(0), directoryObtained);
+		int idx = Main.getSelectedDataIdx();
+		if(directoryObtained != null && idx>=0)
+			dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(idx), directoryObtained);
+		else
+			System.out.println("Nothing is exported");
 	}
 	
 	public static void onClickInitLoadBtn(){

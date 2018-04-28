@@ -13,6 +13,10 @@ import java.io.Serializable;
 public class DataColumn implements Serializable{
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7748533999639923589L;
+	/**
 	 * Constructor. Create an empty data column
 	 */
 	public DataColumn() {

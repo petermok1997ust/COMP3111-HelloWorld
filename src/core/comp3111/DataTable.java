@@ -18,6 +18,10 @@ import java.util.Set;
 public class DataTable implements Serializable{
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6520120541814048297L;
+	/**
 	 * Construct - Create an empty DataTable
 	 */
 	public DataTable() {
