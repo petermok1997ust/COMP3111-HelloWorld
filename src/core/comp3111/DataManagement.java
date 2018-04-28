@@ -65,7 +65,7 @@ public class DataManagement implements Serializable{
 	}
 
 	public void importCSV(File file) {
-		System.out.println("Importing CSV....");
+		System.out.println("Importing CSV "+ file.getAbsolutePath());
 		Scanner inputStream;
 		List<String> list = new ArrayList<String> ();  
 		int num_row = 0;
@@ -94,15 +94,19 @@ public class DataManagement implements Serializable{
 			inputStream.close();
 		}catch (FileNotFoundException e) {
 			e.printStackTrace();
+		}finally {
+			System.out.println("Finished importing CSV with "+ num_row+" rows and "+ num_col+" columns");
 		}
-//		System.out.print(list.size());
-//		for(int i=0; i < list.size(); i++ )
-//			System.out.println(list.get(i));
+		String empty = "";
+		if(num_row <= 0 || num_col <=0)
+			empty = "_(empty)";
+		System.out.println("Creating Table");
 		createDataTable(list, num_row, num_col);	
 		num_table++;
-		String name = "dataset"+num_table;
+		String name = "dataset"+num_table+empty;
 		table_name.add(name);
 		Main.setDataItem(name);
+		System.out.println("Finished create Table");
 	}
 
 	public void exportTableToCSV(DataTable table, File file) {
@@ -111,7 +115,7 @@ public class DataManagement implements Serializable{
 		int num_col = table.getNumCol();
 		Set<String> keys = table.getKeys();
 		String[] headers = keys.toArray(new String[keys.size()]);
-
+		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
 		FileWriter fileWriter = null;
 		try {
 			fileWriter = new FileWriter(file);
@@ -122,8 +126,8 @@ public class DataManagement implements Serializable{
 					fileWriter.append(COMMA);
 			}
 			fileWriter.append(NEW_LINE);
-			//add content
-			for(int i = 0; i<num_row;i++) {
+			//add content(-1 because without header)
+			for(int i = 0; i<num_row -1;i++) {
 				for(int j=0;j<num_col;j++) {
 					try {
 						String row_ele = (String)(table.getCol(headers[j]).getData())[i];
@@ -137,16 +141,16 @@ public class DataManagement implements Serializable{
 				}
 				fileWriter.append(NEW_LINE);
 			}
-			System.out.println("CSV file was created successfully !!!");
+			System.out.println("CSV file was created in "+ file.getAbsolutePath());
 		} catch (Exception e) {
-			System.out.println("Error in CsvFileWriter !!!");
+			System.out.println("Error in exporting");
 			e.printStackTrace();
 		} finally {
 			try {
 				fileWriter.flush();
 				fileWriter.close();
 			} catch (IOException e) {
-				System.out.println("Error while flushing/closing fileWriter !!!");
+				System.out.println("Error while flushing/closing");
 				e.printStackTrace();
 			}
 		}
@@ -155,36 +159,39 @@ public class DataManagement implements Serializable{
 
 	public void saveProject(File file) {
 		try {
-//			this.num_chart = 10;
 			DataManagement projectObj = null;
+			System.out.println("Copying DataObject");
 			projectObj = DataManagement.getInstance();
-			//      System.out.println(path);
 			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(projectObj);
 			oos.flush();
 			oos.close();
-			//      this.num_chart = 0;
-//			System.out.println("obj1: " + projectObj.num_chart);
-//			System.out.println("this: " + this.num_chart);
+			System.out.println("Successfully saved in "+ file.getAbsolutePath());
 		} catch (Exception e) {
-			System.out.println("Error while Saving !!!");
+			System.out.println("Error while Saving");
 			e.printStackTrace();
 		}
 	}
 
 	public void loadProject(File file) {
 		try {
-			//    	this.num_chart = 0;
 			DataManagement load_object;
+			System.out.println("Loading DataObject");
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			load_object = (DataManagement) ois.readObject();
+			System.out.println("Copying DataObject");
+			table_array = load_object.table_array;
+			chart_array = load_object.chart_array;
+			num_chart = load_object.num_chart;
+			num_table = load_object.num_table;
+			table_name = load_object.table_name;
 			ois.close();
 			Main.setDataObj(load_object);
-			System.out.println("obj: " + load_object.num_table);
+			System.out.println("Object is already loaded");
 		} catch (Exception e) {
-			System.out.println("Error while loading Project !!!");
+			System.out.println("Error while loading Project");
 			e.printStackTrace();
 		}
 	}
@@ -201,13 +208,10 @@ public class DataManagement implements Serializable{
 				columns.add(new Number[num_row]);
 		}
 		
-//		System.out.print(columns.size());
 		//add items into the columns
 		for(int j = num_col; j < list.size(); j++) {
 			//idx in column
 			int idx = j/num_col - 1;
-//			System.out.print(idx+": ");
-//			System.out.println(list.get(j));
 			if(isNum[j%num_col] == false) {
 				//null case
 				try {
@@ -220,8 +224,8 @@ public class DataManagement implements Serializable{
 				try {
 					((Number[]) columns.get(j%isNum.length))[idx] = Float.parseFloat(list.get(j));
 				}catch(Exception e) {
-					//null string
-					((Number[]) columns.get(j%isNum.length))[idx] = 0;	
+					//null number for missing data handling
+					((Number[]) columns.get(j%isNum.length))[idx] = null;	
 				}
 			}
 		}
@@ -243,7 +247,6 @@ public class DataManagement implements Serializable{
 			}
 		}
 		management_instance.table_array.add(t);
-//		System.out.println(table_array.get(0).getNumCol());
 		return t;
 	}
 	

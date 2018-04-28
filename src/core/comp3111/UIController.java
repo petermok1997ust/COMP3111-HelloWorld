@@ -40,7 +40,7 @@ public class UIController {
 		if(directoryObtained != null && idx>=0)
 			dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(idx), directoryObtained);
 		else
-			System.out.println("Nothing is exported");
+			System.out.println("Nothing is selected");
 	}
 	
 	public static void onClickInitLoadBtn(){

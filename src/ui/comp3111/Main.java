@@ -387,6 +387,7 @@ public class Main extends Application {
 	}
 	
 	public static int getSelectedDataIdx() {
+		System.out.println("Selected: "+dataList.getSelectionModel().getSelectedIndex());
 		return dataList.getSelectionModel().getSelectedIndex();
 	}
 	
