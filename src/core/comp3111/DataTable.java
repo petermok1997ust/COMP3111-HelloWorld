@@ -1,7 +1,9 @@
 package core.comp3111;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 2D array of data values with the following requirements: (1) There are 0 to
@@ -13,8 +15,12 @@ import java.util.Map;
  * @author cspeter
  *
  */
-public class DataTable {
+public class DataTable implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6520120541814048297L;
 	/**
 	 * Construct - Create an empty DataTable
 	 */
@@ -107,7 +113,7 @@ public class DataTable {
 	 */
 	public int getNumCol() {
 		return dc.size();
-	}
+	}	
 
 	/**
 	 * Return the number of row of the data table. This data structure ensures that
@@ -125,6 +131,9 @@ public class DataTable {
 		return dc.get(entry.getKey()).getSize();
 	}
 
+	public Set<String> getKeys() {
+		return dc.keySet();
+	}
 	// attribute: A java.util.Map interface
 	// KeyType: String
 	// ValueType: DataColumn

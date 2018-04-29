@@ -1,22 +1,36 @@
 package ui.comp3111;
 
+import java.io.File;
+import java.util.List;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import core.comp3111.DataColumn;
+import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
+import core.comp3111.UIController;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -33,12 +47,14 @@ public class Main extends Application {
 	// Hint: Use java.util.List interface and its implementation classes (e.g.
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
+	private static DataManagement dataManagementInstance = DataManagement.getInstance();
 
 	// Attributes: Scene and Stage
-	private static final int SCENE_NUM = 2;
+	private static final int SCENE_NUM = 3;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" };
+	private static final int SCENE_INIT_SCREEN = 2;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" , "Init Screen"};
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -56,6 +72,23 @@ public class Main extends Application {
 	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
 
+	// Screen 3: Init
+	private Button initImport, initExport, initSave, initLoad;
+	private Label initDataSet, initChart;
+	private static ObservableList<String> chartItems;
+	private static ObservableList<String> dataItems;
+	private static ListView<String> dataList;
+	public static final String string_zero = "Zero";
+	public static final String string_median = "Median";
+	public static final String string_mean = "Mean";
+	private static final ObservableList<String> options = 
+		    FXCollections.observableArrayList(
+		    	string_zero,
+		    	string_median,
+		    	string_mean
+		    );
+	private static final ComboBox<String> comboBox = new ComboBox<String>(options);
+	
 	/**
 	 * create all scenes in this application
 	 */
@@ -63,6 +96,7 @@ public class Main extends Application {
 		scenes = new Scene[SCENE_NUM];
 		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 400, 500);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
+		scenes[SCENE_INIT_SCREEN] = new Scene(paneInitScreen(), 600, 600);
 		for (Scene s : scenes) {
 			if (s != null)
 				// Assumption: all scenes share the same stylesheet
@@ -235,6 +269,87 @@ public class Main extends Application {
 
 		return pane;
 	}
+	
+	private Pane paneInitScreen() {
+	
+		initDataSet = new Label("DataSets");
+		initChart = new Label("Charts");
+		initImport = new Button("Import");
+		initExport = new Button("Export");
+		initSave = new Button("Save");
+		initLoad = new Button("Load");
+		
+		initImport.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitImportBtn();
+            }
+        });
+		
+		initLoad.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitLoadBtn();
+            }
+        });
+		
+		initSave.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitSaveBtn();
+            }
+        });
+		initExport.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	UIController.onClickInitExportBtn();
+            }
+        });
+		
+		ListView<String> chartList = new ListView<String>();
+		chartItems =FXCollections.observableArrayList ();
+		chartList.setItems(chartItems);
+
+		
+		dataList = new ListView<String>();
+		dataItems =FXCollections.observableArrayList ();
+		dataList.setItems(dataItems);
+
+		// Layout the UI components
+
+
+		HBox chartButtons = new HBox(10);
+		chartButtons.getChildren().addAll(initLoad, initSave);
+		HBox dataButtons = new HBox(10);
+		dataButtons.getChildren().addAll(initImport, initExport);
+		//data list
+		VBox dataSets = new VBox(10);
+		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons);
+		//chart list
+		VBox charts = new VBox(10);
+		charts.getChildren().addAll(initChart, chartList, chartButtons);
+		
+		HBox hc = new HBox(10);
+		hc.getChildren().addAll(dataSets, charts);
+		hc.setAlignment(Pos.CENTER);
+		
+		//combo box
+
+		comboBox.getSelectionModel().selectFirst();
+		Text num_handle_text = new Text(10, 50, "Replace empty numeric data with: ");
+		HBox num_handle = new HBox(20);
+		num_handle.getChildren().addAll(num_handle_text, comboBox);
+		num_handle.setAlignment(Pos.CENTER);
+		//UI
+		VBox vb = new VBox(20);
+		vb.getChildren().addAll(hc, num_handle);
+		BorderPane pane = new BorderPane();
+		pane.setCenter(vb);
+		
+
+
+		return pane;
+	}
 
 	/**
 	 * This method is used to pick anyone of the scene on the stage. It handles the
@@ -268,14 +383,41 @@ public class Main extends Application {
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
 			initEventHandlers(); // link up the event handlers
-			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
-
+//			putSceneOnStage(SCENE_MAIN_SCREEN); // show the main screen
+			putSceneOnStage(SCENE_INIT_SCREEN); 
 		} catch (Exception e) {
 
 			e.printStackTrace(); // exception handling: print the error message on the console
 		}
 	}
 
+	public static void setDataItem(List<String> list) {
+		dataItems.clear();
+		for(int i = 0; i<list.size();i++)
+			dataItems.add(list.get(i));
+	}
+	
+	public static void setDataItem(String name) {
+			dataItems.add(name);
+	}
+	
+	
+	public static void setDataObj(DataManagement dataObj) {
+		dataManagementInstance = dataObj;
+		setDataItem(dataObj.getTableName());
+	}
+	
+	public static int getSelectedDataIdx() {
+		System.out.println("Selected dataset index: "+dataList.getSelectionModel().getSelectedIndex());
+		return dataList.getSelectionModel().getSelectedIndex();
+	}
+	
+	public static String getSelectedNumHandle() {
+		System.out.println("Selected number handling: "+comboBox.getSelectionModel().getSelectedItem());
+		return comboBox.getSelectionModel().getSelectedItem();
+	}
+	
+	
 	/**
 	 * main method - only use if running via command line
 	 * 
