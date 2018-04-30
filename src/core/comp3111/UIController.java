@@ -25,7 +25,6 @@ public class UIController {
 		return selectedFile;
 	}
 	
-	
 	public static void onClickInitImportBtn(){
 		File fileObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, false);
 		if(fileObtained != null) {
@@ -68,7 +67,6 @@ public class UIController {
 	public static void onClickTransformOKBtn(String choice){
 		System.out.print("apply ok ");
 		System.out.println(choice);
-		
 	}	
 	
 }

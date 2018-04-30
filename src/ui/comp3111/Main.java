@@ -1,12 +1,15 @@
 package ui.comp3111;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import core.comp3111.DataColumn;
 import core.comp3111.DataManagement;
+import core.comp3111.Chart;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
@@ -56,17 +59,18 @@ public class Main extends Application {
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
 	private static DataManagement dataManagementInstance = DataManagement.getInstance();
-
+	private static Chart chartInstance = Chart.getInstance();;
+	
 	// Attributes: Scene and Stage
 	public static final int SCENE_NUM = 4;
 	public static final int SCENE_MAIN_SCREEN = 0;
-	public static final int SCENE_LINE_CHART = 1;
+	public static final int SCENE_CHART = 1;
 	public static final int SCENE_INIT_SCREEN = 2;
 	public static final int SCENE_TRANSFORM_SCREEN = 3;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" , "Init Screen", "Transform Screen"};
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Chart Screen" , "Init Screen", "Transform Screen"};
 	private Stage stage = null;
 	private Scene[] scenes = null;
-
+	
 	// To keep this application more structural,
 	// The following UI components are used to keep references after invoking
 	// createScene()
@@ -76,27 +80,30 @@ public class Main extends Application {
 	private Label lbSampleDataTable, lbMainScreenTitle;
 
 	// Screen 2: paneSampleLineChartScreen
-	private LineChart<Number, Number> lineChart = null;
-	private NumberAxis xAxis = null;
-	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
 
 	// Screen 3: Init
-	private Button initImport, initExport, initSave, initLoad, initTransform;
+	private Button initImport, initExport, initSave, initLoad, initTransform, initPlot;
 	private Label initDataSet, initChart;
+	private static Label chart_col_1_text,chart_col_2_text;
 	private static ObservableList<String> chartItems;
 	private static ObservableList<String> dataItems;
 	private static ListView<String> dataList;
+	private static ListView<String> chartList ;
 	public static final String string_zero = "Zero";
 	public static final String string_median = "Median";
 	public static final String string_mean = "Mean";
+	
 	private static final ObservableList<String> options = 
 		    FXCollections.observableArrayList(
 		    	string_zero,
 		    	string_median,
 		    	string_mean
 		    );
+	
 	private static final ComboBox<String> comboBox = new ComboBox<String>(options);
+	private static ComboBox<String> chartDataColName1 = new ComboBox<String>();
+	private static ComboBox<String> chartDataColName2 = new ComboBox<String>();
 	
 	// Screen 4: Transform
 	private ListView<TableView> splitedDataset;
@@ -112,13 +119,14 @@ public class Main extends Application {
 	private static  ToggleGroup rcGroup;
 	String rcChoice = null;
 	
+	
 	/**
 	 * create all scenes in this application
 	 */
 	private void initScenes() {
 		scenes = new Scene[SCENE_NUM];
 		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 400, 500);
-		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
+		scenes[SCENE_CHART] = new Scene(paneChartScreen(), 800, 600);
 		scenes[SCENE_INIT_SCREEN] = new Scene(paneInitScreen(), 600, 600);
 		scenes[SCENE_TRANSFORM_SCREEN] = new Scene(paneTransformScreen(), 600, 600);
 		for (Scene s : scenes) {
@@ -161,11 +169,9 @@ public class Main extends Application {
 		// Ensure both columns exist and the type is number
 		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
 				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
-
-			lineChart.setTitle("Sample Line Chart");
-			xAxis.setLabel("X");
-			yAxis.setLabel("Y");
-
+			
+			 LineChart lineChart = chartInstance.lineChart("X", "Y", "Sample Line Chart");
+				
 			// defining a series
 			XYChart.Series series = new XYChart.Series();
 
@@ -207,7 +213,6 @@ public class Main extends Application {
 					sampleDataTable.getNumCol()));
 
 			populateSampleDataTableValuesToChart("Sample 1");
-
 		});
 
 		// click handler
@@ -224,7 +229,7 @@ public class Main extends Application {
 
 		// click handler
 		btSampleLineChart.setOnAction(e -> {
-			putSceneOnStage(SCENE_LINE_CHART);
+			putSceneOnStage(SCENE_CHART);
 		});
 
 	}
@@ -234,18 +239,11 @@ public class Main extends Application {
 	 * 
 	 * @return a Pane component to be displayed on a scene
 	 */
-	private Pane paneLineChartScreen() {
-
-		xAxis = new NumberAxis();
-		yAxis = new NumberAxis();
-		lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-
+	private Pane paneChartScreen() {
 		btLineChartBackMain = new Button("Back");
 
-		xAxis.setLabel("undefined");
-		yAxis.setLabel("undefined");
-		lineChart.setTitle("An empty line chart");
-
+		LineChart lineChart = chartInstance.lineChart("x","y","Tittle"); 
+		
 		// Layout the UI components
 		VBox container = new VBox(20);
 		container.getChildren().addAll(lineChart, btLineChartBackMain);
@@ -256,7 +254,11 @@ public class Main extends Application {
 
 		// Apply CSS to style the GUI components
 		pane.getStyleClass().add("screen-background");
-
+		
+		btLineChartBackMain.setOnAction(e -> {
+			putSceneOnStage(SCENE_INIT_SCREEN);
+		});
+		
 		return pane;
 	}
 
@@ -302,6 +304,7 @@ public class Main extends Application {
 		initExport = new Button("Export");
 		initSave = new Button("Save");
 		initLoad = new Button("Load");
+		initPlot = new Button("Plot");
 		initTransform = new Button("Transform");
 		
 		initImport.setOnAction(new EventHandler<ActionEvent>() {
@@ -315,6 +318,14 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
             	UIController.onClickInitLoadBtn();
+            }
+        });
+		
+		initPlot.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	//putSceneOnStage(SCENE_CHART); 
+            	update_chartCol_comboBox();
             }
         });
 		
@@ -338,35 +349,48 @@ public class Main extends Application {
             }
         });
 
-		ListView<String> chartList = new ListView<String>();
+		chartList = new ListView<String>();
 		chartItems =FXCollections.observableArrayList ();
 		chartList.setItems(chartItems);
-
+		
+		String [] chartTypes = chartInstance.getChartType();
+		
+		for (String chartType : chartTypes) {
+		    // fruit is an element of the `fruits` array.
+			chartItems.add(chartType);
+		}
 		
 		dataList = new ListView<String>();
 		dataItems =FXCollections.observableArrayList ();
 		dataList.setItems(dataItems);
 
 		// Layout the UI components
-
+		
 
 		HBox chartButtons = new HBox(10);
-		chartButtons.getChildren().addAll(initLoad, initSave);
+		chartButtons.getChildren().addAll(initLoad, initSave );
+		
 		HBox dataButtons = new HBox(10);
 		dataButtons.getChildren().addAll(initImport, initExport, initTransform);
+		
 		//data list
 		VBox dataSets = new VBox(10);
-		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons);
+		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons,chartButtons);
+		
+		HBox hc1 = new HBox(10);
+		chart_col_1_text = new Label();
+		chart_col_2_text = new Label();
+		hc1.getChildren().addAll(chart_col_1_text,chartDataColName1,chart_col_2_text,chartDataColName2,initPlot);
+		
 		//chart list
 		VBox charts = new VBox(10);
-		charts.getChildren().addAll(initChart, chartList, chartButtons);
+		charts.getChildren().addAll(initChart, chartList, hc1);
 		
 		HBox hc = new HBox(10);
 		hc.getChildren().addAll(dataSets, charts);
 		hc.setAlignment(Pos.CENTER);
 		
 		//combo box
-
 		comboBox.getSelectionModel().selectFirst();
 		Text num_handle_text = new Text(10, 50, "Replace empty numeric data with: ");
 		HBox num_handle = new HBox(20);
@@ -378,8 +402,24 @@ public class Main extends Application {
 		BorderPane pane = new BorderPane();
 		pane.setCenter(vb);
 		
-
-
+		dataList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
+		{
+		    public void changed(ObservableValue<? extends String> ov,
+		            final String oldvalue, final String newvalue) 
+		    {
+		    	update_chartCol_comboBox();
+		    }
+		});
+		
+		chartList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>()
+		{
+		    public void changed(ObservableValue<? extends String> ov,
+		            final String oldvalue, final String newvalue) 
+		    {
+		    	update_chartCol_comboBox();
+		    }
+		});
+		
 		return pane;
 	}
 	
@@ -451,12 +491,14 @@ public class Main extends Application {
             	UIController.onClickTransformOKBtn(rcChoice);
             }
         });
+		
 		//Toggle button
 		replace.setUserData("replace");
 		create.setUserData("create");
 		replace.setToggleGroup(rcGroup);
 		create.setToggleGroup(rcGroup);
 		create.setSelected(true);	//default Create new datasets
+		
 		//comboBox
 		 columnSelect.getItems().addAll(
             "jacob.smith@example.com",
@@ -466,6 +508,7 @@ public class Main extends Application {
             "michael.brown@example.com"  
         );
 		comparison.getItems().addAll("<","<=","==","!=",">=",">");
+		
 		//slider
 		percentage.setShowTickLabels(true);
 		percentage.setShowTickMarks(true);
@@ -529,17 +572,19 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
-			initEventHandlers(); // link up the event handlers			
+			//initEventHandlers(); // link up the event handlers	
+			
 			putSceneOnStage(SCENE_INIT_SCREEN); 
+			putSceneOnStage(SCENE_CHART); 
+			
 		} catch (Exception e) {
 
 			e.printStackTrace(); // exception handling: print the error message on the console
 		}
 	}
-
+	
 	public static void setDataItem(List<String> list) {
 		dataItems.clear();
 		for(int i = 0; i<list.size();i++)
@@ -550,6 +595,9 @@ public class Main extends Application {
 			dataItems.add(name);
 	}
 	
+	public static void setChartItem(String name) {
+		chartItems.add(name);
+	}
 	
 	public static void setDataObj(DataManagement dataObj) {
 		dataManagementInstance = dataObj;
@@ -573,5 +621,48 @@ public class Main extends Application {
 	 */
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	public void openStage(int sceneID) {
+		putSceneOnStage(sceneID);
+	}
+	
+	public static void update_chartCol_comboBox() {
+		int selected_chart_index = chartList.getSelectionModel().getSelectedIndex();
+		int selected_dataset_index = dataList.getSelectionModel().getSelectedIndex();
+		
+		System.out.println("selected_chart_index: " + selected_chart_index);
+        System.out.println("selected_dataset_index" + selected_dataset_index );
+        
+		if (selected_chart_index > -1 ) {			
+			chart_col_1_text.setText(Chart.chart_labels[selected_chart_index][0]);
+			chart_col_2_text.setText(Chart.chart_labels[selected_chart_index][1]);
+		}
+
+		chartDataColName1.getItems().clear();
+		chartDataColName2.getItems().clear();
+		
+		if (selected_dataset_index > -1) {
+			List<DataTable> tables = dataManagementInstance.getDataTables();
+			DataTable table = tables.get(selected_dataset_index);
+			Set<String> key = table.getKeys();
+			Object[] key_arr = key.toArray();
+			
+			for (Object k : key_arr) {
+				DataColumn col = table.getCol((String)k);
+				String type = col.getTypeName();
+				
+				if(type == Chart.chart_col_types[selected_chart_index][0])
+					chartDataColName1.getItems().add((String) k);
+				
+				if(type == Chart.chart_col_types[selected_chart_index][1])
+					chartDataColName2.getItems().add((String)k);
+				
+				System.out.println(k+type);
+			}
+		}
+		
+		chartDataColName1.getSelectionModel().selectFirst();
+		chartDataColName2.getSelectionModel().selectFirst();
 	}
 }
