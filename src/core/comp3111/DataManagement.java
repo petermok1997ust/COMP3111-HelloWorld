@@ -1,12 +1,10 @@
 package core.comp3111;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import ui.comp3111.Main;
 
@@ -75,22 +72,17 @@ public class DataManagement implements Serializable{
 			inputStream = new Scanner(file);
 			while(inputStream.hasNextLine()) {
 				String line = inputStream.nextLine();
-				Scanner lineScanner = new Scanner(line);
-				lineScanner.useDelimiter(COMMA);
-				int c = 0;
-				while(c<num_col||lineScanner.hasNext()){
-					String line_item= null;
-					if(lineScanner.hasNext())
-						line_item = lineScanner.next();
-					list.add(line_item);
-					//column of header count
-					if(num_row == 0) 
-						num_col++;
-					c++;
+				String[] line_split = line.split(",",-1);
+				for(int i=0; i<line_split.length;i++) {
+					System.out.print(line_split[i]);
 				}
-				//row count
+				if(num_row == 0)
+					num_col = line_split.length;
+				for(int c=0; c<line_split.length; c++) {
+					String input = line_split[c].isEmpty()?null:line_split[c];
+					list.add(input);
+				}
 				num_row++;
-				lineScanner.close();
 			}
 			inputStream.close();
 		}catch (FileNotFoundException e) {
@@ -262,13 +254,14 @@ public class DataManagement implements Serializable{
 	
 	public boolean[] isColumnNum(List<String> list, int numCol) {
 		boolean[] isNum = new boolean[numCol];
+		Arrays.fill(isNum, true);
 		for(int j = numCol+1; j < list.size(); j++) {
 			if(list.get(j) != null) {
 				try{
 					Float.parseFloat(list.get(j));
-					isNum[j%numCol] = true;
 //					System.out.println(list.size()+", "+numCol+", "+j);
 				}catch (NumberFormatException e){
+					isNum[j%numCol] = false;
 				}finally {
 //					System.out.println(list.get(j)+", "+isNum[j%numCol]);
 				}
