@@ -18,7 +18,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -59,19 +58,12 @@ public class Main extends Application {
 	private static DataManagement dataManagementInstance = DataManagement.getInstance();
 
 	// Attributes: Scene and Stage
-<<<<<<< HEAD
 	public static final int SCENE_NUM = 4;
 	public static final int SCENE_MAIN_SCREEN = 0;
 	public static final int SCENE_LINE_CHART = 1;
 	public static final int SCENE_INIT_SCREEN = 2;
 	public static final int SCENE_TRANSFORM_SCREEN = 3;
 	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" , "Init Screen", "Transform Screen"};
-=======
-	private static final int SCENE_NUM = 2;
-	private static final int SCENE_MAIN_SCREEN = 0;
-	private static final int SCENE_LINE_CHART = 1;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - HELLO WORLD", "Sample Line Chart Screen" };
->>>>>>> HOFA
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -85,7 +77,6 @@ public class Main extends Application {
 
 	// Screen 2: paneSampleLineChartScreen
 	private LineChart<Number, Number> lineChart = null;
-	private BarChart<String, Number> barChart = null;
 	private NumberAxis xAxis = null;
 	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
@@ -166,12 +157,11 @@ public class Main extends Application {
 		// Get 2 columns
 		DataColumn xCol = sampleDataTable.getCol("X");
 		DataColumn yCol = sampleDataTable.getCol("Y");
-		
-		
+
 		// Ensure both columns exist and the type is number
 		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
 				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
-			
+
 			lineChart.setTitle("Sample Line Chart");
 			xAxis.setLabel("X");
 			yAxis.setLabel("Y");
@@ -198,52 +188,11 @@ public class Main extends Application {
 
 			// add the new series as the only one series for this line chart
 			lineChart.getData().add(series);
+
 		}
 
 	}
-	/**
-	 * Populate sample data table values to the bar chart view
-	 */
-	private void populateSampleDataTableValuesToBarChart(String seriesName) {
 
-		// Get 2 columns
-		DataColumn xCol = sampleDataTable.getCol("X");
-		DataColumn yCol = sampleDataTable.getCol("Y");
-
-		// Ensure both columns exist and the type is number
-		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
-				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
-
-			barChart.setTitle("Sample Line Chart");
-			xAxis.setLabel("X");
-			yAxis.setLabel("Y");
-
-			// defining a series
-			XYChart.Series series = new XYChart.Series();
-
-			series.setName(seriesName);
-
-			// populating the series with data
-			// As we have checked the type, it is safe to downcast to Number[]
-			Number[] xValues = (Number[]) xCol.getData();
-			Number[] yValues = (Number[]) yCol.getData();
-
-			// In DataTable structure, both length must be the same
-			int len = xValues.length;
-
-			for (int i = 0; i < len; i++) {
-				series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-			}
-
-			// clear all previous series
-			barChart.getData().clear();
-
-			// add the new series as the only one series for this line chart
-			barChart.getData().add(series);
-		}
-	}
-	
-	
 	/**
 	 * Initialize event handlers of the main screen
 	 */
