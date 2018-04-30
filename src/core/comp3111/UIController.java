@@ -57,6 +57,7 @@ public class UIController {
 			dataManagementInstance.saveProject(fileObtained);
 	}
 	
+	//Transform scene
 	public static void onClickApplyFilterBtn(double v, boolean e){
 		System.out.print("apply filter");
 		if(!e) System.out.print(v);

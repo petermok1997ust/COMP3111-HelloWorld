@@ -1,7 +1,10 @@
 package ui.comp3111;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,10 +15,12 @@ import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 import core.comp3111.UIController;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -29,17 +34,21 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 /**
  * The Main class of this GUI application
@@ -87,6 +96,8 @@ public class Main extends Application {
 	private static ObservableList<String> chartItems;
 	private static ObservableList<String> dataItems;
 	private static ListView<String> dataList;
+	private static ListView<String> chartList;
+	private int selectedDataset;
 	public static final String string_zero = "Zero";
 	public static final String string_median = "Median";
 	public static final String string_mean = "Mean";
@@ -101,16 +112,16 @@ public class Main extends Application {
 	// Screen 4: Transform
 	private ListView<TableView> splitedDataset;
 	private ObservableList<TableView> dataSetItems;
-	private TableView dataTable;
+	private TableView dataTableView;
 	private Separator transformSeparator, percentageSeparator;
 	private Label split, filter, percentageLTxt, percentageRTxt;
 	private ComboBox<String> columnSelect, comparison;
 	private TextField compareValue;
 	private Slider percentage;
-	private Button applyFilter, applySplit, transformOK;
+	private Button applyFilter, applySplit, transformOK, backFromTransform;
 	private ToggleButton replace, create;
 	private static  ToggleGroup rcGroup;
-	String rcChoice = null;
+	String rcChoice = "create";
 	
 	/**
 	 * create all scenes in this application
@@ -303,6 +314,7 @@ public class Main extends Application {
 		initSave = new Button("Save");
 		initLoad = new Button("Load");
 		initTransform = new Button("Transform");
+		selectedDataset = -1;
 		
 		initImport.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -334,22 +346,30 @@ public class Main extends Application {
 		initTransform.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-    			putSceneOnStage(SCENE_TRANSFORM_SCREEN);
+            	if(selectedDataset != -1) {
+                	//settingDatasetView();
+        			putSceneOnStage(SCENE_TRANSFORM_SCREEN);            		
+            	}
+            	else {
+            		System.out.println("dataset not selected");
+            	}
             }
         });
 
 		ListView<String> chartList = new ListView<String>();
 		chartItems =FXCollections.observableArrayList ();
 		chartList.setItems(chartItems);
-
 		
 		dataList = new ListView<String>();
 		dataItems =FXCollections.observableArrayList ();
 		dataList.setItems(dataItems);
-
+		dataList.getSelectionModel().selectedItemProperty().addListener(
+            (ObservableValue<? extends String> ov, String old_val, 
+                String new_val) -> {
+                	selectedDataset = dataList.getSelectionModel().getSelectedIndex();
+        });
+		
 		// Layout the UI components
-
-
 		HBox chartButtons = new HBox(10);
 		chartButtons.getChildren().addAll(initLoad, initSave);
 		HBox dataButtons = new HBox(10);
@@ -378,14 +398,13 @@ public class Main extends Application {
 		BorderPane pane = new BorderPane();
 		pane.setCenter(vb);
 		
-
-
 		return pane;
 	}
 	
-	private Pane paneTransformScreen() {		
+
+	private Pane paneTransformScreen() {
 		splitedDataset = new ListView<TableView>();
-		dataTable = new TableView();
+		dataTableView = new TableView<>();
 		transformSeparator = new Separator();
 		filter = new Label("Filter: ");
 		split = new Label("Split: ");
@@ -402,16 +421,7 @@ public class Main extends Application {
 		replace = new ToggleButton("Replace current dataset");
 		create = new ToggleButton("Create new dataset");
 		rcGroup = new ToggleGroup();
-		
-		//list
-		dataSetItems = FXCollections.observableArrayList(dataTable);
-		splitedDataset.setItems(dataSetItems);
-		splitedDataset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
-		//table
-		TableColumn firstNameCol = new TableColumn("First Name");
-        TableColumn lastNameCol = new TableColumn("Last Name");
-        dataTable.getColumns().addAll(firstNameCol, lastNameCol);
+		backFromTransform = new Button("Back");
 
 		//Button
 		applyFilter.setOnAction(new EventHandler<ActionEvent>() {
@@ -433,7 +443,6 @@ public class Main extends Application {
             	UIController.onClickApplySplitBtn();
             }
         });
-
  
 		transformOK.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -451,6 +460,14 @@ public class Main extends Application {
             	UIController.onClickTransformOKBtn(rcChoice);
             }
         });
+
+		backFromTransform.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	putSceneOnStage(SCENE_INIT_SCREEN);
+            }
+        });
+
 		//Toggle button
 		replace.setUserData("replace");
 		create.setUserData("create");
@@ -466,6 +483,10 @@ public class Main extends Application {
             "michael.brown@example.com"  
         );
 		comparison.getItems().addAll("<","<=","==","!=",">=",">");
+		
+		//text field
+		comparison.setPromptText("Enter float/integer number.");
+		
 		//slider
 		percentage.setShowTickLabels(true);
 		percentage.setShowTickMarks(true);
@@ -478,7 +499,8 @@ public class Main extends Application {
 	                percentageLTxt.setText(String.format("%.2f", new_val));
 	                percentageRTxt.setText(String.format("%.2f", 100.0 - new_val.doubleValue()));
 	        });
-
+		percentageSeparator.setOrientation(Orientation.VERTICAL);
+		
 		HBox hb1 = new HBox(20);
 		hb1.getChildren().addAll(filter, columnSelect, comparison, compareValue, applyFilter);
 //		hb1.setAlignment(Pos.CENTER);
@@ -488,11 +510,14 @@ public class Main extends Application {
 		HBox hb3 = new HBox(20);
 		hb3.getChildren().addAll(replace, create, transformOK);
 //		hb3.setAlignment(Pos.CENTER);
+		HBox hb4 = new HBox(20);
+		hb4.getChildren().addAll(backFromTransform);
+//		hb4.setAlignment(Pos.CENTER);
 		
 		VBox vb = new VBox(30);
-		vb.getChildren().addAll(hb1,hb2,hb3);
+		vb.getChildren().addAll(hb1,hb2,hb3,hb4);
 		
-		VBox positionBox = new VBox(100);
+		VBox positionBox = new VBox(30);
 		positionBox.getChildren().addAll(splitedDataset, vb);
 		
 		BorderPane pane = new BorderPane();
