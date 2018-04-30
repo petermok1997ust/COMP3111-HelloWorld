@@ -35,11 +35,12 @@ public class UIController {
 	}
 	
 	public static void onClickInitExportBtn(){
-		File directoryObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, true);
 		int idx = Main.getSelectedDataIdx();
-		if(directoryObtained != null && idx>=0)
-			dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(idx), directoryObtained);
-		else
+		if(idx>=0){
+			File directoryObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, true);
+			if(directoryObtained != null)
+				dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(idx), directoryObtained);
+		}else
 			System.out.println("Nothing is selected");
 	}
 	
