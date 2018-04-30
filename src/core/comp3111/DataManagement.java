@@ -285,7 +285,12 @@ public class DataManagement implements Serializable{
 	public List<DataTable> getDataTables(){
 		return table_array;
 	}
-
+	
+	public DataTable getDataTableByIndex(int n){
+//		if(table_array == null) return null;
+		return table_array.get(n);
+	}
+	
 	public void handleMissingData(List<Object> columns, boolean[] problematic_col) {
 		for(int i=0; i<problematic_col.length;i++) {
 			if(problematic_col[i]) {
