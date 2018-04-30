@@ -56,4 +56,19 @@ public class UIController {
 		if(fileObtained != null)
 			dataManagementInstance.saveProject(fileObtained);
 	}
+	
+	public static void onClickApplyFilterBtn(double v, boolean e){
+		System.out.print("apply filter");
+		if(!e) System.out.print(v);
+		else System.out.println("error");
+	}	
+	public static void onClickApplySplitBtn(){
+		System.out.print("apply split");
+	}	
+	public static void onClickTransformOKBtn(String choice){
+		System.out.print("apply ok ");
+		System.out.println(choice);
+		
+	}	
+	
 }
