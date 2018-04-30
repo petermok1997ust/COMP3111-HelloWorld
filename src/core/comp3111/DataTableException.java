@@ -11,8 +11,12 @@ package core.comp3111;
  * @author cspeter
  *
  */
-@SuppressWarnings("serial")
 public class DataTableException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public DataTableException(String message) {
 		super("DataTableException: " + message);
