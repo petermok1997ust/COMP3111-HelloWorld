@@ -81,6 +81,7 @@ public class Main extends Application {
 
 	// Screen 2: paneSampleLineChartScreen
 	private Button btLineChartBackMain = null;
+	private LineChart<Number, Number> lineChart = null;
 
 	// Screen 3: Init
 	private Button initImport, initExport, initSave, initLoad, initTransform, initPlot;
@@ -90,6 +91,9 @@ public class Main extends Application {
 	private static ObservableList<String> dataItems;
 	private static ListView<String> dataList;
 	private static ListView<String> chartList ;
+	private static int selected_dataset_index,selected_chart_index;
+	private static String selected_col1,selected_col2;
+	private static DataTable selected_table;
 	public static final String string_zero = "Zero";
 	public static final String string_median = "Median";
 	public static final String string_mean = "Mean";
@@ -137,119 +141,22 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method will be invoked after createScenes(). In this stage, all UI
-	 * components will be created with a non-NULL references for the UI components
-	 * that requires interaction (e.g. button click, or others).
-	 */
-	private void initEventHandlers() {
-		initMainScreenHandlers();
-		initLineChartScreenHandlers();
-	}
-
-	/**
-	 * Initialize event handlers of the line chart screen
-	 */
-	private void initLineChartScreenHandlers() {
-
-		// click handler
-		btLineChartBackMain.setOnAction(e -> {
-			putSceneOnStage(SCENE_MAIN_SCREEN);
-		});
-	}
-
-	/**
-	 * Populate sample data table values to the chart view
-	 */
-	private void populateSampleDataTableValuesToChart(String seriesName) {
-
-		// Get 2 columns
-		DataColumn xCol = sampleDataTable.getCol("X");
-		DataColumn yCol = sampleDataTable.getCol("Y");
-
-		// Ensure both columns exist and the type is number
-		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
-				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
-			
-			 LineChart lineChart = chartInstance.lineChart("X", "Y", "Sample Line Chart");
-				
-			// defining a series
-			XYChart.Series series = new XYChart.Series();
-
-			series.setName(seriesName);
-
-			// populating the series with data
-			// As we have checked the type, it is safe to downcast to Number[]
-			Number[] xValues = (Number[]) xCol.getData();
-			Number[] yValues = (Number[]) yCol.getData();
-
-			// In DataTable structure, both length must be the same
-			int len = xValues.length;
-
-			for (int i = 0; i < len; i++) {
-				series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-			}
-
-			// clear all previous series
-			lineChart.getData().clear();
-
-			// add the new series as the only one series for this line chart
-			lineChart.getData().add(series);
-
-		}
-
-	}
-
-	/**
-	 * Initialize event handlers of the main screen
-	 */
-	private void initMainScreenHandlers() {
-
-		// click handler
-		btSampleLineChartData.setOnAction(e -> {
-
-			// In this example, we invoke SampleDataGenerator to generate sample data
-			sampleDataTable = SampleDataGenerator.generateSampleLineData();
-			lbSampleDataTable.setText(String.format("SampleDataTable: %d rows, %d columns", sampleDataTable.getNumRow(),
-					sampleDataTable.getNumCol()));
-
-			populateSampleDataTableValuesToChart("Sample 1");
-		});
-
-		// click handler
-		btSampleLineChartDataV2.setOnAction(e -> {
-
-			// In this example, we invoke SampleDataGenerator to generate sample data
-			sampleDataTable = SampleDataGenerator.generateSampleLineDataV2();
-			lbSampleDataTable.setText(String.format("SampleDataTable: %d rows, %d columns", sampleDataTable.getNumRow(),
-					sampleDataTable.getNumCol()));
-
-			populateSampleDataTableValuesToChart("Sample 2");
-
-		});
-
-		// click handler
-		btSampleLineChart.setOnAction(e -> {
-			putSceneOnStage(SCENE_CHART);
-		});
-
-	}
-
-	/**
 	 * Create the line chart screen and layout its UI components
 	 * 
 	 * @return a Pane component to be displayed on a scene
 	 */
 	private Pane paneChartScreen() {
 		btLineChartBackMain = new Button("Back");
-
-		LineChart lineChart = chartInstance.lineChart("x","y","Tittle"); 
+		
+		BorderPane pane = new BorderPane();
+		
+		lineChart = chartInstance.lineChart(); 
 		
 		// Layout the UI components
 		VBox container = new VBox(20);
 		container.getChildren().addAll(lineChart, btLineChartBackMain);
 		container.setAlignment(Pos.CENTER);
 
-		BorderPane pane = new BorderPane();
 		pane.setCenter(container);
 
 		// Apply CSS to style the GUI components
@@ -258,10 +165,17 @@ public class Main extends Application {
 		btLineChartBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_INIT_SCREEN);
 		});
-		
+
 		return pane;
 	}
-
+	
+	private void update_line_chart () {
+		
+		if (selected_table != null ) {
+			String Name = dataManagementInstance.getTableName().get(selected_dataset_index);
+			chartInstance.lineChart_update(Name,selected_table, selected_col1, selected_col2); 
+		}
+	}
 	/**
 	 * Creates the main screen and layout its UI components
 	 * 
@@ -324,8 +238,8 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	//putSceneOnStage(SCENE_CHART); 
-            	update_chartCol_comboBox();
+            	update_line_chart ();
+            	putSceneOnStage(SCENE_CHART); 
             }
         });
 		
@@ -378,13 +292,15 @@ public class Main extends Application {
 		dataSets.getChildren().addAll(initDataSet, dataList, dataButtons,chartButtons);
 		
 		HBox hc1 = new HBox(10);
+		HBox hc2 = new HBox(10);
 		chart_col_1_text = new Label();
 		chart_col_2_text = new Label();
-		hc1.getChildren().addAll(chart_col_1_text,chartDataColName1,chart_col_2_text,chartDataColName2,initPlot);
+		hc1.getChildren().addAll(chart_col_1_text,chartDataColName1);
+		hc2.getChildren().addAll(chart_col_2_text,chartDataColName2,initPlot);
 		
 		//chart list
 		VBox charts = new VBox(10);
-		charts.getChildren().addAll(initChart, chartList, hc1);
+		charts.getChildren().addAll(initChart, chartList, hc1,hc2);
 		
 		HBox hc = new HBox(10);
 		hc.getChildren().addAll(dataSets, charts);
@@ -420,6 +336,19 @@ public class Main extends Application {
 		    }
 		});
 		
+		chartList.getSelectionModel().selectFirst();
+		
+		chartDataColName1.valueProperty().addListener(new ChangeListener<String>() {
+	        @Override public void changed(ObservableValue ov, String t, String t1) {
+	            selected_col1 = t1;
+	        }    
+	    });
+		
+		chartDataColName2.valueProperty().addListener(new ChangeListener<String>() {
+	        @Override public void changed(ObservableValue ov, String t, String t1) {
+	        	selected_col2 = t1;
+	        }    
+	    });
 		return pane;
 	}
 	
@@ -577,7 +506,6 @@ public class Main extends Application {
 			//initEventHandlers(); // link up the event handlers	
 			
 			putSceneOnStage(SCENE_INIT_SCREEN); 
-			putSceneOnStage(SCENE_CHART); 
 			
 		} catch (Exception e) {
 
@@ -628,11 +556,8 @@ public class Main extends Application {
 	}
 	
 	public static void update_chartCol_comboBox() {
-		int selected_chart_index = chartList.getSelectionModel().getSelectedIndex();
-		int selected_dataset_index = dataList.getSelectionModel().getSelectedIndex();
-		
-		System.out.println("selected_chart_index: " + selected_chart_index);
-        System.out.println("selected_dataset_index" + selected_dataset_index );
+		selected_chart_index = chartList.getSelectionModel().getSelectedIndex();
+		selected_dataset_index = dataList.getSelectionModel().getSelectedIndex(); 
         
 		if (selected_chart_index > -1 ) {			
 			chart_col_1_text.setText(Chart.chart_labels[selected_chart_index][0]);
@@ -644,21 +569,19 @@ public class Main extends Application {
 		
 		if (selected_dataset_index > -1) {
 			List<DataTable> tables = dataManagementInstance.getDataTables();
-			DataTable table = tables.get(selected_dataset_index);
-			Set<String> key = table.getKeys();
+			selected_table = tables.get(selected_dataset_index);
+			Set<String> key = selected_table.getKeys();
 			Object[] key_arr = key.toArray();
 			
 			for (Object k : key_arr) {
-				DataColumn col = table.getCol((String)k);
+				DataColumn col = selected_table.getCol((String)k);
 				String type = col.getTypeName();
-				
+
 				if(type == Chart.chart_col_types[selected_chart_index][0])
 					chartDataColName1.getItems().add((String) k);
 				
 				if(type == Chart.chart_col_types[selected_chart_index][1])
 					chartDataColName2.getItems().add((String)k);
-				
-				System.out.println(k+type);
 			}
 		}
 		
