@@ -39,6 +39,13 @@ public class Chart implements Serializable{
 	private PieChart pieChart = null;
 	ObservableList<PieChart.Data> pieChartData;
 	
+	public static Chart getInstance()
+	{
+		if (management_instance == null)
+			management_instance = new Chart();
+		return management_instance;
+	}
+	
 	//constructor
 	private Chart() {
 		//create line chart
@@ -47,6 +54,7 @@ public class Chart implements Serializable{
 		lineChart = new LineChart<Number, Number>(xAxis, yAxis);
 		XYChart.Series series = new XYChart.Series();
 		lineChart.getData().add(series);
+		lineChart.setVisible(false);
 		
 		//create pie chart
 		
@@ -55,24 +63,9 @@ public class Chart implements Serializable{
 				   new PieChart.Data("Samsung Grand", 25), 
 				   new PieChart.Data("MOTO G", 10), 
 				   new PieChart.Data("Nokia Lumia", 22)); 
-		pieChart = new PieChart(pieChartData);
 		
-	}
-	
-	public static Chart getInstance()
-	{
-		if (management_instance == null)
-			management_instance = new Chart();
-		return management_instance;
-	}
-	
-	public int getChartTypeIndex(String type) {
-		int x = 0; 
-		for (String chartType : chartTypes) {
-			if (chartType == type ) return x;
-			x++;
-		}
-		return -1;
+		pieChart = new PieChart(pieChartData);
+		pieChart.setVisible(false);
 	}
 	
 	public String [] getChartType() {
@@ -85,6 +78,54 @@ public class Chart implements Serializable{
 	
 	public PieChart pieChart() {
 		return pieChart;
+	}
+	
+	public void setVisble(int chart_type, boolean isVisible ) {
+		switch(chart_type) {
+        case 0 :
+        	lineChart.setVisible(true);
+        	pieChart.setVisible(false);
+           break;
+        case 1 :
+        	lineChart.setVisible(false);
+        	pieChart.setVisible(true);
+           break;
+        case 2 :
+        	lineChart.setVisible(false);
+        	pieChart.setVisible(false);
+        	break;
+        default :
+           System.out.println("Invalid chart_type");
+     }
+	}
+	
+	public int getChartTypeIndex(String type) {
+		int x = 0; 
+		for (String chartType : chartTypes) {
+			if (chartType == type ) return x;
+			x++;
+		}
+		return -1;
+	}
+	
+
+	
+	public void update_chart (int chart_type, String tittle ,DataTable table,  String col1Name ,String col2Name) {
+		switch(chart_type) {
+        case 0 :
+        	lineChart_update( tittle , table,   col1Name , col2Name);
+           break;
+        case 1 :
+        	pieChart_update( tittle , table,   col1Name , col2Name);
+           break;
+        case 2 :
+        	
+        	break;
+        default :
+           System.out.println("Invalid chart_type");
+		}
+		
+		setVisble(chart_type, true );
 	}
 	
 	public void lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {

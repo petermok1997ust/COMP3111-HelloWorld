@@ -23,6 +23,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -82,6 +83,7 @@ public class Main extends Application {
 	// Screen 2: paneSampleLineChartScreen
 	private Button btLineChartBackMain = null;
 	private LineChart<Number, Number> lineChart = null;
+	private PieChart pieChart = null;
 
 	// Screen 3: Init
 	private Button initImport, initExport, initSave, initLoad, initTransform, initPlot;
@@ -129,7 +131,7 @@ public class Main extends Application {
 	 */
 	private void initScenes() {
 		scenes = new Scene[SCENE_NUM];
-		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 400, 500);
+		scenes[SCENE_MAIN_SCREEN] = new Scene(paneInitScreen(), 400, 500);
 		scenes[SCENE_CHART] = new Scene(paneChartScreen(), 800, 600);
 		scenes[SCENE_INIT_SCREEN] = new Scene(paneInitScreen(), 600, 600);
 		scenes[SCENE_TRANSFORM_SCREEN] = new Scene(paneTransformScreen(), 600, 600);
@@ -151,10 +153,11 @@ public class Main extends Application {
 		BorderPane pane = new BorderPane();
 		
 		lineChart = chartInstance.lineChart(); 
+		pieChart = chartInstance.pieChart(); 
 		
 		// Layout the UI components
 		VBox container = new VBox(20);
-		container.getChildren().addAll(lineChart, btLineChartBackMain);
+		container.getChildren().addAll(lineChart, pieChart, btLineChartBackMain);
 		container.setAlignment(Pos.CENTER);
 
 		pane.setCenter(container);
@@ -165,47 +168,6 @@ public class Main extends Application {
 		btLineChartBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_INIT_SCREEN);
 		});
-
-		return pane;
-	}
-	
-	private void update_line_chart () {
-		
-		if (selected_table != null ) {
-			String Name = dataManagementInstance.getTableName().get(selected_dataset_index);
-			chartInstance.lineChart_update(Name,selected_table, selected_col1, selected_col2); 
-		}
-	}
-	/**
-	 * Creates the main screen and layout its UI components
-	 * 
-	 * @return a Pane component to be displayed on a scene
-	 */
-	private Pane paneMainScreen() {
-
-		lbMainScreenTitle = new Label("COMP3111 Chart");
-		btSampleLineChartData = new Button("Sample 1");
-		btSampleLineChartDataV2 = new Button("Sample 2");
-		btSampleLineChart = new Button("Sample Line Chart");
-		lbSampleDataTable = new Label("DataTable: empty");
-
-		// Layout the UI components
-
-		HBox hc = new HBox(20);
-		hc.setAlignment(Pos.CENTER);
-		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
-
-		VBox container = new VBox(20);
-		container.getChildren().addAll(lbMainScreenTitle, hc, lbSampleDataTable, new Separator(), btSampleLineChart);
-		container.setAlignment(Pos.CENTER);
-
-		BorderPane pane = new BorderPane();
-		pane.setCenter(container);
-
-		// Apply style to the GUI components
-		btSampleLineChart.getStyleClass().add("menu-button");
-		lbMainScreenTitle.getStyleClass().add("menu-title");
-		pane.getStyleClass().add("screen-background");
 
 		return pane;
 	}
@@ -238,7 +200,7 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	update_line_chart ();
+            	update_chart ();
             	putSceneOnStage(SCENE_CHART); 
             }
         });
@@ -249,6 +211,7 @@ public class Main extends Application {
             	UIController.onClickInitSaveBtn();
             }
         });
+		
 		initExport.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -280,7 +243,6 @@ public class Main extends Application {
 
 		// Layout the UI components
 		
-
 		HBox chartButtons = new HBox(10);
 		chartButtons.getChildren().addAll(initLoad, initSave );
 		
@@ -584,8 +546,14 @@ public class Main extends Application {
 					chartDataColName2.getItems().add((String)k);
 			}
 		}
-		
 		chartDataColName1.getSelectionModel().selectFirst();
 		chartDataColName2.getSelectionModel().selectFirst();
+	}
+	
+	private void update_chart () {
+		if (selected_table != null ) {
+			String Name = dataManagementInstance.getTableName().get(selected_dataset_index);
+			chartInstance.update_chart(selected_chart_index, Name,selected_table, selected_col1, selected_col2); 
+		}
 	}
 }
