@@ -13,6 +13,7 @@ import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
+import core.comp3111.Transform;
 import core.comp3111.UIController;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -122,7 +123,7 @@ public class Main extends Application {
 	private ToggleButton replace, create;
 	private static  ToggleGroup rcGroup;
 	String rcChoice = "create";
-	
+	private Transform t;
 	/**
 	 * create all scenes in this application
 	 */
@@ -347,8 +348,9 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
             	if(selectedDataset != -1) {
-                	//settingDatasetView();
-        			putSceneOnStage(SCENE_TRANSFORM_SCREEN);            		
+                	t = new Transform(selectedDataset);
+        			settingDatasetView(t.colToRow(), t.getColName(), t.getNumColName());
+        			putSceneOnStage(SCENE_TRANSFORM_SCREEN);
             	}
             	else {
             		System.out.println("dataset not selected");
@@ -400,7 +402,41 @@ public class Main extends Application {
 		
 		return pane;
 	}
-	
+	private void settingDatasetView(String[][] rowList, String[] colName, ArrayList<String> numColName) {
+		if(numColName != null)
+			for(int i = 0; i < numColName.size(); i++)
+	    		columnSelect.getItems().add(numColName.get(i));	//setting comboBox
+
+		ObservableList<String[]> data = FXCollections.observableArrayList();
+		data.addAll(Arrays.asList(rowList));
+		
+		boolean isRow = false;
+		for(int v = 0; v < colName.length; v++)
+			if(rowList[rowList.length-1][v] != null) {isRow = true; continue;}
+		if(!isRow) data.remove(rowList.length-1);//remove last null row from data
+		
+		for (int i = 0; i < colName.length; i++) {
+			TableColumn tc = new TableColumn(colName[i]);
+			final int colNo = i;
+			tc.setCellValueFactory(new Callback<CellDataFeatures<String[], String>, ObservableValue<String>>() {
+				@Override
+				public ObservableValue<String> call(CellDataFeatures<String[], String> p) {
+//					System.out.println(colNo);
+//					System.out.println(p.getValue()[colNo]);
+					return new SimpleStringProperty((p.getValue()[colNo]));
+				}
+			});
+			tc.setPrefWidth(90);
+	        dataTableView.getColumns().add(tc);
+		}
+		dataTableView.setItems(data);
+
+        //list
+		dataSetItems = FXCollections.observableArrayList(dataTableView);
+		splitedDataset.setItems(dataSetItems);
+		splitedDataset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	}
+
 
 	private Pane paneTransformScreen() {
 		splitedDataset = new ListView<TableView>();
@@ -434,6 +470,8 @@ public class Main extends Application {
             	} catch (NumberFormatException e) {
             	    error = true;
             	}
+        		String tmp = columnSelect.getValue();
+        		System.out.println(tmp);
             	UIController.onClickApplyFilterBtn(v, error);
             }
         });
@@ -464,6 +502,7 @@ public class Main extends Application {
 		backFromTransform.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+            	t = null;
             	putSceneOnStage(SCENE_INIT_SCREEN);
             }
         });
@@ -474,14 +513,7 @@ public class Main extends Application {
 		replace.setToggleGroup(rcGroup);
 		create.setToggleGroup(rcGroup);
 		create.setSelected(true);	//default Create new datasets
-		//comboBox
-		 columnSelect.getItems().addAll(
-            "jacob.smith@example.com",
-            "isabella.johnson@example.com",
-            "ethan.williams@example.com",
-            "emma.jones@example.com",
-            "michael.brown@example.com"  
-        );
+		//comboBox		
 		comparison.getItems().addAll("<","<=","==","!=",">=",">");
 		
 		//text field
