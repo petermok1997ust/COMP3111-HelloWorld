@@ -64,32 +64,32 @@ public class Transform {
 		ArrayList<ArrayList<String>> filteredRowList = new ArrayList<ArrayList<String>>();
 		switch(comparison) {
 			case "<":
-				for(int i = 0; i < rowList.length-1; i++)
+				for(int i = 0; i < rowList.length; i++)
 					if(Double.parseDouble(rowList[i][Arrays.asList(colName).indexOf(cSelected)]) < v)
 						filteredRowList.add(new ArrayList<>(Arrays.asList(rowList[i])));
 				break;
 			case "<=":
-				for(int i = 0; i < rowList.length-1; i++)
+				for(int i = 0; i < rowList.length; i++)
 					if(Double.parseDouble(rowList[i][Arrays.asList(colName).indexOf(cSelected)]) <= v)
 						filteredRowList.add(new ArrayList<>(Arrays.asList(rowList[i])));
 				break;
 			case "==":
-				for(int i = 0; i < rowList.length-1; i++)
+				for(int i = 0; i < rowList.length; i++)
 					if(Double.parseDouble(rowList[i][Arrays.asList(colName).indexOf(cSelected)]) == v)
 						filteredRowList.add(new ArrayList<String>(Arrays.asList(rowList[i])));
 				break;
 			case "!=":
-				for(int i = 0; i < rowList.length-1; i++)
+				for(int i = 0; i < rowList.length; i++)
 					if(Double.parseDouble(rowList[i][Arrays.asList(colName).indexOf(cSelected)]) != v)
 						filteredRowList.add(new ArrayList<>(Arrays.asList(rowList[i])));
 				break;
 			case ">=":
-				for(int i = 0; i < rowList.length-1; i++)
+				for(int i = 0; i < rowList.length; i++)
 					if(Double.parseDouble(rowList[i][Arrays.asList(colName).indexOf(cSelected)]) >= v)
 						filteredRowList.add(new ArrayList<>(Arrays.asList(rowList[i])));
 				break;
 			case ">":
-				for(int i = 0; i < rowList.length-1; i++)
+				for(int i = 0; i < rowList.length; i++)
 					if(Double.parseDouble(rowList[i][Arrays.asList(colName).indexOf(cSelected)]) > v)
 						filteredRowList.add(new ArrayList<String>(Arrays.asList(rowList[i])));
 					break;
