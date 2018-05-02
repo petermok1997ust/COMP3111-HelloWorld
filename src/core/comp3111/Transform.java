@@ -1,7 +1,11 @@
 package core.comp3111;
 
+import java.security.SecureRandom;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+
 import core.comp3111.DataColumn;
 import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
@@ -106,6 +110,59 @@ public class Transform {
 		}
 		return frl;
 	}
+	
+	public String[][] splitData(double percentage){
+		int p = (int) Math.round(percentage);
+		int newRLength = (int) (rowList.length * p/100);
+		ArrayList<Integer> rowIndexList = new ArrayList<Integer>();
+		SecureRandom random = new SecureRandom();
+		for(int i = 0; i<newRLength; i++) {
+			int row = random.nextInt(rowList.length);
+			if(!rowIndexList.contains(row)) {
+				rowIndexList.add(row);
+			}
+			else i--;
+		}
+		Collections.sort(rowIndexList);
+		
+		//printing rowIndexList
+//		System.out.print("row index list: ");
+//		for(int i = 0; i < rowIndexList.size(); i++) {
+//			System.out.print(rowIndexList.get(i)+1);
+//		}
+//		System.out.println();
+		
+		ArrayList<ArrayList<String>> firstRowL = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> secondRowL = new ArrayList<ArrayList<String>>();
+
+		for(int i = 0; i<rowIndexList.size(); i++) {
+			ArrayList<String> z = new ArrayList<String>(Arrays.asList(rowList[rowIndexList.get(i)]));
+			firstRowL.add(z);
+		}
+//		System.out.println("first table:");
+//		for(int i = 0; i < firstRowL.size(); i++) {
+//			for(int j = 0; j < firstRowL.get(i).size(); j++) {
+//				System.out.print(firstRowL.get(i).get(j) + " ");
+//			}
+//			System.out.println();
+//		}
+
+		for(int i = 0; i < rowList.length; i++) {
+			if(rowIndexList.contains(i)) continue;
+			ArrayList<String> z = new ArrayList<String>(Arrays.asList(rowList[i]));
+			secondRowL.add(z);
+		}
+//		System.out.println("\nsecond table:");
+//		for(int i = 0; i < secondRowL.size(); i++) {
+//			for(int j = 0; j < secondRowL.get(i).size(); j++) {
+//				System.out.print(secondRowL.get(i).get(j) + " ");
+//			}
+//			System.out.println();
+//		}
+//		System.out.println();
+		
+		return rowList;
+	}
 	public ArrayList<String> getNumColName() {
 		return numColName;
 	}
@@ -114,7 +171,7 @@ public class Transform {
 	}
 	private DataManagement dataManagementInstance;
 	private DataTable selectedTable;
-//	private DataTable[] splitedT;
+	private ArrayList<ArrayList<ArrayList<String>>> splitedT;
 	private String sCol, sComparison; 
 	private Double sValue, sPercentage;
 	private String[] colName;
