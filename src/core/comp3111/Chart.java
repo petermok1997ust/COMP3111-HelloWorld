@@ -21,47 +21,60 @@ import java.lang.Math;
 
 public class Chart implements Serializable{
 	
-	public static String[] chartTypes = {"Line Chart","Pie Chart"};
+	public static String[] chartTypes = {
+			"Line Chart",
+			"Pie Chart",
+			"Animation Line Chart"
+			};
 	
-	public static String[][]chart_labels = {{"X-Axit","Y-Axit"},{"Lebel","Value"}};
+	public static String[][]chart_labels = {
+			{"X-Axit","Y-Axit"},
+			{"Lebel","Value"},
+			{"X-Axit","Y-Axit"}
+			};
 	
-	public static String[][]chart_col_types = {{DataType.TYPE_NUMBER , DataType.TYPE_NUMBER },{ DataType.TYPE_STRING ,DataType.TYPE_NUMBER}};
+	public static String[][]chart_col_types = {
+			{DataType.TYPE_NUMBER , DataType.TYPE_NUMBER },
+			{ DataType.TYPE_STRING ,DataType.TYPE_NUMBER},
+			{ DataType.TYPE_NUMBER ,DataType.TYPE_NUMBER}
+			};
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Chart management_instance = null;
-	private static HBox chart_container = null;
+	private static Chart chart_instance = null;
+	private static HBox chart_container =  new HBox(20);
 	
 	//Line Chart
-	private LineChart<Number, Number> lineChart = null;
-	private NumberAxis xAxis = null;
-	private NumberAxis yAxis = null;
+	private NumberAxis xAxis = new NumberAxis();
+	private NumberAxis yAxis = new NumberAxis();
+	private LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+
 	
 	//Pie Chart
-	private PieChart pieChart = null;
+	private PieChart pieChart = new PieChart();
 	ObservableList<PieChart.Data> pieChartData;
+	
+	//Animated Line Chart
+	private NumberAxis ani_xAxis = new NumberAxis();
+	private NumberAxis ani_yAxis = new NumberAxis();
+	private LineChart<Number, Number> ani_lineChart = new LineChart<Number, Number>(ani_xAxis, ani_yAxis);
 	
 	public static Chart getInstance()
 	{
-		if (management_instance == null)
-			management_instance = new Chart();
-		return management_instance;
+		if (chart_instance == null)
+			chart_instance = new Chart();
+		return chart_instance;
 	}
 	
 	//constructor
 	private Chart() {
-		//create line chart
-		xAxis = new NumberAxis();
-		yAxis = new NumberAxis();
-		lineChart = new LineChart<Number, Number>(xAxis, yAxis);
 		XYChart.Series series = new XYChart.Series();
+		XYChart.Series series1 = new XYChart.Series();
 		lineChart.getData().add(series);
 		
-		//create pie chart
-		pieChart = new PieChart();
-		
-		chart_container = new HBox(20);
+		ani_lineChart.getData().add(series1);
 		chart_container.setAlignment(Pos.CENTER);
 	}
 	
@@ -75,6 +88,10 @@ public class Chart implements Serializable{
 	
 	public PieChart pieChart() {
 		return pieChart;
+	}
+	
+	public LineChart ani_lineChart() {
+		return ani_lineChart;
 	}
 	
 	public static HBox container() {
@@ -92,6 +109,8 @@ public class Chart implements Serializable{
         	chart_container.getChildren().addAll(pieChart);
            break;
         case 2 :
+        	chart_container.getChildren().clear();
+        	chart_container.getChildren().addAll(ani_lineChart);
         	break;
         default :
            System.out.println("Invalid chart_type");
@@ -107,8 +126,6 @@ public class Chart implements Serializable{
 		return -1;
 	}
 	
-
-	
 	public void update_chart (int chart_type, String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		switch(chart_type) {
         case 0 :
@@ -118,7 +135,7 @@ public class Chart implements Serializable{
         	pieChart_update( tittle , table,   col1Name , col2Name);
            break;
         case 2 :
-        	
+        	ani_lineChart_update( tittle , table,   col1Name , col2Name);
         	break;
         default :
            System.out.println("Invalid chart_type");
@@ -169,6 +186,48 @@ public class Chart implements Serializable{
 		}
 	}
 	
+	public void ani_lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
+		
+		ani_xAxis.setLabel(col1Name);
+		ani_yAxis.setLabel(col2Name);
+		ani_lineChart.setTitle(tittle+"(animation)");
+		
+		// Get 2 columns
+		DataColumn xCol = table.getCol(col1Name);
+		DataColumn yCol = table.getCol(col2Name);
+		
+		// Ensure both columns exist and the type is number
+		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
+				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
+				
+			// defining a series
+			XYChart.Series series = new XYChart.Series();
+			
+			series.setName(tittle);
+
+			// populating the series with data
+			// As we have checked the type, it is safe to downcast to Number[]
+			Number[] xValues = (Number[]) xCol.getData();
+			Number[] yValues = (Number[]) yCol.getData();
+
+			// In DataTable structure, both length must be the same
+			int len = xValues.length;
+
+			for (int i = 0; i < len; i++) {
+				if (xValues[i] != null && yValues[i] != null) {
+					series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
+					//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
+				}
+			}
+
+			// clear all previous series
+			ani_lineChart.getData().clear();
+
+			// add the new series as the only one series for this line chart
+			ani_lineChart.getData().add(series);
+		}
+	}
+	
 	public void pieChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		
 		pieChart.setTitle(tittle);
@@ -176,14 +235,6 @@ public class Chart implements Serializable{
 		// Get 2 columns
 		DataColumn xCol = table.getCol(col1Name);
 		DataColumn yCol = table.getCol(col2Name);
-		
-//		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-//		         new PieChart.Data("Iphone 5SSSSSSS", 130), 
-//		         new PieChart.Data("Samsung Grand", 25), 
-//		         new PieChart.Data("MOTO G", 10), 
-//		         new PieChart.Data("Nokia Lumia", 22));
-		
-		//pieChart.setData(pieChartData);
 		
 		// Ensure both columns exist and the type is number
 		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_STRING)
@@ -205,7 +256,7 @@ public class Chart implements Serializable{
 					
 					int y = Math.round((float) yValues[i]);
 					pieChartData.add(new PieChart.Data(xValues[i], y ));
-					System.out.println("X: " + xValues[i]+ "Y: " + y  );
+					//System.out.println("X: " + xValues[i]+ "Y: " + y  );
 					
 				}
 			}
