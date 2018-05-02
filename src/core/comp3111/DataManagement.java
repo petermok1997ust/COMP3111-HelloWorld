@@ -73,16 +73,19 @@ public class DataManagement implements Serializable{
 			while(inputStream.hasNextLine()) {
 				String line = inputStream.nextLine();
 				String[] line_split = line.split(",",-1);
-				for(int i=0; i<line_split.length;i++) {
-					System.out.print(line_split[i]);
-				}
+//				for(int i=0; i<line_split.length;i++) {
+//					System.out.print(line_split[i]);
+//				}
 				if(num_row == 0)
 					num_col = line_split.length;
 				for(int c=0; c<line_split.length; c++) {
 					String input = line_split[c].isEmpty()?null:line_split[c];
+					System.out.print(input + " ");
 					list.add(input);
 				}
 				num_row++;
+				System.out.print(" " + num_row);
+				System.out.println();
 			}
 			inputStream.close();
 		}catch (FileNotFoundException e) {
@@ -94,7 +97,7 @@ public class DataManagement implements Serializable{
 		if(num_row <= 0 || num_col <=0)
 			empty = "_(empty)";
 		System.out.println("Creating Table");
-		createDataTable(list, num_row, num_col);	
+		createDataTable(list, num_row-1, num_col);	
 		num_table++;
 		String name = "dataset"+num_table+empty;
 		table_name.add(name);
@@ -278,7 +281,12 @@ public class DataManagement implements Serializable{
 	public List<DataTable> getDataTables(){
 		return table_array;
 	}
-
+	
+	public DataTable getDataTableByIndex(int n){
+//		if(table_array == null) return null;
+		return table_array.get(n);
+	}
+	
 	public void handleMissingData(List<Object> columns, boolean[] problematic_col) {
 		for(int i=0; i<problematic_col.length;i++) {
 			if(problematic_col[i]) {

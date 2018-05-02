@@ -1,6 +1,7 @@
 package core.comp3111;
 
 import java.io.File;
+import java.util.Arrays;
 
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -30,6 +31,8 @@ public class UIController {
 		File fileObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, false);
 		if(fileObtained != null) {
 			dataManagementInstance.importCSV(fileObtained);
+			DataTable s = dataManagementInstance.getDataTableByIndex(dataManagementInstance.getDataTables().size()-1);
+			printDT(s);
 		}
 			
 	}
@@ -51,18 +54,38 @@ public class UIController {
 		}
 			
 	}
-	
+	public static void printDT(DataTable s) {
+		DataColumn[] columnList = new DataColumn[s.getNumCol()];
+		String[] tmpStrCol = new String[s.getNumRow()];
+		String[][] rowList = new String[s.getNumRow()][s.getNumCol()];
+		for(int i = 0; i<s.getNumCol(); i++) {
+			String a = s.getKeys().toArray()[i].toString();
+	        columnList[i] = s.getCol(a);
+		}
+		for(int i = 0; i < s.getNumRow(); i++) {
+			for(int j = 0; j < s.getNumCol(); j++) {
+	        	if(columnList[j].getTypeName().equals("java.lang.Number")) {
+	        		tmpStrCol = Arrays.toString(columnList[j].getData()).split("[\\[\\]]")[1].split(", ");
+	        	}
+	        	else tmpStrCol = (String[])columnList[j].getData();
+	        	rowList[i][j] = tmpStrCol[i];
+			}
+		}
+		for(int i = 0; i < s.getNumRow(); i++) {
+			for(int j = 0; j < s.getNumCol(); j++) {
+	        	System.out.print(rowList[i][j]);
+			}
+			System.out.println(" "+i);
+		}
+
+	}
 	public static void onClickInitSaveBtn(){
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, true);
 		if(fileObtained != null)
 			dataManagementInstance.saveProject(fileObtained);
 	}
 	
-	public static void onClickApplyFilterBtn(double v, boolean e){
-		System.out.print("apply filter");
-		if(!e) System.out.print(v);
-		else System.out.println("error");
-	}	
+	//Transform scene
 	public static void onClickApplySplitBtn(){
 		System.out.print("apply split");
 	}	
