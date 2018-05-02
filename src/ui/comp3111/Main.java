@@ -103,7 +103,6 @@ public class Main extends Application {
 	private static ObservableList<String> dataItems;
 	private static ListView<String> dataList;
 	private static ListView<String> chartList;
-	private static int selected_dataset_index, selected_chart_index;
 	public static final String string_zero = "Zero";
 	public static final String string_median = "Median";
 	public static final String string_mean = "Mean";
