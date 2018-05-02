@@ -35,7 +35,7 @@ public class DataManagement implements Serializable{
 
 
 	//constructor
-	private DataManagement() {
+	public DataManagement() {
 		num_table = 0;
 		num_chart = 0;
 		table_array = null;
@@ -63,6 +63,8 @@ public class DataManagement implements Serializable{
 	}
 
 	public void importCSV(File file) {
+		if(file == null)
+			return;
 		System.out.println("Importing CSV "+ file.getAbsolutePath());
 		Scanner inputStream;
 		List<String> list = new ArrayList<String> ();  
@@ -72,37 +74,34 @@ public class DataManagement implements Serializable{
 			inputStream = new Scanner(file);
 			while(inputStream.hasNextLine()) {
 				String line = inputStream.nextLine();
+				System.out.print(line);
 				String[] line_split = line.split(",",-1);
-//				for(int i=0; i<line_split.length;i++) {
-//					System.out.print(line_split[i]);
-//				}
-				if(num_row == 0)
-					num_col = line_split.length;
+				num_col = line_split.length;
 				for(int c=0; c<line_split.length; c++) {
 					String input = line_split[c].isEmpty()?null:line_split[c];
-					System.out.print(input + " ");
+//					System.out.print(input + " ");
 					list.add(input);
 				}
 				num_row++;
-				System.out.print(" " + num_row);
+//				System.out.print(" " + num_row);
 				System.out.println();
 			}
 			inputStream.close();
 		}catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}finally {
-			System.out.println("Finished importing CSV with "+ num_row+" rows and "+ num_col+" columns");
 		}
+		System.out.println("Finished importing CSV with "+ num_row+" rows and "+ num_col+" columns");
 		String empty = "";
-		if(num_row <= 0 || num_col <=0)
-			empty = "_(empty)";
-		System.out.println("Creating Table");
-		createDataTable(list, num_row-1, num_col);	
-		num_table++;
-		String name = "dataset"+num_table+empty;
-		table_name.add(name);
-		Main.setDataItem(name);
-		System.out.println("Finished create Table");
+
+		if(num_row >0 && num_col >0) {
+			System.out.println("Creating Table");
+			createDataTable(list, num_row-1, num_col);	
+			num_table++;
+			String name = "dataset"+num_table;
+			table_name.add(name);
+			System.out.println("Finished create Table");
+			Main.setDataItem(name);
+		}
 	}
 
 	public void exportTableToCSV(DataTable table, File file) {
@@ -158,13 +157,15 @@ public class DataManagement implements Serializable{
 			DataManagement projectObj = null;
 			System.out.println("Copying DataObject");
 			projectObj = DataManagement.getInstance();
+			if(file == null)
+				throw new IOException();
 			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(projectObj);
 			oos.flush();
 			oos.close();
 			System.out.println("Successfully saved in "+ file.getAbsolutePath());
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("Error while Saving");
 			e.printStackTrace();
 		}
@@ -193,80 +194,96 @@ public class DataManagement implements Serializable{
 	}
 
 	public DataTable createDataTable(List<String> list, int num_row, int num_col) {
-		boolean[] isNum = isColumnNum(list, num_col);
-		//make column
-		List<Object> columns = new ArrayList<Object>();
-		//prepare columns
-		for(int i = 0; i<isNum.length;i++) {
-			if(isNum[i] == false)
-				columns.add(new String[num_row]);
-			else
-				columns.add(new Number[num_row]);
-		}
+			//make column
+			DataTable t = new DataTable();
+			if(num_row > 0) {
+				List<Object> columns = new ArrayList<Object>();
+				//prepare columns
+				boolean[] isNum = isColumnNum(list, num_col);
+				for(int i = 0; i<isNum.length;i++) {
+					if(isNum[i] == false)
+						columns.add(new String[num_row]);
+					else
+						columns.add(new Number[num_row]);
+				}
+				
+				//save problematic columns;
+				boolean[] problematic_col = new boolean[num_col];
+				int num_problem = 0;
+				//add items into the columns
+				for(int j = num_col; j < list.size(); j++) {
+					//idx in column
+					int idx = j/num_col - 1;
+//					System.out.println(list.size());
+					if(isNum[j%num_col] == false) {
+						//null case
+							if(list.get(j) != null)
+								((String[]) columns.get(j%isNum.length))[idx] = list.get(j);
+							else
+								((String[]) columns.get(j%isNum.length))[idx] = EMPTY_STRING;	
+					}else{
+//						System.out.println(list.get(j)+" is num");
+						try {
+							((Number[]) columns.get(j%isNum.length))[idx] = Float.parseFloat(list.get(j));
+						}catch(Exception e) {
+							//null number for missing data handling
+							((Number[]) columns.get(j%isNum.length))[idx] = null;
+							problematic_col[j%isNum.length] = true;
+							num_problem++;
+//							System.out.println("from col"+j%isNum.length);
+						}
+					}
+				}
+				System.out.println("num_problem: "+num_problem);
+				if(num_problem>0) {
+						System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
+						handleMissingData(columns, problematic_col);
+						System.out.println("Finished Handling");
+					
+				}
+				//create column
+				
+				for(int i=0; i <columns.size(); i++) {
+					DataColumn col = null;
+					if(isNum[i])
+						col = new DataColumn(DataType.TYPE_NUMBER, (Number[])columns.get(i));
+					else
+						col = new DataColumn(DataType.TYPE_STRING, (String[])columns.get(i));
+					try {
+						t.addCol(list.get(i), col);
+					} catch (DataTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}	
+			}else {
+				for(int i=0; i <num_col; i++) {
+					try {
+//						System.out.print(list.get(i));
+						t.addCol(list.get(i), new DataColumn(DataType.TYPE_OBJECT, null));
+					} catch (DataTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			
+			management_instance.table_array.add(t);
+			return t;
 		
-		//save problematic columns;
-		boolean[] problematic_col = new boolean[num_col];
-		int num_problem = 0;
-		//add items into the columns
-		for(int j = num_col; j < list.size(); j++) {
-			//idx in column
-			int idx = j/num_col - 1;
-			if(isNum[j%num_col] == false) {
-				//null case
-				try {
-					((String[]) columns.get(j%isNum.length))[idx] = list.get(j);
-				}catch(Exception e) {
-					//null string
-					((String[]) columns.get(j%isNum.length))[idx] = EMPTY_STRING;	
-				}
-			}else{
-				try {
-					((Number[]) columns.get(j%isNum.length))[idx] = Float.parseFloat(list.get(j));
-				}catch(Exception e) {
-					//null number for missing data handling
-					((Number[]) columns.get(j%isNum.length))[idx] = null;
-					problematic_col[j%isNum.length] = true;
-					num_problem++;
-				}
-			}
-		}
-		System.out.println("");
-		if(num_problem>0) {
-		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
-		handleMissingData(columns, problematic_col);
-		System.out.println("Finished Handling");
-		}
-		//create column
-		DataTable t = new DataTable();
-		for(int i=0; i <columns.size(); i++) {
-			DataColumn col = null;
-			if(isNum[i])
-				col = new DataColumn(DataType.TYPE_NUMBER, (Number[])columns.get(i));
-			else
-				col = new DataColumn(DataType.TYPE_STRING, (String[])columns.get(i));
-			try {
-				t.addCol(list.get(i), col);
-			} catch (DataTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		management_instance.table_array.add(t);
-		return t;
+		
 	}
 	
 	public boolean[] isColumnNum(List<String> list, int numCol) {
 		boolean[] isNum = new boolean[numCol];
 		Arrays.fill(isNum, true);
-		for(int j = numCol+1; j < list.size(); j++) {
+		for(int j = numCol; j < list.size(); j++) {
 			if(list.get(j) != null) {
 				try{
 					Float.parseFloat(list.get(j));
-//					System.out.println(list.size()+", "+numCol+", "+j);
 				}catch (NumberFormatException e){
 					isNum[j%numCol] = false;
-				}finally {
-//					System.out.println(list.get(j)+", "+isNum[j%numCol]);
 				}
 			}
 		}
@@ -339,6 +356,18 @@ public class DataManagement implements Serializable{
 			if(numbers[i] == null)
 				numbers[i] = num;
 		}
+	}
+	
+	public List<Chart> getChartArray() {
+		return chart_array;
+	}
+
+	public int getNumTable() {
+		return num_table;
+	}
+
+	public int getNumChart() {
+		return num_chart;
 	}
 
 }
