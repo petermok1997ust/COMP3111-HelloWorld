@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-
 import ui.comp3111.Main;
 
 public class DataManagement implements Serializable{
@@ -137,43 +136,39 @@ public class DataManagement implements Serializable{
 				fileWriter.append(NEW_LINE);
 			}
 			System.out.println("CSV file was created in "+ file.getAbsolutePath());
-		} catch (Exception e) {
+			fileWriter.flush();
+			fileWriter.close();
+		} catch(IOException e) {
 			System.out.println("Error in exporting");
 			e.printStackTrace();
-		} finally {
-			try {
-				fileWriter.flush();
-				fileWriter.close();
-			} catch (IOException e) {
-				System.out.println("Error while flushing/closing");
-				e.printStackTrace();
-			}
-		}
+		} 
 	}
 
 
-	public void saveProject(File file) {
+	public File saveProject(File file) {
 		try {
 			DataManagement projectObj = null;
 			System.out.println("Copying DataObject");
 			projectObj = DataManagement.getInstance();
-			if(file == null)
-				throw new IOException();
 			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(projectObj);
 			oos.flush();
 			oos.close();
 			System.out.println("Successfully saved in "+ file.getAbsolutePath());
+			return file;
 		} catch (IOException e) {
 			System.out.println("Error while Saving");
 			e.printStackTrace();
+			return null;
 		}
 	}
 
 	public void loadProject(File file) {
 		try {
 			DataManagement load_object;
+			if(file == null)
+				throw new IOException();
 			System.out.println("Loading DataObject");
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
@@ -185,9 +180,9 @@ public class DataManagement implements Serializable{
 			num_table = load_object.num_table;
 			table_name = load_object.table_name;
 			ois.close();
-			Main.setDataObj(load_object);
+//			Main.setDataObj(load_object);
 			System.out.println("Object is already loaded");
-		} catch (Exception e) {
+		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error while loading Project");
 			e.printStackTrace();
 		}

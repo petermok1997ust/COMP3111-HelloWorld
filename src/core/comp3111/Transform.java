@@ -3,7 +3,6 @@ package core.comp3111;
 import java.util.ArrayList;
 import java.util.Arrays;
 import core.comp3111.DataColumn;
-import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;

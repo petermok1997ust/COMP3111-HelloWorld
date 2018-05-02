@@ -682,6 +682,10 @@ public class Main extends Application {
 		return comboBox.getSelectionModel().getSelectedItem();
 	}
 		
+	
+	public static DataManagement getDataObj() {
+		return dataManagementInstance;
+	}
 	/**
 	 * main method - only use if running via command line
 	 * 
