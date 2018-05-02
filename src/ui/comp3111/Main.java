@@ -100,7 +100,7 @@ public class Main extends Application {
 	private static ObservableList<String> dataItems;
 	private static ListView<String> dataList;
 	private static ListView<String> chartList;
-	private int selectedDataset;
+	private static int selected_dataset_index, selected_chart_index;
 	public static final String string_zero = "Zero";
 	public static final String string_median = "Median";
 	public static final String string_mean = "Mean";
@@ -317,7 +317,7 @@ public class Main extends Application {
 		initSave = new Button("Save");
 		initLoad = new Button("Load");
 		initTransform = new Button("Transform");
-		selectedDataset = -1;
+		selected_dataset_index = -1;
 		
 		initImport.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -349,8 +349,8 @@ public class Main extends Application {
 		initTransform.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	if(selectedDataset != -1) {
-                	t = new Transform(selectedDataset);
+            	if(selected_dataset_index != -1) {
+                	t = new Transform(selected_dataset_index);
         			settingDatasetView(t.colToRow(), t.getColName(), t.getNumColName());
         			putSceneOnStage(SCENE_TRANSFORM_SCREEN);
             	}
@@ -370,7 +370,7 @@ public class Main extends Application {
 		dataList.getSelectionModel().selectedItemProperty().addListener(
             (ObservableValue<? extends String> ov, String old_val, 
                 String new_val) -> {
-                	selectedDataset = dataList.getSelectionModel().getSelectedIndex();
+                	selected_dataset_index = dataList.getSelectionModel().getSelectedIndex();
         });
 		
 		// Layout the UI components
@@ -404,6 +404,7 @@ public class Main extends Application {
 		
 		return pane;
 	}
+	
 	private void settingDatasetView(String[][] rowList, String[] colName, ArrayList<String> numColName) {
 		String prevCS = columnSelect.getSelectionModel().getSelectedItem();
 		columnSelect.getItems().clear();
@@ -509,7 +510,7 @@ public class Main extends Application {
 		applySplit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickApplySplitBtn();
+            	t.splitData(percentage.getValue());
             }
         });
  
@@ -584,8 +585,9 @@ public class Main extends Application {
 		percentage.valueProperty().addListener((
 	            ObservableValue<? extends Number> ov, 
 	            Number old_val, Number new_val) -> {
-	                percentageLTxt.setText(String.format("%.2f", new_val));
-	                percentageRTxt.setText(String.format("%.2f", 100.0 - new_val.doubleValue()));
+	            	percentage.setValue(Math.round(new_val.doubleValue()));
+	                percentageLTxt.setText(String.format("%d", Math.round(new_val.doubleValue())));
+	                percentageRTxt.setText(String.format("%d", 100 - Math.round(new_val.doubleValue())));
 	        });
 		percentageSeparator.setOrientation(Orientation.VERTICAL);
 		
