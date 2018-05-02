@@ -1,9 +1,12 @@
 package ui.comp3111;
 
 import java.io.File;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,6 +18,7 @@ import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 import core.comp3111.UIController;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -33,17 +37,22 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 /**
  * The Main class of this GUI application
@@ -534,7 +543,7 @@ public class Main extends Application {
 		if (selected_dataset_index > -1) {
 			List<DataTable> tables = dataManagementInstance.getDataTables();
 			selected_table = tables.get(selected_dataset_index);
-			Set<String> key = selected_table.getKeys();
+			 Set<String> key = selected_table.getKeys();
 			Object[] key_arr = key.toArray();
 			
 			for (Object k : key_arr) {
