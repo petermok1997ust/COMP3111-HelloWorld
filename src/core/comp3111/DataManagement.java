@@ -80,7 +80,7 @@ public class DataManagement implements Serializable{
 					num_col = line_split.length;
 				for(int c=0; c<line_split.length; c++) {
 					String input = line_split[c].isEmpty()?null:line_split[c];
-					System.out.print(input);
+					System.out.print(input + " ");
 					list.add(input);
 				}
 				num_row++;
@@ -97,7 +97,7 @@ public class DataManagement implements Serializable{
 		if(num_row <= 0 || num_col <=0)
 			empty = "_(empty)";
 		System.out.println("Creating Table");
-		createDataTable(list, num_row, num_col);	
+		createDataTable(list, num_row-1, num_col);	
 		num_table++;
 		String name = "dataset"+num_table+empty;
 		table_name.add(name);

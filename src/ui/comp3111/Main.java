@@ -405,10 +405,15 @@ public class Main extends Application {
 		return pane;
 	}
 	private void settingDatasetView(String[][] rowList, String[] colName, ArrayList<String> numColName) {
+		String prevCS = columnSelect.getSelectionModel().getSelectedItem();
 		columnSelect.getItems().clear();
 		if(numColName != null)
 			for(int i = 0; i < numColName.size(); i++)
 					columnSelect.getItems().add(numColName.get(i));	//setting comboBox
+		if(columnSelect.getItems().contains(prevCS))
+			columnSelect.getSelectionModel().select(prevCS);
+		else columnSelect.getSelectionModel().selectFirst();
+		
 		dataTableView = new TableView<>();
 		ObservableList<String[]> data = FXCollections.observableArrayList();
 		data.addAll(Arrays.asList(rowList));
@@ -422,9 +427,12 @@ public class Main extends Application {
 //			}
 //		}
 //		if(!isRow) data.remove(rowList.length-1);
+		//printing rowLsit
 //		for(int i = 0; i < rowList.length; i++)
 //			for(int j = 0; j < rowList[i].length; j++)
 //				System.out.print(rowList[i][j] + " ");
+//		System.out.println();
+		//printing data array
 //		for(int i = 0; i < data.size(); i++)
 //			for(int j = 0; j < data.get(i).length; j++)
 //				System.out.print(data.get(i)[j] + " ");
@@ -454,7 +462,6 @@ public class Main extends Application {
 
 	private Pane paneTransformScreen() {
 		splitedDataset = new ListView<TableView>();
-//		dataTableView = new TableView<>();
 		transformSeparator = new Separator();
 		filter = new Label("Filter: ");
 		split = new Label("Split: ");
