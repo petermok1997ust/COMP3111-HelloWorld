@@ -34,7 +34,9 @@ public class DataManagement implements Serializable{
 	private static final String EMPTY_STRING = "";
 
 
-	//constructor
+	/**
+	 * Constructor of DataManagement
+	 */
 	public DataManagement() {
 		num_table = 0;
 		num_chart = 0;
@@ -45,16 +47,10 @@ public class DataManagement implements Serializable{
 		table_name = new ArrayList<String>();
 	}
 
-//	private void setInstance(DataManagement dataManagementObj) {
-//		management_instance.num_chart = dataManagementObj.num_chart;
-//		management_instance.num_table = dataManagementObj.num_table;
-//		//    System.arraycopy( dataManagementObj.table_array, 0, management_instance.table_array, 0, dataManagementObj.table_array.length );
-//		//    System.arraycopy( dataManagementObj.chart_array, 0, management_instance.chart_array, 0, dataManagementObj.chart_array.length );
-//		management_instance.table_array = dataManagementObj.table_array;
-//		management_instance.chart_array = dataManagementObj.chart_array;
-//	}
-
-	//singleton getInstance
+	/**
+	 * Get instance object of DataManagement
+	 * @return Instance of DataManagement Obj
+	 */
 	public static DataManagement getInstance()
 	{
 		if (management_instance == null)
@@ -62,6 +58,12 @@ public class DataManagement implements Serializable{
 		return management_instance;
 	}
 
+	/**
+	 * Import the CSV from file
+	 * @param file
+	 * @return Name of the dataset
+	 * @throws DataTableException
+	 */
 	public String importCSV(File file) throws DataTableException {
 		if(file == null)
 			return null;
@@ -104,6 +106,12 @@ public class DataManagement implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Export the table to the csv to the directory of file
+	 * @param table
+	 * @param file
+	 * @return
+	 */
 	public boolean exportTableToCSV(DataTable table, File file) {
 		//write to csv
 	
@@ -151,7 +159,11 @@ public class DataManagement implements Serializable{
 		
 	}
 
-
+	/**
+	 * Save the project into .3111 extension
+	 * @param file
+	 * @return file to be saved
+	 */
 	public File saveProject(File file) {
 		try {
 			if(file == null)
@@ -173,6 +185,11 @@ public class DataManagement implements Serializable{
 		}
 	}
 
+	/**
+	 * Load the project from the file
+	 * @param file
+	 * @return DataManagement Object loaded from the project file
+	 */
 	public DataManagement loadProject(File file) {
 		try {
 			DataManagement load_object;
@@ -198,7 +215,14 @@ public class DataManagement implements Serializable{
 		return null;
 	}
 	
-
+	/**
+	 * Create Data Table from the data list
+	 * @param list
+	 * @param num_row
+	 * @param num_col
+	 * @return The datatable created from the data list
+	 * @throws DataTableException
+	 */
 	public DataTable createDataTable(List<String> list, int num_row, int num_col) throws DataTableException {
 			//make column
 			DataTable t = new DataTable();
@@ -269,6 +293,12 @@ public class DataManagement implements Serializable{
 		
 	}
 	
+	/**
+	 * To get the columns that are number
+	 * @param list
+	 * @param numCol
+	 * @return array of boolean(number is true)
+	 */
 	public boolean[] isColumnNum(List<String> list, int numCol) {
 		boolean[] isNum = new boolean[numCol];
 		Arrays.fill(isNum, true);
@@ -285,30 +315,52 @@ public class DataManagement implements Serializable{
 
 	}
 	
+	/**
+	 * Get the array of table name
+	 * @return List of table name
+	 */
 	public List<String> getTableName() {
 		return table_name;
 	}
 
+	/**
+	 * Get the array of data table
+	 * @return  the array of data table
+	 */
 	public List<DataTable> getDataTables(){
 		return table_array;
 	}
 	
+	/**
+	 * Get the data table from the index n
+	 * @param n
+	 * @return DataTable from the index n
+	 */
 	public DataTable getDataTableByIndex(int n){
-//		if(table_array == null) return null;
 		return table_array.get(n);
 	}
 	
-
-	
-		
+	/**
+	 * 	Get the array of chart
+	 * @return array of chart
+	 */
 	public List<Chart> getChartArray() {
 		return chart_array;
 	}
-
+	
+	/**
+	 * 	Get the number of tables
+	 * @return number of tables
+	 */
 	public int getNumTable() {
 		return num_table;
 	}
 
+	
+	/**
+	 * Get number of charts
+	 * @return number of charts
+	 */
 	public int getNumChart() {
 		return num_chart;
 	}
