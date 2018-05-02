@@ -1,12 +1,17 @@
-package core.comp3111;
+package ui.comp3111;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import core.comp3111.DataColumn;
+import core.comp3111.DataManagement;
+import core.comp3111.DataTable;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import ui.comp3111.Main;
 
 public class UIController {
 	private static DataManagement dataManagementInstance = DataManagement.getInstance();
@@ -30,9 +35,9 @@ public class UIController {
 	public static void onClickInitImportBtn(){
 		File fileObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, false);
 		if(fileObtained != null) {
-			dataManagementInstance.importCSV(fileObtained);
-			DataTable s = dataManagementInstance.getDataTableByIndex(dataManagementInstance.getDataTables().size()-1);
-			printDT(s);
+			String name = dataManagementInstance.importCSV(fileObtained);
+			if(name != null)
+				Main.setDataItem(name);
 		}
 			
 	}
@@ -50,7 +55,9 @@ public class UIController {
 	public static void onClickInitLoadBtn(){
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, false);
 		if(fileObtained != null) {
-			dataManagementInstance.loadProject(fileObtained);
+			DataManagement load_object = dataManagementInstance.loadProject(fileObtained);
+			if(load_object != null)
+				Main.setDataObj(load_object);
 		}
 			
 	}
@@ -94,5 +101,60 @@ public class UIController {
 		System.out.println(choice);
 		
 	}	
+	
+	public static void handleNumColumnByCase(Number[] numbers) {
+		String handleType = Main.getSelectedNumHandle();
+		switch(handleType) {
+		case Main.string_zero:
+			fillAllMissingWith(numbers, 0);
+			break;
+		case Main.string_mean:
+			Float num_of_valid_col = 0f;
+			Float total = 0f;
+			for(int i=0;i<numbers.length;i++) {
+				if(numbers[i] != null) {
+					total+=(Float)numbers[i];
+					num_of_valid_col++;
+				}
+			}
+			double mean = (double)(total/num_of_valid_col);
+			fillAllMissingWith(numbers, mean);
+			break;
+		case Main.string_median:
+			List<Float> list = new ArrayList<Float>();
+			for(int i=0;i<numbers.length;i++) {
+				if(numbers[i] != null) {
+					list.add((Float) numbers[i]);
+				}
+			}
+			Collections.sort(list);
+			double median = 0;
+			int idx = list.size()/2;
+			if(list.size()%2 == 0) {
+				median = (double) (list.get(idx - 1) + list.get(idx))/2;
+			}else {
+				median = (double) list.get((list.size()+1)/2-1);
+			}
+
+			fillAllMissingWith(numbers, median);
+			break;
+		}
+	}
+
+	public static void fillAllMissingWith(Number[] numbers, double num) {
+		for(int i =0; i<numbers.length;i++) {
+			if(numbers[i] == null)
+				numbers[i] = num;
+		}
+	}
+
+	public static void handleMissingData(List<Object> columns, boolean[] problematic_col) {
+		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
+		for(int i=0; i<problematic_col.length;i++) {
+			if(problematic_col[i]) {
+				handleNumColumnByCase((Number[])columns.get(i));
+			}
+		}
+	}
 	
 }

@@ -16,6 +16,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import ui.comp3111.Main;
+import ui.comp3111.UIController;
 
 public class DataManagement implements Serializable{
 	/**
@@ -61,9 +62,9 @@ public class DataManagement implements Serializable{
 		return management_instance;
 	}
 
-	public void importCSV(File file) {
+	public String importCSV(File file) {
 		if(file == null)
-			return;
+			return null;
 		System.out.println("Importing CSV "+ file.getAbsolutePath());
 		Scanner inputStream;
 		List<String> list = new ArrayList<String> ();  
@@ -90,8 +91,6 @@ public class DataManagement implements Serializable{
 			e.printStackTrace();
 		}
 		System.out.println("Finished importing CSV with "+ num_row+" rows and "+ num_col+" columns");
-		String empty = "";
-
 		if(num_row >0 && num_col >0) {
 			System.out.println("Creating Table");
 			createDataTable(list, num_row-1, num_col);	
@@ -99,17 +98,18 @@ public class DataManagement implements Serializable{
 			String name = "dataset"+num_table;
 			table_name.add(name);
 			System.out.println("Finished create Table");
-			Main.setDataItem(name);
+			return name;
 		}
+		return null;
 	}
 
-	public void exportTableToCSV(DataTable table, File file) {
+	public boolean exportTableToCSV(DataTable table, File file) {
 		//write to csv
 		int num_row = table.getNumRow();
 		int num_col = table.getNumCol();
 		Set<String> keys = table.getKeys();
 		String[] headers = keys.toArray(new String[keys.size()]);
-		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
+//		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
 		FileWriter fileWriter = null;
 		try {
 			fileWriter = new FileWriter(file);
@@ -138,10 +138,12 @@ public class DataManagement implements Serializable{
 			System.out.println("CSV file was created in "+ file.getAbsolutePath());
 			fileWriter.flush();
 			fileWriter.close();
+			return true;
 		} catch(IOException e) {
 			System.out.println("Error in exporting");
 			e.printStackTrace();
 		} 
+		return false;
 	}
 
 
@@ -164,7 +166,7 @@ public class DataManagement implements Serializable{
 		}
 	}
 
-	public void loadProject(File file) {
+	public DataManagement loadProject(File file) {
 		try {
 			DataManagement load_object;
 			if(file == null)
@@ -180,13 +182,15 @@ public class DataManagement implements Serializable{
 			num_table = load_object.num_table;
 			table_name = load_object.table_name;
 			ois.close();
-//			Main.setDataObj(load_object);
 			System.out.println("Object is already loaded");
+			return load_object;
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error while loading Project");
 			e.printStackTrace();
 		}
+		return null;
 	}
+	
 
 	public DataTable createDataTable(List<String> list, int num_row, int num_col) {
 			//make column
@@ -231,10 +235,8 @@ public class DataManagement implements Serializable{
 				}
 				System.out.println("num_problem: "+num_problem);
 				if(num_problem>0) {
-						System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
-						handleMissingData(columns, problematic_col);
-						System.out.println("Finished Handling");
-					
+						UIController.handleMissingData(columns, problematic_col);
+						System.out.println("Finished Handling");	
 				}
 				//create column
 				
@@ -299,60 +301,9 @@ public class DataManagement implements Serializable{
 		return table_array.get(n);
 	}
 	
-	public void handleMissingData(List<Object> columns, boolean[] problematic_col) {
-		for(int i=0; i<problematic_col.length;i++) {
-			if(problematic_col[i]) {
-				handleNumColumnByCase((Number[])columns.get(i));
-			}
-		}
-	}
-	
-	public void handleNumColumnByCase(Number[] numbers) {
-		String handleType = Main.getSelectedNumHandle();
-		switch(handleType) {
-		case Main.string_zero:
-			fillAllMissingWith(numbers, 0);
-			break;
-		case Main.string_mean:
-			Float num_of_valid_col = 0f;
-			Float total = 0f;
-			for(int i=0;i<numbers.length;i++) {
-				if(numbers[i] != null) {
-					total+=(Float)numbers[i];
-					num_of_valid_col++;
-				}
-			}
-			double mean = (double)(total/num_of_valid_col);
-			fillAllMissingWith(numbers, mean);
-			break;
-		case Main.string_median:
-			List<Float> list = new ArrayList<Float>();
-			for(int i=0;i<numbers.length;i++) {
-				if(numbers[i] != null) {
-					list.add((Float) numbers[i]);
-				}
-			}
-			Collections.sort(list);
-			double median = 0;
-			int idx = list.size()/2;
-			if(list.size()%2 == 0) {
-				median = (double) (list.get(idx - 1) + list.get(idx))/2;
-			}else {
-				median = (double) list.get((list.size()+1)/2-1);
-			}
 
-			fillAllMissingWith(numbers, median);
-			break;
-		}
-	}
-
-	public void fillAllMissingWith(Number[] numbers, double num) {
-		for(int i =0; i<numbers.length;i++) {
-			if(numbers[i] == null)
-				numbers[i] = num;
-		}
-	}
 	
+		
 	public List<Chart> getChartArray() {
 		return chart_array;
 	}
