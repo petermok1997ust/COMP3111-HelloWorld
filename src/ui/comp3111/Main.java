@@ -126,7 +126,7 @@ public class Main extends Application {
 	private ObservableList<TableView> dataSetItems;
 	private TableView dataTableView;
 	private Separator transformSeparator, percentageSeparator;
-	private Label split, filter, filterError, percentageLTxt, percentageRTxt;
+	private Label split, filter, filterError, percentageLTxt, percentageRTxt, splitError;
 	private ComboBox<String> columnSelect, comparison;
 	private TextField compareValue;
 	private Slider percentage;
@@ -134,7 +134,7 @@ public class Main extends Application {
 	private ToggleButton replace, create;
 	private static  ToggleGroup rcGroup;
 	String rcChoice = "create";
-	private Transform t;
+	private ArrayList<Transform> t;
 	/**
 	 * create all scenes in this application
 	 */
@@ -362,8 +362,10 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
             	if(selected_dataset_index != -1) {
-                	t = new Transform(selected_dataset_index);
-        			settingDatasetView(t.colToRow(), t.getColName(), t.getNumColName());
+            		DataTable selectedTable = dataManagementInstance.getDataTableByIndex(selected_dataset_index);
+                	t = new ArrayList<Transform>();
+            		t.add(new Transform(selectedTable));
+        			settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
         			putSceneOnStage(SCENE_TRANSFORM_SCREEN);
             	}
             	else {
@@ -465,7 +467,8 @@ public class Main extends Application {
 		return pane;
 	}
 	
-	private void settingDatasetView(String[][] rowList, String[] colName, ArrayList<String> numColName) {
+	private void settingDatasetView(ArrayList<Transform> tList, String[] colName, ArrayList<String> numColName) {
+		dataSetItems = FXCollections.observableArrayList();
 		String prevCS = columnSelect.getSelectionModel().getSelectedItem();
 		columnSelect.getItems().clear();
 		if(numColName != null)
@@ -475,47 +478,60 @@ public class Main extends Application {
 			columnSelect.getSelectionModel().select(prevCS);
 		else columnSelect.getSelectionModel().selectFirst();
 		
-		dataTableView = new TableView<>();
-		ObservableList<String[]> data = FXCollections.observableArrayList();
-		data.addAll(Arrays.asList(rowList));
-		//remove last null row from data
-//		boolean isRow = false;
-//		for(int v = 1; v < colName.length; v++) {
-//			try {
-//				if(!rowList[rowList.length-1][v].isEmpty()) {isRow = true; break;}		
-//			} catch(Exception e){
-//				if(rowList[rowList.length-1][v] != null) {isRow = true; break;}
+		System.out.println(tList.size());
+		for(Transform x : tList) {
+//			String[][] rowList = new String[x.getNumRowOfFilteredList()][x.getNumColOfFilteredList()];
+			String[][] rowList = x.getFilteredList();
+//			System.out.println("row size: " + rowList.length);
+//			System.out.println("col size: " + rowList[0].length);
+//			for(int i =0 ; i< rowList.length; i++) {
+//				for(int j =0; j< rowList[i].length; j++) {
+//					System.out.print(rowList[i][j]);
+//				}
+//				System.out.println();
 //			}
-//		}
-//		if(!isRow) data.remove(rowList.length-1);
-		//printing rowLsit
-//		for(int i = 0; i < rowList.length; i++)
-//			for(int j = 0; j < rowList[i].length; j++)
-//				System.out.print(rowList[i][j] + " ");
-//		System.out.println();
-		//printing data array
-//		for(int i = 0; i < data.size(); i++)
-//			for(int j = 0; j < data.get(i).length; j++)
-//				System.out.print(data.get(i)[j] + " ");
-//		System.out.println();
-		
-		for (int i = 0; i < colName.length; i++) {
-			TableColumn tc = new TableColumn(colName[i]);
-			final int colNo = i;
-			tc.setCellValueFactory(new Callback<CellDataFeatures<String[], String>, ObservableValue<String>>() {
-				@Override
-				public ObservableValue<String> call(CellDataFeatures<String[], String> p) {
-//					System.out.println(p.getValue()[colNo]);
-					return new SimpleStringProperty((p.getValue()[colNo]));
-				}
-			});
-			tc.setPrefWidth(90);
-	        dataTableView.getColumns().add(tc);
-		}
-		dataTableView.setItems(data);
+			dataTableView = new TableView<>();
+			ObservableList<String[]> data = FXCollections.observableArrayList();
+			data.addAll(Arrays.asList(rowList));
+			//remove last null row from data
+//			boolean isRow = false;
+//			for(int v = 1; v < colName.length; v++) {
+//				try {
+//					if(!rowList[rowList.length-1][v].isEmpty()) {isRow = true; break;}		
+//				} catch(Exception e){
+//					if(rowList[rowList.length-1][v] != null) {isRow = true; break;}
+//				}
+//			}
+//			if(!isRow) data.remove(rowList.length-1);
+			//printing rowLsit
+//			for(int i = 0; i < rowList.length; i++)
+//				for(int j = 0; j < rowList[i].length; j++)
+//					System.out.print(rowList[i][j] + " ");
+//			System.out.println();
+			//printing data array
+//			for(int i = 0; i < data.size(); i++)
+//				for(int j = 0; j < data.get(i).length; j++)
+//					System.out.print(data.get(i)[j] + " ");
+//			System.out.println();
+//			System.out.println(colName.length);
+			for (int i = 0; i < colName.length; i++) {
+				TableColumn tc = new TableColumn(colName[i]);
+				final int colNo = i;
+				tc.setCellValueFactory(new Callback<CellDataFeatures<String[], String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<String[], String> p) {
+//						System.out.println(p.getValue()[colNo]);
+						return new SimpleStringProperty((p.getValue()[colNo]));
+					}
+				});
+				tc.setPrefWidth(90);
+		        dataTableView.getColumns().add(tc);
+			}
+			dataTableView.setItems(data);
 
-        //list
-		dataSetItems = FXCollections.observableArrayList(dataTableView);
+	        //list
+			dataSetItems.add(dataTableView);
+		}
 		splitedDataset.setItems(dataSetItems);
 		splitedDataset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
@@ -526,14 +542,15 @@ public class Main extends Application {
 		transformSeparator = new Separator();
 		filter = new Label("Filter: ");
 		split = new Label("Split: ");
-		filterError = new Label("Please complete the input.");
+		filterError = new Label();
 		columnSelect = new ComboBox<String>();
 		comparison = new ComboBox<String>();
 		compareValue = new TextField();
-		percentage = new Slider(0,50,0);
+		percentage = new Slider(10,50,0);
 		percentageLTxt = new Label(Double.toString(percentage.getValue()));
 		percentageSeparator = new Separator();
 		percentageRTxt = new Label(Double.toString(100 - percentage.getValue()));
+		splitError = new Label();
 		applyFilter = new Button("Apply");
 		applySplit	= new Button("Apply");
 		transformOK = new Button("OK");
@@ -560,17 +577,60 @@ public class Main extends Application {
             	
         		String cSelectTmp = columnSelect.getValue();
         		String comparisonTmp = comparison.getValue();
-        		if(cSelectTmp == null || comparisonTmp == null || error) filterError.setVisible(true);
+        		if(cSelectTmp == null || comparisonTmp == null || error) {
+        			filterError.setText("Please complete the input.");
+        			filterError.setVisible(true);
+        		}
         		else {
         			filterError.setVisible(false);
-            		settingDatasetView(t.filterData(cSelectTmp, comparisonTmp, cValueTmp), t.getColName(), t.getNumColName());        			
+        			if(splitedDataset.getItems().size() == 1) {
+        				t.get(0).filterData(cSelectTmp, comparisonTmp, cValueTmp);
+        				settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
+        			}
+        			else if(splitedDataset.getSelectionModel().isEmpty()){
+        				filterError.setText("Please select at list one table.");
+        				filterError.setVisible(true);
+        			}
+        			else {
+        				for(int x : splitedDataset.getSelectionModel().getSelectedIndices())
+        					t.get(x).filterData(cSelectTmp, comparisonTmp, cValueTmp);
+        				settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
+        			}
         		}
             }
         });
 		applySplit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	t.splitData(percentage.getValue());
+            	if(!t.get(0).splitData(percentage.getValue())) {
+            		splitError.setText("Percentage not valid.");
+            		splitError.setVisible(true);
+            	}
+            	else {
+	            	ArrayList<ArrayList<String>> one = t.get(0).getFirstSplitedT();
+	            	ArrayList<ArrayList<String>> two = t.get(0).getSecondSplitedT();
+	            	Transform onet = null;
+					try {
+						onet = t.get(0).clone();
+					} catch (CloneNotSupportedException e) {
+						System.out.println("clone failed");
+						e.printStackTrace();					
+					}
+	            	onet.setRowList(one);
+	            	t.add(onet);
+	            	Transform twot = null;
+					try {
+						twot = t.get(0).clone();
+					} catch (CloneNotSupportedException e) {
+						System.out.println("clone 2 failed");
+						e.printStackTrace();
+					}
+	            	twot.setRowList(two);
+	            	t.add(twot);
+	            	t.remove(0);
+	            	settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
+	            	splitError.setVisible(false);
+	            }
             }
         });
  
@@ -650,7 +710,8 @@ public class Main extends Application {
 	                percentageRTxt.setText(String.format("%d", 100 - Math.round(new_val.doubleValue())));
 	        });
 		percentageSeparator.setOrientation(Orientation.VERTICAL);
-		
+		splitError.setVisible(false);
+
 		HBox hb1 = new HBox(20);
 		hb1.getChildren().addAll(filter, columnSelect, comparison, compareValue, applyFilter);
 //		hb1.setAlignment(Pos.CENTER);
@@ -667,11 +728,14 @@ public class Main extends Application {
 		VBox vb = new VBox(10);
 		vb.getChildren().addAll(hb1,filterError);
 
-		VBox vb1 = new VBox(30);
-		vb1.getChildren().addAll(vb ,hb2,hb3,hb4);
+		VBox vb1 = new VBox(10);
+		vb1.getChildren().addAll(hb2,splitError);
+		
+		VBox vb2 = new VBox(30);
+		vb2.getChildren().addAll(vb ,vb1, hb3, hb4);
 		
 		VBox positionBox = new VBox(30);
-		positionBox.getChildren().addAll(splitedDataset, vb1);
+		positionBox.getChildren().addAll(splitedDataset, vb2);
 		
 		BorderPane pane = new BorderPane();
 		pane.setCenter(positionBox);

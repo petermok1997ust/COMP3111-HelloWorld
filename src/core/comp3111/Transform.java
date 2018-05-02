@@ -13,10 +13,8 @@ import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 
 
-public class Transform {
-	public Transform(int selectedTableIndex){
-		dataManagementInstance = DataManagement.getInstance();
-		DataTable selectedTable = dataManagementInstance.getDataTableByIndex(selectedTableIndex);
+public class Transform implements Cloneable {
+	public Transform(DataTable selectedTable){
 		this.selectedTable = selectedTable;
 		sCol = "NOT YET SELECTED";
 		sComparison = "NOT YET SELECTED"; 
@@ -24,7 +22,47 @@ public class Transform {
 		sPercentage = Double.MAX_VALUE;
 		numColName = new ArrayList<String>();
 		colName = new String[selectedTable.getNumCol()+1];
+		colToRow();
 	}
+
+	public Transform clone() throws CloneNotSupportedException {
+		Transform clonedObj = (Transform) super.clone();
+		clonedObj.splitedOne = (ArrayList<ArrayList<String>>) this.splitedOne.clone();
+		clonedObj.splitedTwo = (ArrayList<ArrayList<String>>) this.splitedTwo.clone();
+		clonedObj.colName = this.colName.clone();
+        clonedObj.numColName = (ArrayList<String>) this.numColName.clone();
+        clonedObj.rowList = this.rowList.clone();
+        clonedObj.filteredList = this.filteredList.clone();
+        return clonedObj;
+    }
+	
+//	public Transform(String[][] rowlist, String[] colName, ArrayList<String> numColName){
+//		this.selectedTable = null;
+//		rowList = rowlist;
+//		sCol = "NOT YET SELECTED";
+//		sComparison = "NOT YET SELECTED"; 
+//		Double sValue = Double.MAX_VALUE;
+//		sPercentage = Double.MAX_VALUE;
+//		this.numColName = numColName;
+////		colName = new String[rowList[0].length+1];
+//		this.colName = colName;
+//	}
+//	public Transform(ArrayList<ArrayList<String>> rowlist, String[] colName, ArrayList<String> numColName){
+//		this.selectedTable = null;
+//        rowList = new String[rowlist.size()][rowlist.get(0).size()];
+//		for(int i = 0; i < rowlist.size(); i++) {
+//			String [] tmplist = new String[rowlist.get(i).size()];
+//			tmplist = rowlist.get(i).toArray(tmplist);
+//			rowList[i] = tmplist;
+//		}
+//		sCol = "NOT YET SELECTED";
+//		sComparison = "NOT YET SELECTED"; 
+//		Double sValue = Double.MAX_VALUE;
+//		sPercentage = Double.MAX_VALUE;
+//		this.numColName = numColName;
+////		colName = new String[rowList[0].length+1];
+//		this.colName = colName;
+//	}
 	
 	public String[][] colToRow() {
 	        DataColumn[] columnList = new DataColumn[selectedTable.getNumCol()];
@@ -60,6 +98,7 @@ public class Transform {
 //				System.out.print(rowList[i][1]);
 //				System.out.println();
 //			}
+			filteredList = rowList.clone();
 			return rowList;
 		}
 	
@@ -104,16 +143,19 @@ public class Transform {
 
 		String[][] frl = new String[filteredRowList.size()][colName.length];
 		for(int i = 0; i < filteredRowList.size(); i++) {
-			String [] tmplist = new String[filteredRowList.size()];
+			String [] tmplist = new String[filteredRowList.get(i).size()];
 			tmplist = filteredRowList.get(i).toArray(tmplist);
 			frl[i] = tmplist;
 		}
+		filteredList = frl.clone();
 		return frl;
 	}
 	
-	public String[][] splitData(double percentage){
+	//if can split, return true
+	public boolean splitData(double percentage){
 		int p = (int) Math.round(percentage);
 		int newRLength = (int) (rowList.length * p/100);
+		if(newRLength == 0) return false;
 		ArrayList<Integer> rowIndexList = new ArrayList<Integer>();
 		SecureRandom random = new SecureRandom();
 		for(int i = 0; i<newRLength; i++) {
@@ -139,6 +181,7 @@ public class Transform {
 			ArrayList<String> z = new ArrayList<String>(Arrays.asList(rowList[rowIndexList.get(i)]));
 			firstRowL.add(z);
 		}
+		splitedOne = firstRowL;
 //		System.out.println("first table:");
 //		for(int i = 0; i < firstRowL.size(); i++) {
 //			for(int j = 0; j < firstRowL.get(i).size(); j++) {
@@ -152,6 +195,7 @@ public class Transform {
 			ArrayList<String> z = new ArrayList<String>(Arrays.asList(rowList[i]));
 			secondRowL.add(z);
 		}
+		splitedTwo = secondRowL;
 //		System.out.println("\nsecond table:");
 //		for(int i = 0; i < secondRowL.size(); i++) {
 //			for(int j = 0; j < secondRowL.get(i).size(); j++) {
@@ -161,7 +205,7 @@ public class Transform {
 //		}
 //		System.out.println();
 		
-		return rowList;
+		return true;
 	}
 	public ArrayList<String> getNumColName() {
 		return numColName;
@@ -169,14 +213,41 @@ public class Transform {
 	public String[] getColName() {
 		return colName;
 	}
-	private DataManagement dataManagementInstance;
+	public String[][] getRowList(){
+		return rowList;
+	}
+	public String[][] getFilteredList(){
+		return filteredList;
+	}
+	public int getNumRowOfFilteredList() {
+		return filteredList.length;
+	}
+	public int getNumColOfFilteredList() {
+		return filteredList[0].length;
+	}
+	public ArrayList<ArrayList<String>> getFirstSplitedT(){
+		return splitedOne;
+	}
+	public ArrayList<ArrayList<String>> getSecondSplitedT(){
+		return splitedTwo;
+	}
+	public void setRowList(ArrayList<ArrayList<String>> rowlist) {
+		rowList = new String[rowlist.size()][rowlist.get(0).size()];
+		for(int i = 0; i < rowlist.size(); i++) {
+			String [] tmplist = new String[rowlist.get(i).size()];
+			tmplist = rowlist.get(i).toArray(tmplist);
+			rowList[i] = tmplist;
+		}
+		filteredList = rowList.clone();
+	}
+	
 	private DataTable selectedTable;
-	private ArrayList<ArrayList<ArrayList<String>>> splitedT;
+	private ArrayList<ArrayList<String>> splitedOne, splitedTwo;
 	private String sCol, sComparison; 
 	private Double sValue, sPercentage;
 	private String[] colName;
 	private ArrayList<String> numColName;
-	private String[][] rowList;
+	private String[][] rowList, filteredList;
 //	private String[] splitedCol, splitedComparison; 
 //	private Double[] splitedValue, splitedPercentage;
 	
