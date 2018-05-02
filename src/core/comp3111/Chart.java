@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -17,7 +18,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import ui.comp3111.Main;
 import java.lang.Math;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import java.util.Random;
 
 public class Chart implements Serializable{
 	
@@ -57,10 +61,18 @@ public class Chart implements Serializable{
 	ObservableList<PieChart.Data> pieChartData;
 	
 	//Animated Line Chart
-	private NumberAxis ani_xAxis = new NumberAxis();
-	private NumberAxis ani_yAxis = new NumberAxis();
-	private LineChart<Number, Number> ani_lineChart = new LineChart<Number, Number>(ani_xAxis, ani_yAxis);
-	
+	private static NumberAxis ani_xAxis = new NumberAxis();
+	private static NumberAxis ani_yAxis = new NumberAxis();
+	private final static LineChart<Number, Number> ani_lineChart = new LineChart<Number, Number>(ani_xAxis, ani_yAxis);
+	private static Runnable runnable;
+	private final static XYChart.Series anim_series = new XYChart.Series();
+	private static Thread thread;
+	private XYChart.Series series;
+	private static Timer timer = null;
+	private static long delay = 0;
+	private final static long intevalPeriod = 2* 1000; 
+	private static TimerTask task;
+	    
 	public static Chart getInstance()
 	{
 		if (chart_instance == null)
@@ -71,10 +83,10 @@ public class Chart implements Serializable{
 	//constructor
 	private Chart() {
 		XYChart.Series series = new XYChart.Series();
-		XYChart.Series series1 = new XYChart.Series();
 		lineChart.getData().add(series);
 		
-		ani_lineChart.getData().add(series1);
+		ani_lineChart.getData().add(anim_series);
+			
 		chart_container.setAlignment(Pos.CENTER);
 	}
 	
@@ -135,7 +147,8 @@ public class Chart implements Serializable{
         	pieChart_update( tittle , table,   col1Name , col2Name);
            break;
         case 2 :
-        	ani_lineChart_update( tittle , table,   col1Name , col2Name);
+        	Chart.ani_lineChart_update( tittle , table,   col1Name , col2Name);
+	  	    
         	break;
         default :
            System.out.println("Invalid chart_type");
@@ -187,7 +200,12 @@ public class Chart implements Serializable{
 		}
 	}
 	
-	public void ani_lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
+	public void stop_animate() {
+		timer.cancel();
+		timer.purge();
+	}
+	
+	public static void ani_lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		
 		ani_xAxis.setLabel(col1Name);
 		ani_yAxis.setLabel(col2Name);
@@ -197,36 +215,47 @@ public class Chart implements Serializable{
 		DataColumn xCol = table.getCol(col1Name);
 		DataColumn yCol = table.getCol(col2Name);
 		
-		// Ensure both columns exist and the type is number
-		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
-				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
-				
-			// defining a series
-			XYChart.Series series = new XYChart.Series();
-			
-			series.setName(tittle);
+    	// Ensure both columns exist and the type is number
+  		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
+  				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
+  				
+  			anim_series.setName(tittle);
 
-			// populating the series with data
-			// As we have checked the type, it is safe to downcast to Number[]
-			Number[] xValues = (Number[]) xCol.getData();
-			Number[] yValues = (Number[]) yCol.getData();
+  			// populating the series with data
+  			// As we have checked the type, it is safe to downcast to Number[]
+  			final Number[] xValues = (Number[]) xCol.getData();
+  			final Number[] yValues = (Number[]) yCol.getData();
 
-			// In DataTable structure, both length must be the same
-			int len = xValues.length;
+  			// In DataTable structure, both length must be the same
+  			final int len = xValues.length;
 
-			for (int i = 0; i < len; i++) {
-				if (xValues[i] != null && yValues[i] != null) {
-					series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-					//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
+  			for (int i = 0; i < len; i++) {
+  				if (xValues[i] != null && yValues[i] != null) {
+  					anim_series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
+  					//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
+  				}
+  			}
+  			
+  			task = new TimerTask() {
+  		      @Override
+  		      public void run() {
+  		        // task to run goes here
+  		        System.out.println("Hello !!!");
+  		        
+  		      anim_series.getData().clear();
+				for (int i = 0; i < len; i++) {
+					if (xValues[i] != null && yValues[i] != null) {
+						anim_series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
+						System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
+					}
 				}
-			}
-
-			// clear all previous series
-			ani_lineChart.getData().clear();
-
-			// add the new series as the only one series for this line chart
-			ani_lineChart.getData().add(series);
-		}
+  		      }
+  		    };
+  		    
+  		    timer = new Timer();
+  		    // schedules the task to be run in an interval 
+  		    timer.scheduleAtFixedRate(task, delay, intevalPeriod);
+  		}
 	}
 	
 	public void pieChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
@@ -254,11 +283,9 @@ public class Chart implements Serializable{
 
 			for (int i = 0; i < len; i++) {
 				if (xValues[i] != null && yValues[i] != null) {
-					
 					int y = Math.round((float) yValues[i]);
 					pieChartData.add(new PieChart.Data(xValues[i], y ));
 					//System.out.println("X: " + xValues[i]+ "Y: " + y  );
-					
 				}
 			}
 			// add the new series as the only one series for this line chart

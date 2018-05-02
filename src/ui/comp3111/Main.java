@@ -16,7 +16,6 @@ import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 import core.comp3111.Transform;
-import core.comp3111.UIController;
 import core.comp3111.Chart;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -72,7 +71,7 @@ public class Main extends Application {
 	private DataTable sampleDataTable = null;
 	private static DataManagement dataManagementInstance = DataManagement.getInstance();
 	private static Chart chartInstance = Chart.getInstance();
-	
+
 	// Attributes: Scene and Stage
 	public static final int SCENE_NUM = 4;
 	public static final int SCENE_MAIN_SCREEN = 0;
@@ -279,6 +278,7 @@ public class Main extends Application {
 		
 		btLineChartBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_INIT_SCREEN);
+			chartInstance.stop_animate();
 		});
 
 		return pane;
@@ -855,6 +855,7 @@ public class Main extends Application {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		UIController.started = true;
 		launch(args);
 	}
 }
