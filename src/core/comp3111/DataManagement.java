@@ -73,16 +73,19 @@ public class DataManagement implements Serializable{
 			while(inputStream.hasNextLine()) {
 				String line = inputStream.nextLine();
 				String[] line_split = line.split(",",-1);
-				for(int i=0; i<line_split.length;i++) {
-					System.out.print(line_split[i]);
-				}
+//				for(int i=0; i<line_split.length;i++) {
+//					System.out.print(line_split[i]);
+//				}
 				if(num_row == 0)
 					num_col = line_split.length;
 				for(int c=0; c<line_split.length; c++) {
 					String input = line_split[c].isEmpty()?null:line_split[c];
+					System.out.print(input);
 					list.add(input);
 				}
 				num_row++;
+				System.out.print(" " + num_row);
+				System.out.println();
 			}
 			inputStream.close();
 		}catch (FileNotFoundException e) {
