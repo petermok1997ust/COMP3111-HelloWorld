@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-
 import ui.comp3111.Main;
+import ui.comp3111.UIController;
 
 public class DataManagement implements Serializable{
 	/**
@@ -62,11 +62,12 @@ public class DataManagement implements Serializable{
 		return management_instance;
 	}
 
-	public void importCSV(File file) {
+	public String importCSV(File file) throws DataTableException {
 		if(file == null)
-			return;
+			return null;
 		System.out.println("Importing CSV "+ file.getAbsolutePath());
 		Scanner inputStream;
+		
 		List<String> list = new ArrayList<String> ();  
 		int num_row = 0;
 		int num_col = 0;
@@ -91,8 +92,6 @@ public class DataManagement implements Serializable{
 			e.printStackTrace();
 		}
 		System.out.println("Finished importing CSV with "+ num_row+" rows and "+ num_col+" columns");
-		String empty = "";
-
 		if(num_row >0 && num_col >0) {
 			System.out.println("Creating Table");
 			createDataTable(list, num_row-1, num_col);	
@@ -100,19 +99,23 @@ public class DataManagement implements Serializable{
 			String name = "dataset"+num_table;
 			table_name.add(name);
 			System.out.println("Finished create Table");
-			Main.setDataItem(name);
+			return name;
 		}
+		return null;
 	}
 
-	public void exportTableToCSV(DataTable table, File file) {
+	public boolean exportTableToCSV(DataTable table, File file) {
 		//write to csv
+	
 		int num_row = table.getNumRow();
 		int num_col = table.getNumCol();
 		Set<String> keys = table.getKeys();
 		String[] headers = keys.toArray(new String[keys.size()]);
-		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
+//		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
 		FileWriter fileWriter = null;
 		try {
+			if(file == null)
+				throw new IOException();
 			fileWriter = new FileWriter(file);
 			//add headers
 			for(int i = 0; i< num_col; i++) {
@@ -137,43 +140,44 @@ public class DataManagement implements Serializable{
 				fileWriter.append(NEW_LINE);
 			}
 			System.out.println("CSV file was created in "+ file.getAbsolutePath());
-		} catch (Exception e) {
+			fileWriter.flush();
+			fileWriter.close();
+			return true;
+		} catch(IOException e) {
 			System.out.println("Error in exporting");
 			e.printStackTrace();
-		} finally {
-			try {
-				fileWriter.flush();
-				fileWriter.close();
-			} catch (IOException e) {
-				System.out.println("Error while flushing/closing");
-				e.printStackTrace();
-			}
-		}
+			return false;
+		} 
+		
 	}
 
 
-	public void saveProject(File file) {
+	public File saveProject(File file) {
 		try {
+			if(file == null)
+				throw new IOException();
 			DataManagement projectObj = null;
 			System.out.println("Copying DataObject");
 			projectObj = DataManagement.getInstance();
-			if(file == null)
-				throw new IOException();
 			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(projectObj);
 			oos.flush();
 			oos.close();
 			System.out.println("Successfully saved in "+ file.getAbsolutePath());
+			return file;
 		} catch (IOException e) {
 			System.out.println("Error while Saving");
 			e.printStackTrace();
+			return null;
 		}
 	}
 
-	public void loadProject(File file) {
+	public DataManagement loadProject(File file) {
 		try {
 			DataManagement load_object;
+			if(file == null)
+				throw new IOException();
 			System.out.println("Loading DataObject");
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
@@ -185,15 +189,17 @@ public class DataManagement implements Serializable{
 			num_table = load_object.num_table;
 			table_name = load_object.table_name;
 			ois.close();
-			Main.setDataObj(load_object);
 			System.out.println("Object is already loaded");
-		} catch (Exception e) {
+			return load_object;
+		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error while loading Project");
 			e.printStackTrace();
 		}
+		return null;
 	}
+	
 
-	public DataTable createDataTable(List<String> list, int num_row, int num_col) {
+	public DataTable createDataTable(List<String> list, int num_row, int num_col) throws DataTableException {
 			//make column
 			DataTable t = new DataTable();
 			if(num_row > 0) {
@@ -236,10 +242,8 @@ public class DataManagement implements Serializable{
 				}
 				System.out.println("num_problem: "+num_problem);
 				if(num_problem>0) {
-						System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
-						handleMissingData(columns, problematic_col);
-						System.out.println("Finished Handling");
-					
+						UIController.handleMissingData(columns, problematic_col);
+						System.out.println("Finished Handling");	
 				}
 				//create column
 				
@@ -249,22 +253,12 @@ public class DataManagement implements Serializable{
 						col = new DataColumn(DataType.TYPE_NUMBER, (Number[])columns.get(i));
 					else
 						col = new DataColumn(DataType.TYPE_STRING, (String[])columns.get(i));
-					try {
-						t.addCol(list.get(i), col);
-					} catch (DataTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					t.addCol(list.get(i), col);
+					
 				}	
 			}else {
 				for(int i=0; i <num_col; i++) {
-					try {
-//						System.out.print(list.get(i));
 						t.addCol(list.get(i), new DataColumn(DataType.TYPE_OBJECT, null));
-					} catch (DataTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				}
 				
 			}
@@ -304,60 +298,9 @@ public class DataManagement implements Serializable{
 		return table_array.get(n);
 	}
 	
-	public void handleMissingData(List<Object> columns, boolean[] problematic_col) {
-		for(int i=0; i<problematic_col.length;i++) {
-			if(problematic_col[i]) {
-				handleNumColumnByCase((Number[])columns.get(i));
-			}
-		}
-	}
-	
-	public void handleNumColumnByCase(Number[] numbers) {
-		String handleType = Main.getSelectedNumHandle();
-		switch(handleType) {
-		case Main.string_zero:
-			fillAllMissingWith(numbers, 0);
-			break;
-		case Main.string_mean:
-			Float num_of_valid_col = 0f;
-			Float total = 0f;
-			for(int i=0;i<numbers.length;i++) {
-				if(numbers[i] != null) {
-					total+=(Float)numbers[i];
-					num_of_valid_col++;
-				}
-			}
-			double mean = (double)(total/num_of_valid_col);
-			fillAllMissingWith(numbers, mean);
-			break;
-		case Main.string_median:
-			List<Float> list = new ArrayList<Float>();
-			for(int i=0;i<numbers.length;i++) {
-				if(numbers[i] != null) {
-					list.add((Float) numbers[i]);
-				}
-			}
-			Collections.sort(list);
-			double median = 0;
-			int idx = list.size()/2;
-			if(list.size()%2 == 0) {
-				median = (double) (list.get(idx - 1) + list.get(idx))/2;
-			}else {
-				median = (double) list.get((list.size()+1)/2-1);
-			}
 
-			fillAllMissingWith(numbers, median);
-			break;
-		}
-	}
-
-	public void fillAllMissingWith(Number[] numbers, double num) {
-		for(int i =0; i<numbers.length;i++) {
-			if(numbers[i] == null)
-				numbers[i] = num;
-		}
-	}
 	
+		
 	public List<Chart> getChartArray() {
 		return chart_array;
 	}

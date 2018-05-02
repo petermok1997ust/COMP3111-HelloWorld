@@ -13,4 +13,24 @@ public class DataType {
 	public static final String TYPE_STRING = "java.lang.String";
 
 	// TODO: Add more type mapping here...
+	public static String getObjStr() {
+		return TYPE_OBJECT;
+	}
+	
+	public static String getNumStr() {
+		return TYPE_NUMBER;
+	}
+	
+	public static String getStrStr() {
+		return TYPE_STRING;
+	}
+	
+	public DataType() {
+		
+	}
+	
+	public String getNumberStr() {
+		return TYPE_NUMBER;
+	}
+
 }
