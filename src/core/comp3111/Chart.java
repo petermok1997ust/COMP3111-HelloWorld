@@ -12,9 +12,11 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import ui.comp3111.Main;
+import java.lang.Math;
 
 
 public class Chart implements Serializable{
@@ -29,6 +31,7 @@ public class Chart implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Chart management_instance = null;
+	private static HBox chart_container = null;
 	
 	//Line Chart
 	private LineChart<Number, Number> lineChart = null;
@@ -54,18 +57,12 @@ public class Chart implements Serializable{
 		lineChart = new LineChart<Number, Number>(xAxis, yAxis);
 		XYChart.Series series = new XYChart.Series();
 		lineChart.getData().add(series);
-		lineChart.setVisible(false);
 		
 		//create pie chart
+		pieChart = new PieChart();
 		
-		pieChartData = FXCollections.observableArrayList( 
-				   new PieChart.Data("Iphone 5S", 13), 
-				   new PieChart.Data("Samsung Grand", 25), 
-				   new PieChart.Data("MOTO G", 10), 
-				   new PieChart.Data("Nokia Lumia", 22)); 
-		
-		pieChart = new PieChart(pieChartData);
-		pieChart.setVisible(false);
+		chart_container = new HBox(20);
+		chart_container.setAlignment(Pos.CENTER);
 	}
 	
 	public String [] getChartType() {
@@ -80,19 +77,21 @@ public class Chart implements Serializable{
 		return pieChart;
 	}
 	
+	public static HBox container() {
+		return chart_container;
+	}
+	
 	public void setVisble(int chart_type, boolean isVisible ) {
 		switch(chart_type) {
         case 0 :
-        	lineChart.setVisible(true);
-        	pieChart.setVisible(false);
+        	chart_container.getChildren().clear();
+        	chart_container.getChildren().addAll(lineChart);
            break;
         case 1 :
-        	lineChart.setVisible(false);
-        	pieChart.setVisible(true);
+        	chart_container.getChildren().clear();
+        	chart_container.getChildren().addAll(pieChart);
            break;
         case 2 :
-        	lineChart.setVisible(false);
-        	pieChart.setVisible(false);
         	break;
         default :
            System.out.println("Invalid chart_type");
@@ -179,10 +178,40 @@ public class Chart implements Serializable{
 		DataColumn yCol = table.getCol(col2Name);
 		
 //		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-//		         new PieChart.Data("Iphone 5S", 13), 
+//		         new PieChart.Data("Iphone 5SSSSSSS", 130), 
 //		         new PieChart.Data("Samsung Grand", 25), 
 //		         new PieChart.Data("MOTO G", 10), 
 //		         new PieChart.Data("Nokia Lumia", 22));
+		
+		//pieChart.setData(pieChartData);
+		
+		// Ensure both columns exist and the type is number
+		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_STRING)
+				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
+				
+			// defining a series
+			ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+			
+			// populating the series with data
+			// As we have checked the type, it is safe to downcast to Number[]
+			String[] xValues = (String[]) xCol.getData();
+			Number[] yValues = (Number[]) yCol.getData();
+
+			// In DataTable structure, both length must be the same
+			int len = xValues.length;
+
+			for (int i = 0; i < len; i++) {
+				if (xValues[i] != null && yValues[i] != null) {
+					
+					int y = Math.round((float) yValues[i]);
+					pieChartData.add(new PieChart.Data(xValues[i], y ));
+					System.out.println("X: " + xValues[i]+ "Y: " + y  );
+					
+				}
+			}
+			// add the new series as the only one series for this line chart
+			pieChart.setData(pieChartData);
+		}
 		
 	}
 }

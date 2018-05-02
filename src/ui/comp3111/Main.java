@@ -155,9 +155,11 @@ public class Main extends Application {
 		lineChart = chartInstance.lineChart(); 
 		pieChart = chartInstance.pieChart(); 
 		
+		
 		// Layout the UI components
 		VBox container = new VBox(20);
-		container.getChildren().addAll(lineChart, pieChart, btLineChartBackMain);
+		
+		container.getChildren().addAll(Chart.container() , btLineChartBackMain);
 		container.setAlignment(Pos.CENTER);
 
 		pane.setCenter(container);
