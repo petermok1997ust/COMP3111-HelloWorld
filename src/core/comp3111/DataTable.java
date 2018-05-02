@@ -29,6 +29,7 @@ public class DataTable implements Serializable{
 		// In this application, we use HashMap data structure defined in
 		// java.util.HashMap
 		dc = new HashMap<String, DataColumn>();
+		
 	}
 
 	/**
