@@ -62,11 +62,12 @@ public class DataManagement implements Serializable{
 		return management_instance;
 	}
 
-	public String importCSV(File file) {
+	public String importCSV(File file) throws DataTableException {
 		if(file == null)
 			return null;
 		System.out.println("Importing CSV "+ file.getAbsolutePath());
 		Scanner inputStream;
+		
 		List<String> list = new ArrayList<String> ();  
 		int num_row = 0;
 		int num_col = 0;
@@ -105,6 +106,7 @@ public class DataManagement implements Serializable{
 
 	public boolean exportTableToCSV(DataTable table, File file) {
 		//write to csv
+	
 		int num_row = table.getNumRow();
 		int num_col = table.getNumCol();
 		Set<String> keys = table.getKeys();
@@ -112,6 +114,8 @@ public class DataManagement implements Serializable{
 //		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
 		FileWriter fileWriter = null;
 		try {
+			if(file == null)
+				throw new IOException();
 			fileWriter = new FileWriter(file);
 			//add headers
 			for(int i = 0; i< num_col; i++) {
@@ -142,13 +146,16 @@ public class DataManagement implements Serializable{
 		} catch(IOException e) {
 			System.out.println("Error in exporting");
 			e.printStackTrace();
+			return false;
 		} 
-		return false;
+		
 	}
 
 
 	public File saveProject(File file) {
 		try {
+			if(file == null)
+				throw new IOException();
 			DataManagement projectObj = null;
 			System.out.println("Copying DataObject");
 			projectObj = DataManagement.getInstance();
@@ -192,7 +199,7 @@ public class DataManagement implements Serializable{
 	}
 	
 
-	public DataTable createDataTable(List<String> list, int num_row, int num_col) {
+	public DataTable createDataTable(List<String> list, int num_row, int num_col) throws DataTableException {
 			//make column
 			DataTable t = new DataTable();
 			if(num_row > 0) {
@@ -246,22 +253,12 @@ public class DataManagement implements Serializable{
 						col = new DataColumn(DataType.TYPE_NUMBER, (Number[])columns.get(i));
 					else
 						col = new DataColumn(DataType.TYPE_STRING, (String[])columns.get(i));
-					try {
-						t.addCol(list.get(i), col);
-					} catch (DataTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					t.addCol(list.get(i), col);
+					
 				}	
 			}else {
 				for(int i=0; i <num_col; i++) {
-					try {
-//						System.out.print(list.get(i));
 						t.addCol(list.get(i), new DataColumn(DataType.TYPE_OBJECT, null));
-					} catch (DataTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				}
 				
 			}

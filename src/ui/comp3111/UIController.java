@@ -9,6 +9,7 @@ import java.util.List;
 import core.comp3111.DataColumn;
 import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
+import core.comp3111.DataTableException;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -19,6 +20,7 @@ public class UIController {
 	private static final String EXT_NAME_3111 = "COMP3111 file(.comp3111)";
 	private static final String EXT_CSV = "*.csv";
 	private static final String EXT_NAME_CSV = "CSV file(.csv)";
+	public static boolean started = false;
 	
 	public static File openFileChooser(String extName, String ext, boolean isSave) {
 		FileChooser fileChooser = new FileChooser();
@@ -35,7 +37,13 @@ public class UIController {
 	public static void onClickInitImportBtn(){
 		File fileObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, false);
 		if(fileObtained != null) {
-			String name = dataManagementInstance.importCSV(fileObtained);
+			String name = null;
+			try {
+				name = dataManagementInstance.importCSV(fileObtained);
+			} catch (DataTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if(name != null)
 				Main.setDataItem(name);
 		}
@@ -103,7 +111,10 @@ public class UIController {
 	}	
 	
 	public static void handleNumColumnByCase(Number[] numbers) {
-		String handleType = Main.getSelectedNumHandle();
+		
+		String handleType = null;
+			handleType = Main.getSelectedNumHandle();
+		
 		switch(handleType) {
 		case Main.string_zero:
 			fillAllMissingWith(numbers, 0);
@@ -138,6 +149,7 @@ public class UIController {
 
 			fillAllMissingWith(numbers, median);
 			break;
+				
 		}
 	}
 
@@ -149,10 +161,11 @@ public class UIController {
 	}
 
 	public static void handleMissingData(List<Object> columns, boolean[] problematic_col) {
-		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
+//		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
 		for(int i=0; i<problematic_col.length;i++) {
 			if(problematic_col[i]) {
-				handleNumColumnByCase((Number[])columns.get(i));
+				if(started)
+					handleNumColumnByCase((Number[])columns.get(i));
 			}
 		}
 	}

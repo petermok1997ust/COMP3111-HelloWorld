@@ -49,21 +49,35 @@ class DataManagementTest {
 		assert (dc.getNumChart() == dc.getChartArray().size());
 	}
 	
-//	@Test
-//	void testDataManagementImportNullCsv() throws IOException{
-//		//null file
-//		System.out.println("Null file");
-////		assertThrows(NullPointerException.class, ()->dc.importCSV(null));
-//	}
-	
 	@Test
-	void testDataManagementImportEmptyCsv() throws IOException{
+	void testDataManagementImportNullCsv() throws IOException, DataTableException{
 		//null file
-		assert(dc.importCSV(file)==null);
+		System.out.println("Null file");
+		assertEquals(dc.importCSV(null), null);
 	}
 	
 	@Test
-	void testDataManagementImportOnlyHeaderCsv() throws IOException{
+	void testDataManagementImportNotFoundCsv() throws IOException, DataTableException{
+		//null file
+		System.out.println("Null file");
+		assertEquals(dc.importCSV(null), null);
+	}
+	
+	@Test
+	void testDataManagementImportEmptyCsv() throws IOException, DataTableException{
+		//null file
+		assert(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath()))==null);
+	}
+	@Test
+	void testDataManagementImportNullFileCsv() throws IOException, DataTableException{
+		//null file
+		assert(dc.importCSV(null) == null);
+	}
+	
+
+	
+	@Test
+	void testDataManagementImportOnlyHeaderCsv() throws IOException, DataTableException{
 		//only header
 				String text = "dnqwij, ewqewq, 123, dqw";
 				System.out.println("file only with header");
@@ -74,7 +88,7 @@ class DataManagementTest {
 	}
 	
 	@Test
-	void testDataManagementImportOneRowCsv() throws IOException{
+	void testDataManagementImportOneRowCsv() throws IOException, DataTableException{
 		//only header
 				String text = "dnqwij, ewqewq, 123, dqw";
 				System.out.println("file only with header");
@@ -86,7 +100,7 @@ class DataManagementTest {
 	}
 	
 	@Test
-	void testDataManagementImportMoreRowsCsv() throws IOException{
+	void testDataManagementImportMoreRowsCsv() throws IOException, DataTableException{
 		//only header
 				String text = "dnqwij, ewqewq, 123, dqw";
 				FileWriter fileWriter = new FileWriter(file);
@@ -99,33 +113,27 @@ class DataManagementTest {
 	}
 	
 	@Test
-	void testDataManagementImportEmptyStringCsv() throws IOException{
+	void testDataManagementImportEmptyStringCsv() throws IOException, DataTableException{
 		//only header
 				String text = "dnqwij, ewqewq, 123, dqw";
 				text += " \n dnqwij,,59, dqw";
 				FileWriter fileWriter = new FileWriter(file);
-				for(int i = 0; i < Math.round(Math.random()*100);i++) {
-					text += " \n dnqwij, ewqewq, 2, dqw";
-				}
+				text += " \n dnqwij, ewqewq, 2, dqw";
 				fileWriter.write(text);
 				fileWriter.close();
 				assert(dc.importCSV(file) != null);
 	}
 
-//	@Test
-//	void testDataManagementImportNullNumCsv() throws IOException{
-//		//only header
-//				String text = "dnqwij, ewqewq, 123, dqw";
-//				text += " \n dnqwij,dsa,59, dqw";
-//				text += " \n dnqwij,das,, dqw";
-//				FileWriter fileWriter = new FileWriter(file);
-//				for(int i = 0; i < Math.round(Math.random()*100);i++) {
-//					text += " \n dnqwij, ewqewq, 2, dqw";
-//				}
-//				fileWriter.write(text);
-//				fileWriter.close();
-//				assert(dc.importCSV(file) != null);
-//	}
+	@Test
+	void testDataManagementImportNullNumCsv() throws IOException, DataTableException{
+		System.out.println("null number");
+				String text = "dnqwij, ewqewq, 123, dqw \n dnqwij,dsa,59, dqw \n dnqwij,das,, dqw \n dnqwij, ewqewq,, dqw";
+				FileWriter fileWriter = new FileWriter(file);
+				fileWriter.write(text);
+				fileWriter.close();
+				assert(dc.importCSV(file)!=null);
+	}
+	
 	@Test
 	void testDataManagementTestExportEmptyCSV() throws DataTableException {
 		//empty
@@ -157,6 +165,12 @@ class DataManagementTest {
 		assert(dc.exportTableToCSV(d, file) == true);
 	}
 	
+	@Test
+	void testDataManagementExportNullFileCsv() throws IOException{
+		//null file
+		assert(dc.exportTableToCSV(d, null) == false);
+	}
+	
 //	@Test
 //	void testDataManagementTestExportNull() throws DataTableException {
 //		//one column
@@ -164,14 +178,44 @@ class DataManagementTest {
 //	}
 	
 	
+	@Test
+	void testDataManagementTestSaveProject() {
+		assert(dc.saveProject(file)!=null);
+	}
+	
+	@Test
+	void testDataManagementTestLoadProject() {
+		assert(dc.loadProject(dc.saveProject(file)) != null);
+	}
+	
+	@Test
+	void testDataManagementTestLoadNullProject() {
+		//exception
+		assertEquals(null, dc.loadProject(null));
+
+	}
 //	@Test
-//	void testDataManagementTestSaveLoadProject() {
-//		assert(dc.saveProject(file)!=null);
-//		assert(dc.loadProject(dc.saveProject(file)) == null);
+//	void testDataManagementTestSaveNullProject() {
 //		//exception
-////		assertThrows(IOException.class, ()->dc.loadProject(null));
-////		assertThrows(IOException.class, ()->dc.saveProject(null));
+//		assertThrows(NullPointerException.class, ()->dc.saveProject(null));
+//
 //	}
-//	
+	
+	@Test
+	void testDataManagementTestSaveNullProject() {
+		//exception
+		assertEquals(dc.saveProject(null), null);
+
+	}
+	
+	@Test
+	void testDataManagementGetIdx() throws DataTableException{
+		dc.importCSV(file);
+		assert(dc.getDataTableByIndex(0) != null);
+	}
+	
+
+
+	
 
 }
