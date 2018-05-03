@@ -1,5 +1,6 @@
 package ui.comp3111;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -111,7 +112,6 @@ public class Main extends Application {
 	private static  ToggleGroup rcGroup;
 	String rcChoice = "create";
 	private ArrayList<Transform> t;
-	
 	/**
 	 * create all scenes in this application
 	 */
@@ -185,20 +185,38 @@ public class Main extends Application {
 		initLoad.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickInitLoadBtn();
+            	try {
+					UIController.onClickInitLoadBtn();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 		
 		initSave.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickInitSaveBtn();
+            	try {
+					UIController.onClickInitSaveBtn();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 		initExport.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickInitExportBtn();
+            	try {
+					UIController.onClickInitExportBtn();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -221,8 +239,10 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	update_chart ();
-            	putSceneOnStage(SCENE_CHART); 
+            	if (selected_dataset_index > -1 && selected_chart_index > -1) {
+	            	update_chart ();
+	            	putSceneOnStage(SCENE_CHART); 
+            	}
             }
         });
 		
@@ -311,7 +331,7 @@ public class Main extends Application {
 		return pane;
 	}
 	
-	/**
+  /**
 	 * Setting up TableView in Transform pane with table list
 	 * @param tList: list of table to be shown
 	 * @param colName: list of all column name
@@ -330,6 +350,7 @@ public class Main extends Application {
 		
 		System.out.println(tList.size());
 		for(Transform x : tList) {
+//			String[][] rowList = new String[x.getNumRowOfFilteredList()][x.getNumColOfFilteredList()];
 			String[][] rowList = x.getFilteredList();
 //			System.out.println("row size: " + rowList.length);
 //			System.out.println("col size: " + rowList[0].length);
@@ -746,7 +767,7 @@ public class Main extends Application {
 		}
 	}
 
-	/**
+ 	/**
 	 * Set data item to be shown on init screen with data list
 	 * @param list of data item name
 	 */
@@ -756,14 +777,14 @@ public class Main extends Application {
 			dataItems.add(list.get(i));
 	}
 	
-	/**
+ 	/**
 	 * Add data item to be shown on init screen with data name
 	 * @param a data item name
 	 */
 	public static void setDataItem(String name) {
 			dataItems.add(name);
 	}
-
+  
 	/**
 	 * Remove specific data item in the list
 	 * @param a data item index
@@ -771,26 +792,26 @@ public class Main extends Application {
 	public static void removeDataItem(int x) {
 		dataItems.remove(x);
 	}
-
+  
 	/**
 	 * Rename all the data item to ensure the order and no duplicate name
-	 */
+	 */	
 	public static void renameDataItem() {
 		for(int i =0 ; i< dataItems.size();i++) {
 			dataItems.set(i, "dataset"+(i+1));
 		}
 	}
 
-	/**
+ 	/**
 	 * Change the dataManagementInstace to the specified one
 	 * @param DataMangement object to be changed
 	 */
-	public static void setDataObj(DataManagement dataObj) {
+  public static void setDataObj(DataManagement dataObj) {
 		dataManagementInstance = dataObj;
 		setDataItem(dataObj.getTableName());
 	}
-	
-	/**
+
+  /**
 	 * Get selected data set index in init screen
 	 * @return selected data set index in init screen
 	 */
@@ -799,7 +820,7 @@ public class Main extends Application {
 		return dataList.getSelectionModel().getSelectedIndex();
 	}
 
-	/**
+ 	/**
 	 * Get selected option in the comboBox in init screen
 	 * @return selected option in the comboBox in init screen
 	 */
@@ -834,10 +855,10 @@ public class Main extends Application {
 				DataColumn col = selected_table.getCol((String)k);
 				String type = col.getTypeName();
 
-				if(type == Chart.chart_col_types[selected_chart_index][0])
+				if(type.equals(Chart.chart_col_types[selected_chart_index][0]))
 					chartDataColName1.getItems().add((String) k);
 				
-				if(type == Chart.chart_col_types[selected_chart_index][1])
+				if(type.equals(Chart.chart_col_types[selected_chart_index][1]))
 					chartDataColName2.getItems().add((String)k);
 			}
 		}
