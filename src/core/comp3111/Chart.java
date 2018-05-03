@@ -22,6 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import java.util.Random;
+import javafx.application.Platform;
 
 public class Chart implements Serializable{
 	
@@ -70,7 +71,7 @@ public class Chart implements Serializable{
 	private XYChart.Series series;
 	private static Timer timer = null;
 	private static long delay = 0;
-	private final static long intevalPeriod = 2* 1000; 
+	private final static long intevalPeriod = 1* 1000; 
 	private static TimerTask task;
 	    
 	public static Chart getInstance()
@@ -153,7 +154,6 @@ public class Chart implements Serializable{
         default :
            System.out.println("Invalid chart_type");
 		}
-		
 		setVisble(chart_type, true );
 	}
 	
@@ -235,20 +235,20 @@ public class Chart implements Serializable{
   					//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
   				}
   			}
-  			
+            
   			task = new TimerTask() {
   		      @Override
   		      public void run() {
-  		        // task to run goes here
-  		        System.out.println("Hello !!!");
-  		        
-  		      anim_series.getData().clear();
-				for (int i = 0; i < len; i++) {
-					if (xValues[i] != null && yValues[i] != null) {
-						anim_series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-						System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
-					}
-				}
+  		    	  
+  		    	Platform.runLater(() -> {  	  		        
+  	  		        anim_series.getData().clear();
+  					for (int i = 0; i < len; i++) {
+  						if (xValues[i] != null && yValues[i] != null) {
+  							anim_series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
+  							//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
+  						}
+  					}
+  		    	});
   		      }
   		    };
   		    
