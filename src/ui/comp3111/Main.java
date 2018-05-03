@@ -1,5 +1,6 @@
 package ui.comp3111;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -184,20 +185,38 @@ public class Main extends Application {
 		initLoad.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickInitLoadBtn();
+            	try {
+					UIController.onClickInitLoadBtn();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 		
 		initSave.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickInitSaveBtn();
+            	try {
+					UIController.onClickInitSaveBtn();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 		initExport.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	UIController.onClickInitExportBtn();
+            	try {
+					UIController.onClickInitExportBtn();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
 
@@ -220,10 +239,9 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	
-            	if (selected_dataset_index > -1 && selected_chart_index > -1 ) {
-            		update_chart ();
-                	putSceneOnStage(SCENE_CHART); 
+            	if (selected_dataset_index > -1 && selected_chart_index > -1) {
+	            	update_chart ();
+	            	putSceneOnStage(SCENE_CHART); 
             	}
             }
         });
@@ -797,14 +815,13 @@ public class Main extends Application {
 			Object[] key_arr = key.toArray();
 			
 			for (Object k : key_arr) {
-				
 				DataColumn col = selected_table.getCol((String)k);
 				String type = col.getTypeName();
-				
-				if(type.equals(Chart.chart_col_types[selected_chart_index][0])) 
+
+				if(type.equals(Chart.chart_col_types[selected_chart_index][0]))
 					chartDataColName1.getItems().add((String) k);
 				
-				if(type.equals(Chart.chart_col_types[selected_chart_index][1]) )
+				if(type.equals(Chart.chart_col_types[selected_chart_index][1]))
 					chartDataColName2.getItems().add((String)k);
 			}
 		}
