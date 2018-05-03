@@ -1,4 +1,4 @@
-package core.comp3111;
+package ui.comp3111;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,10 +16,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import ui.comp3111.Main;
+
 import java.lang.Math;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import core.comp3111.DataColumn;
+import core.comp3111.DataTable;
+import core.comp3111.DataType;
 
 import java.util.Random;
 import javafx.application.Platform;
@@ -33,9 +37,9 @@ public class Chart implements Serializable{
 			};
 	
 	public static String[][]chart_labels = {
-			{"X-Axit","Y-Axit"},
-			{"Lebel","Value"},
-			{"X-Axit","Y-Axit"}
+			{"X-Axis","Y-Axis"},
+			{"Label","Value"},
+			{"X-Axis","Y-Axis"}
 			};
 	
 	public static String[][]chart_col_types = {
@@ -85,9 +89,7 @@ public class Chart implements Serializable{
 	private Chart() {
 		XYChart.Series series = new XYChart.Series();
 		lineChart.getData().add(series);
-		
 		ani_lineChart.getData().add(anim_series);
-			
 		chart_container.setAlignment(Pos.CENTER);
 	}
 	

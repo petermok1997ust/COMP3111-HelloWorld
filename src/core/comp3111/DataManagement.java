@@ -10,12 +10,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-import ui.comp3111.Main;
 import ui.comp3111.UIController;
 
 public class DataManagement implements Serializable{
@@ -26,7 +24,7 @@ public class DataManagement implements Serializable{
 	private int num_table;
 	private int num_chart;
 	private List<DataTable> table_array;
-	private List<Chart> chart_array;
+//	private List<Chart> chart_array;
 	private List<String> table_name;
 	private static DataManagement management_instance = null;
 	private static final String COMMA = ",";
@@ -41,9 +39,9 @@ public class DataManagement implements Serializable{
 		num_table = 0;
 		num_chart = 0;
 		table_array = null;
-		chart_array = null;
+//		chart_array = null;
 		table_array = new ArrayList<DataTable>();
-		chart_array = new ArrayList<Chart>();
+//		chart_array = new ArrayList<Chart>();
 		table_name = new ArrayList<String>();
 	}
 
@@ -201,7 +199,7 @@ public class DataManagement implements Serializable{
 			load_object = (DataManagement) ois.readObject();
 			System.out.println("Copying DataObject");
 			table_array = load_object.table_array;
-			chart_array = load_object.chart_array;
+//			chart_array = load_object.chart_array;
 			num_chart = load_object.num_chart;
 			num_table = load_object.num_table;
 			table_name = load_object.table_name;
@@ -340,13 +338,13 @@ public class DataManagement implements Serializable{
 		return table_array.get(n);
 	}
 	
-	/**
-	 * 	Get the array of chart
-	 * @return array of chart
-	 */
-	public List<Chart> getChartArray() {
-		return chart_array;
-	}
+//	/**
+//	 * 	Get the array of chart
+//	 * @return array of chart
+//	 */
+//	public List<Chart> getChartArray() {
+//		return chart_array;
+//	}
 	
 	/**
 	 * 	Get the number of tables
