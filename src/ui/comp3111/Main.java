@@ -57,7 +57,6 @@ public class Main extends Application {
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
 	private static DataManagement dataManagementInstance = DataManagement.getInstance();
-	private static Chart chartInstance = Chart.getInstance();
 
 	// Attributes: Scene and Stage
 	public static final int SCENE_NUM = 4;
@@ -148,7 +147,7 @@ public class Main extends Application {
 		
 		btLineChartBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_INIT_SCREEN);
-			chartInstance.stop_animate();
+			Chart.stop_animate();
 		});
 
 		return pane;
@@ -681,7 +680,7 @@ public class Main extends Application {
 	private void update_chart () {
 		if (selected_table != null ) {
 			String Name = dataManagementInstance.getTableName().get(selected_dataset_index);
-			chartInstance.update_chart(selected_chart_index, Name,selected_table, selected_col1, selected_col2); 
+			Chart.update_chart(selected_chart_index, Name,selected_table, selected_col1, selected_col2); 
 		}
 	}
 	
