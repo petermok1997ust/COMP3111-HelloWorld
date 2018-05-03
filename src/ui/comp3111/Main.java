@@ -45,7 +45,7 @@ import javafx.util.Callback;
 /**
  * The Main class of this GUI application
  * 
- * @author cspeter
+ * @author Lotusfa & Peter & Kelvin
  *
  */
 public class Main extends Application {
@@ -125,7 +125,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Create the line chart screen and layout its UI components
+	 * Create the chart screen and layout its UI components
 	 * 
 	 * @return a Pane component to be displayed on a scene
 	 */
@@ -153,6 +153,11 @@ public class Main extends Application {
 		return pane;
 	}
 	
+	/**
+	 * Create the main screen and layout its UI components
+	 * 
+	 * @return a Pane component to be displayed on a scene
+	 */
 	private Pane paneInitScreen() {
 	
 		initDataSet = new Label("DataSets");
@@ -608,8 +613,7 @@ public class Main extends Application {
 		try {
 
 			stage = primaryStage; // keep a stage reference as an attribute
-			initScenes(); // initialize the scenes
-			//initEventHandlers(); // link up the event handlers			
+			initScenes(); // initialize the scenes		
 			putSceneOnStage(SCENE_INIT_SCREEN); 
 		} catch (Exception e) {
 
@@ -627,7 +631,6 @@ public class Main extends Application {
 			dataItems.add(name);
 	}
 	
-	
 	public static void setDataObj(DataManagement dataObj) {
 		dataManagementInstance = dataObj;
 		setDataItem(dataObj.getTableName());
@@ -643,6 +646,9 @@ public class Main extends Application {
 		return comboBox.getSelectionModel().getSelectedItem();
 	}
 	
+	/**
+	 * To help update 2 comBox to display the list of column base on the dataSet and chart selection.  
+	 */
 	public static void update_chartCol_comboBox() {
 		
 		selected_chart_index = chartList.getSelectionModel().getSelectedIndex();
@@ -677,6 +683,9 @@ public class Main extends Application {
 		chartDataColName2.getSelectionModel().selectFirst();
 	}
 	
+	/**
+	 * To help to pass the selected data to Chart in order to update it. 
+	 */
 	private void update_chart () {
 		if (selected_table != null ) {
 			String Name = dataManagementInstance.getTableName().get(selected_dataset_index);

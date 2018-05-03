@@ -19,6 +19,13 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.layout.HBox;
 
+/**
+ * 
+ * Chart is to help displaying difference type of chart to UI
+ * 
+ * @author lotusfa
+ *
+ */
 public class Chart implements Serializable{
 	
 	/**
