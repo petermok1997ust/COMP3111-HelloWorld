@@ -42,11 +42,11 @@ class DataManagementTest {
 	
 	@Test
 	void testDataManagementTestConstructor() {
-		assert (dc.getChartArray() != null);
+//		assert (dc.getChartArray() != null);
 		assert (dc.getTableName() != null);
 		assert (dc.getDataTables() != null);
 		assert (dc.getNumTable() == dc.getDataTables().size());
-		assert (dc.getNumChart() == dc.getChartArray().size());
+//		assert (dc.getNumChart() == dc.getChartArray().size());
 	}
 	
 	@Test
