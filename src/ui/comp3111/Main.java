@@ -220,8 +220,11 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	update_chart ();
-            	putSceneOnStage(SCENE_CHART); 
+            	
+            	if (selected_dataset_index > -1 && selected_chart_index > -1 ) {
+            		update_chart ();
+                	putSceneOnStage(SCENE_CHART); 
+            	}
             }
         });
 		
@@ -794,13 +797,14 @@ public class Main extends Application {
 			Object[] key_arr = key.toArray();
 			
 			for (Object k : key_arr) {
+				
 				DataColumn col = selected_table.getCol((String)k);
 				String type = col.getTypeName();
-
-				if(type == Chart.chart_col_types[selected_chart_index][0])
+				
+				if(type.equals(Chart.chart_col_types[selected_chart_index][0])) 
 					chartDataColName1.getItems().add((String) k);
 				
-				if(type == Chart.chart_col_types[selected_chart_index][1])
+				if(type.equals(Chart.chart_col_types[selected_chart_index][1]) )
 					chartDataColName2.getItems().add((String)k);
 			}
 		}
