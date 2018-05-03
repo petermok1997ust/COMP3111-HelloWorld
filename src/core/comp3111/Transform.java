@@ -5,6 +5,7 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import core.comp3111.DataColumn;
 import core.comp3111.DataTable;
@@ -153,12 +154,12 @@ public class Transform implements Cloneable {
 	//if can split, return true
 	public boolean splitData(double percentage){
 		int p = (int) Math.round(percentage);
-		int newRLength = (int) (rowList.length * p/100);
+		int newRLength = (int) (filteredList.length * p/100);
 		if(newRLength == 0) return false;
 		ArrayList<Integer> rowIndexList = new ArrayList<Integer>();
 		SecureRandom random = new SecureRandom();
 		for(int i = 0; i<newRLength; i++) {
-			int row = random.nextInt(rowList.length);
+			int row = random.nextInt(filteredList.length);
 			if(!rowIndexList.contains(row)) {
 				rowIndexList.add(row);
 			}
@@ -177,9 +178,11 @@ public class Transform implements Cloneable {
 		ArrayList<ArrayList<String>> secondRowL = new ArrayList<ArrayList<String>>();
 
 		for(int i = 0; i<rowIndexList.size(); i++) {
-			ArrayList<String> z = new ArrayList<String>(Arrays.asList(rowList[rowIndexList.get(i)]));
+			ArrayList<String> z = new ArrayList<String>(Arrays.asList(filteredList[rowIndexList.get(i)]));
 			firstRowL.add(z);
 		}
+		for(int i = 0; i < firstRowL.size(); i++)
+			firstRowL.get(i).set(0, String.valueOf(i+1));
 		splitedOne = firstRowL;
 //		System.out.println("first table:");
 //		for(int i = 0; i < firstRowL.size(); i++) {
@@ -189,11 +192,13 @@ public class Transform implements Cloneable {
 //			System.out.println();
 //		}
 
-		for(int i = 0; i < rowList.length; i++) {
+		for(int i = 0; i < filteredList.length; i++) {
 			if(rowIndexList.contains(i)) continue;
-			ArrayList<String> z = new ArrayList<String>(Arrays.asList(rowList[i]));
+			ArrayList<String> z = new ArrayList<String>(Arrays.asList(filteredList[i]));
 			secondRowL.add(z);
 		}
+		for(int i = 0; i < secondRowL.size(); i++)
+			secondRowL.get(i).set(0, String.valueOf(i+1));
 		splitedTwo = secondRowL;
 //		System.out.println("\nsecond table:");
 //		for(int i = 0; i < secondRowL.size(); i++) {
@@ -239,15 +244,23 @@ public class Transform implements Cloneable {
 		}
 		filteredList = rowList.clone();
 	}
-	
+	public List<String> toListwTitle(){
+		List<String> list = new ArrayList<String> ();
+		for(int i = 1; i<colName.length;i++)
+			list.add(colName[i]);
+		for(int i = 0; i<filteredList.length;i++)
+			for(int j = 1; j<filteredList[i].length;j++)
+				list.add(filteredList[i][j]);
+		for(int i = 0; i<list.size();i++)
+				System.out.print(list.get(i)+ " ");
+		
+		return list;
+	}
 	private DataTable selectedTable;
 	private ArrayList<ArrayList<String>> splitedOne, splitedTwo;
 	private String sCol, sComparison; 
 	private Double sValue, sPercentage;
 	private String[] colName;
 	private ArrayList<String> numColName;
-	private String[][] rowList, filteredList;
-//	private String[] splitedCol, splitedComparison; 
-//	private Double[] splitedValue, splitedPercentage;
-	
+	private String[][] rowList, filteredList;	
 }

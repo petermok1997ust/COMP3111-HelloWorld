@@ -99,17 +99,7 @@ public class UIController {
 		if(fileObtained != null)
 			dataManagementInstance.saveProject(fileObtained);
 	}
-	
-	//Transform scene
-	public static void onClickApplySplitBtn(){
-		System.out.print("apply split");
-	}	
-	public static void onClickTransformOKBtn(String choice){
-		System.out.print("apply ok ");
-		System.out.println(choice);
 		
-	}	
-	
 	public static void handleNumColumnByCase(Number[] numbers) {
 		
 		String handleType = null;
