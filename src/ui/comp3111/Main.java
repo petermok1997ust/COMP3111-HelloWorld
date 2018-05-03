@@ -85,22 +85,18 @@ public class Main extends Application {
 	// The following UI components are used to keep references after invoking
 	// createScene()
 
-	// Screen 1: paneMainScreen
-	private Button btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart;
-	private Label lbSampleDataTable, lbMainScreenTitle;
+//	// Screen 1: paneMainScreen
+//	private Button btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart;
+//	private Label lbSampleDataTable, lbMainScreenTitle;
 
 	// Screen 2: paneSampleLineChartScreen
 	private Button btLineChartBackMain = null;
-	private LineChart<Number, Number> lineChart = null;
-	private PieChart pieChart = null;
 
 	// Screen 3: Init
 	private Button initImport, initExport, initSave, initLoad, initTransform, initPlot;
 	private Label initDataSet, initChart;
-	private static ObservableList<String> chartItems;
-	private static ObservableList<String> dataItems;
-	private static ListView<String> dataList;
-	private static ListView<String> chartList;
+	private static ObservableList<String> chartItems, dataItems;
+	private static ListView<String> dataList, chartList;
 	public static final String string_zero = "Zero";
 	public static final String string_median = "Median";
 	public static final String string_mean = "Mean";
@@ -154,70 +150,70 @@ public class Main extends Application {
 	 * components will be created with a non-NULL references for the UI components
 	 * that requires interaction (e.g. button click, or others).
 	 */
-	private void initEventHandlers() {
-//		initMainScreenHandlers();
-//		initLineChartScreenHandlers();
-	}
+//	private void initEventHandlers() {
+////		initMainScreenHandlers();
+////		initLineChartScreenHandlers();
+//	}
 
 	/**
 	 * Initialize event handlers of the line chart screen
 	 */
-	private void initLineChartScreenHandlers() {
-
-//		// click handler
-//		btLineChartBackMain.setOnAction(e -> {
-//			putSceneOnStage(SCENE_MAIN_SCREEN);
-//		});
-	}
+//	private void initLineChartScreenHandlers() {
+//
+////		// click handler
+////		btLineChartBackMain.setOnAction(e -> {
+////			putSceneOnStage(SCENE_MAIN_SCREEN);
+////		});
+//	}
 
 	/**
 	 * Populate sample data table values to the chart view
 	 */
-	private void populateSampleDataTableValuesToChart(String seriesName) {
-
-//		// Get 2 columns
-//		DataColumn xCol = sampleDataTable.getCol("X");
-//		DataColumn yCol = sampleDataTable.getCol("Y");
+//	private void populateSampleDataTableValuesToChart(String seriesName) {
 //
-//		// Ensure both columns exist and the type is number
-//		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
-//				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
+////		// Get 2 columns
+////		DataColumn xCol = sampleDataTable.getCol("X");
+////		DataColumn yCol = sampleDataTable.getCol("Y");
+////
+////		// Ensure both columns exist and the type is number
+////		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
+////				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
+////
+////			lineChart.setTitle("Sample Line Chart");
+////			xAxis.setLabel("X");
+////			yAxis.setLabel("Y");
+////
+////			// defining a series
+////			XYChart.Series series = new XYChart.Series();
+////
+////			series.setName(seriesName);
+////
+////			// populating the series with data
+////			// As we have checked the type, it is safe to downcast to Number[]
+////			Number[] xValues = (Number[]) xCol.getData();
+////			Number[] yValues = (Number[]) yCol.getData();
+////
+////			// In DataTable structure, both length must be the same
+////			int len = xValues.length;
+////
+////			for (int i = 0; i < len; i++) {
+////				series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
+////			}
+////
+////			// clear all previous series
+////			lineChart.getData().clear();
+////
+////			// add the new series as the only one series for this line chart
+////			lineChart.getData().add(series);
+////
+////		}
 //
-//			lineChart.setTitle("Sample Line Chart");
-//			xAxis.setLabel("X");
-//			yAxis.setLabel("Y");
-//
-//			// defining a series
-//			XYChart.Series series = new XYChart.Series();
-//
-//			series.setName(seriesName);
-//
-//			// populating the series with data
-//			// As we have checked the type, it is safe to downcast to Number[]
-//			Number[] xValues = (Number[]) xCol.getData();
-//			Number[] yValues = (Number[]) yCol.getData();
-//
-//			// In DataTable structure, both length must be the same
-//			int len = xValues.length;
-//
-//			for (int i = 0; i < len; i++) {
-//				series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-//			}
-//
-//			// clear all previous series
-//			lineChart.getData().clear();
-//
-//			// add the new series as the only one series for this line chart
-//			lineChart.getData().add(series);
-//
-//		}
-
-	}
+//	}
 
 	/**
 	 * Initialize event handlers of the main screen
 	 */
-	private void initMainScreenHandlers() {
+//	private void initMainScreenHandlers() {
 
 //		// click handler
 //		btSampleLineChartData.setOnAction(e -> {
@@ -248,7 +244,7 @@ public class Main extends Application {
 //			putSceneOnStage(SCENE_CHART);
 //		});
 
-	}
+//	}
 
 	/**
 	 * Create the line chart screen and layout its UI components
@@ -259,10 +255,6 @@ public class Main extends Application {
 		btLineChartBackMain = new Button("Back");
 		
 		BorderPane pane = new BorderPane();
-		
-		lineChart = chartInstance.lineChart(); 
-		pieChart = chartInstance.pieChart(); 
-		
 		
 		// Layout the UI components
 		VBox container = new VBox(20);
@@ -288,34 +280,34 @@ public class Main extends Application {
 	 * 
 	 * @return a Pane component to be displayed on a scene
 	 */
-	private Pane paneMainScreen() {
+//	private Pane paneMainScreen() {
+//
+//		lbMainScreenTitle = new Label("COMP3111 Chart");
+//		btSampleLineChartData = new Button("Sample 1");
+//		btSampleLineChartDataV2 = new Button("Sample 2");
+//		btSampleLineChart = new Button("Sample Line Chart");
+//		lbSampleDataTable = new Label("DataTable: empty");
+//
+//		// Layout the UI components
+//
+//		HBox hc = new HBox(20);
+//		hc.setAlignment(Pos.CENTER);
+//		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
+//
+//		VBox container = new VBox(20);
+//		container.getChildren().addAll(lbMainScreenTitle, hc, lbSampleDataTable, new Separator(), btSampleLineChart);
+//		container.setAlignment(Pos.CENTER);
+//
+//		BorderPane pane = new BorderPane();
+//		pane.setCenter(container);
+//
+//		// Apply style to the GUI components
+//		btSampleLineChart.getStyleClass().add("menu-button");
+//		lbMainScreenTitle.getStyleClass().add("menu-title");
+//		pane.getStyleClass().add("screen-background");
 
-		lbMainScreenTitle = new Label("COMP3111 Chart");
-		btSampleLineChartData = new Button("Sample 1");
-		btSampleLineChartDataV2 = new Button("Sample 2");
-		btSampleLineChart = new Button("Sample Line Chart");
-		lbSampleDataTable = new Label("DataTable: empty");
-
-		// Layout the UI components
-
-		HBox hc = new HBox(20);
-		hc.setAlignment(Pos.CENTER);
-		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
-
-		VBox container = new VBox(20);
-		container.getChildren().addAll(lbMainScreenTitle, hc, lbSampleDataTable, new Separator(), btSampleLineChart);
-		container.setAlignment(Pos.CENTER);
-
-		BorderPane pane = new BorderPane();
-		pane.setCenter(container);
-
-		// Apply style to the GUI components
-		btSampleLineChart.getStyleClass().add("menu-button");
-		lbMainScreenTitle.getStyleClass().add("menu-title");
-		pane.getStyleClass().add("screen-background");
-
-		return pane;
-	}
+//		return pane;
+//	}
 	
 	private Pane paneInitScreen() {
 	
@@ -386,7 +378,7 @@ public class Main extends Application {
 		chartList.setItems(chartItems);
 		
 		//add item to chart list 
-		String [] chartTypes = chartInstance.getChartType();
+		String [] chartTypes = Chart.getChartType();
 		for (String chartType : chartTypes) {
 		    // fruit is an element of the `fruits` array.
 			chartItems.add(chartType);

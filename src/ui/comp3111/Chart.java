@@ -1,22 +1,6 @@
 package ui.comp3111;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
-import javafx.scene.chart.PieChart;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-
 import java.lang.Math;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,8 +9,15 @@ import core.comp3111.DataColumn;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 
-import java.util.Random;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.layout.HBox;
 
 public class Chart implements Serializable{
 	
@@ -48,10 +39,6 @@ public class Chart implements Serializable{
 			{ DataType.TYPE_NUMBER ,DataType.TYPE_NUMBER}
 			};
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private static Chart chart_instance = null;
 	private static HBox chart_container =  new HBox(20);
 	
@@ -69,15 +56,15 @@ public class Chart implements Serializable{
 	private static NumberAxis ani_xAxis = new NumberAxis();
 	private static NumberAxis ani_yAxis = new NumberAxis();
 	private final static LineChart<Number, Number> ani_lineChart = new LineChart<Number, Number>(ani_xAxis, ani_yAxis);
-	private static Runnable runnable;
 	private final static XYChart.Series anim_series = new XYChart.Series();
-	private static Thread thread;
-	private XYChart.Series series;
 	private static Timer timer = null;
-	private static long delay = 0;
 	private final static long intevalPeriod = 1* 1000; 
-	private static TimerTask task;
-	    
+
+	/**
+	 * Get instance object of Chart
+	 * 
+	 * @return Instance of Chart Object
+	 */
 	public static Chart getInstance()
 	{
 		if (chart_instance == null)
@@ -85,30 +72,32 @@ public class Chart implements Serializable{
 		return chart_instance;
 	}
 	
-	//constructor
+	/**
+	 * Constructor. Create a Chart Object
+	 */
 	private Chart() {
-		XYChart.Series series = new XYChart.Series();
-		lineChart.getData().add(series);
+
+		lineChart.getData().add(new XYChart.Series());
 		ani_lineChart.getData().add(anim_series);
 		chart_container.setAlignment(Pos.CENTER);
 	}
 	
-	public String [] getChartType() {
+	/**
+	 * Get all chart type string
+	 * 
+	 * @return chartTypes
+	 * 		- a array of all chart labels
+	 */
+	public static String [] getChartType() {
 		return chartTypes;
 	}
 	
-	public LineChart lineChart() {
-		return lineChart;
-	}
-	
-	public PieChart pieChart() {
-		return pieChart;
-	}
-	
-	public LineChart ani_lineChart() {
-		return ani_lineChart;
-	}
-	
+	/**
+	 * Get the Animation lineChart Object
+	 * 
+	 * @return ani_lineChart
+	 * 		- the object of lineChart with animation  
+	 */
 	public static HBox container() {
 		return chart_container;
 	}
@@ -132,14 +121,14 @@ public class Chart implements Serializable{
      }
 	}
 	
-	public int getChartTypeIndex(String type) {
-		int x = 0; 
-		for (String chartType : chartTypes) {
-			if (chartType == type ) return x;
-			x++;
-		}
-		return -1;
-	}
+//	public int getChartTypeIndex(String type) {
+//		int x = 0; 
+//		for (String chartType : chartTypes) {
+//			if (chartType == type ) return x;
+//			x++;
+//		}
+//		return -1;
+//	}
 	
 	public void update_chart (int chart_type, String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		switch(chart_type) {
@@ -151,7 +140,6 @@ public class Chart implements Serializable{
            break;
         case 2 :
         	Chart.ani_lineChart_update( tittle , table,   col1Name , col2Name);
-	  	    
         	break;
         default :
            System.out.println("Invalid chart_type");
@@ -238,7 +226,7 @@ public class Chart implements Serializable{
   				}
   			}
             
-  			task = new TimerTask() {
+  			TimerTask task = new TimerTask() {
   		      @Override
   		      public void run() {
   		    	  
@@ -256,7 +244,7 @@ public class Chart implements Serializable{
   		    
   		    timer = new Timer();
   		    // schedules the task to be run in an interval 
-  		    timer.scheduleAtFixedRate(task, delay, intevalPeriod);
+  		    timer.scheduleAtFixedRate(task, 0, intevalPeriod);
   		}
 	}
 	
