@@ -14,17 +14,23 @@ import core.comp3111.SampleDataGenerator;
 
 
 public class Transform implements Cloneable {
+	
+	/**
+	 * Construct - Create an Transform object by DataTable
+	 * one Transform object is responsible for one DataTable
+	 * @param DataTable for making Transformation
+	 */
 	public Transform(DataTable selectedTable){
 		this.selectedTable = selectedTable;
-		sCol = "NOT YET SELECTED";
-		sComparison = "NOT YET SELECTED"; 
-		Double sValue = Double.MAX_VALUE;
-		sPercentage = Double.MAX_VALUE;
 		numColName = new ArrayList<String>();
 		colName = new String[selectedTable.getNumCol()+1];
 		colToRow();
 	}
 
+	/**
+	 * clone the Transform object
+	 * @return the cloned Transform object
+	 */
 	public Transform clone() throws CloneNotSupportedException {
 		Transform clonedObj = (Transform) super.clone();
 		clonedObj.splitedOne = (ArrayList<ArrayList<String>>) this.splitedOne.clone();
@@ -35,35 +41,12 @@ public class Transform implements Cloneable {
         clonedObj.filteredList = this.filteredList.clone();
         return clonedObj;
     }
-	
-//	public Transform(String[][] rowlist, String[] colName, ArrayList<String> numColName){
-//		this.selectedTable = null;
-//		rowList = rowlist;
-//		sCol = "NOT YET SELECTED";
-//		sComparison = "NOT YET SELECTED"; 
-//		Double sValue = Double.MAX_VALUE;
-//		sPercentage = Double.MAX_VALUE;
-//		this.numColName = numColName;
-////		colName = new String[rowList[0].length+1];
-//		this.colName = colName;
-//	}
-//	public Transform(ArrayList<ArrayList<String>> rowlist, String[] colName, ArrayList<String> numColName){
-//		this.selectedTable = null;
-//        rowList = new String[rowlist.size()][rowlist.get(0).size()];
-//		for(int i = 0; i < rowlist.size(); i++) {
-//			String [] tmplist = new String[rowlist.get(i).size()];
-//			tmplist = rowlist.get(i).toArray(tmplist);
-//			rowList[i] = tmplist;
-//		}
-//		sCol = "NOT YET SELECTED";
-//		sComparison = "NOT YET SELECTED"; 
-//		Double sValue = Double.MAX_VALUE;
-//		sPercentage = Double.MAX_VALUE;
-//		this.numColName = numColName;
-////		colName = new String[rowList[0].length+1];
-//		this.colName = colName;
-//	}
-	
+		
+	/**
+	 * Convert selected DataTable to rowList.
+	 * Used only in constructor.
+	 * @return the rowList, 2D array corresponding to the DataTable
+	 */
 	public String[][] colToRow() {
 	        DataColumn[] columnList = new DataColumn[selectedTable.getNumCol()];
 	        DataColumn dc;
@@ -102,7 +85,14 @@ public class Transform implements Cloneable {
 			return rowList;
 		}
 	
-	//Keep the row if row value in <cSelected> column <comparison> v 
+	/**
+	 * Filter the data.
+	 * Keep the row if row value in <cSelected> column <comparison> v.
+	 * @param cSelected: column which the filter based on
+	 * @param comparison: comparison operator
+	 * @param v: value for comparison
+	 * @return the filtered list
+	 */
 	public String[][] filterData(String cSelected, String comparison, double v){
 		ArrayList<ArrayList<String>> filteredRowList = new ArrayList<ArrayList<String>>();
 		switch(comparison) {
@@ -151,7 +141,12 @@ public class Transform implements Cloneable {
 		return frl;
 	}
 	
-	//if can split, return true
+	/**
+	 * Split the data into 2 sets with percentage:100-percentage.
+	 * If there is case such as only one column, the data cannot be split and return false
+	 * @param percentage for splitting
+	 * @return true if the data set can be split corrsponding to the percentage
+	 */
 	public boolean splitData(double percentage){
 		int p = (int) Math.round(percentage);
 		int newRLength = (int) (filteredList.length * p/100);
@@ -211,30 +206,77 @@ public class Transform implements Cloneable {
 		
 		return true;
 	}
+	
+	/**
+	 * Get the list of all column names which column type is Number
+	 * @return list of all column names which column type is Number
+	 */
 	public ArrayList<String> getNumColName() {
 		return numColName;
 	}
+	
+	/**
+	 * Get the list of all column names
+	 * @return list of all column names
+	 */
 	public String[] getColName() {
 		return colName;
 	}
+	
+	/**
+	 * Get the 2d list of selected data from init screen
+	 * It will not be changed even if filtering has applied
+	 * @return 2d list of original data
+	 */	
 	public String[][] getRowList(){
 		return rowList;
 	}
+	
+	/**
+	 * Get the 2d list of data after applying filter
+	 * It will be equal to rowList if filtering has not yet applied
+	 * @return 2d list of filtered data
+	 */
 	public String[][] getFilteredList(){
 		return filteredList;
 	}
+	
+	/**
+	 * Get the number of row of filteredList
+	 * @return number of row of filteredList
+	 */
 	public int getNumRowOfFilteredList() {
 		return filteredList.length;
 	}
+	
+	/**
+	 * Get the number of column of filteredList
+	 * @return number of column of filteredList
+	 */
 	public int getNumColOfFilteredList() {
 		return filteredList[0].length;
 	}
+	
+	/**
+	 * Get the 2D array of 1st split table
+	 * @return 2D array of first split table
+	 */
 	public ArrayList<ArrayList<String>> getFirstSplitedT(){
 		return splitedOne;
 	}
+	
+	/**
+	 * Get the 2D array of 2nd split table
+	 * @return 2D array of second split table
+	 */
 	public ArrayList<ArrayList<String>> getSecondSplitedT(){
 		return splitedTwo;
 	}
+	
+	/**
+	 * setting rowList to para rowlist
+	 * @param 2D ArrayList of data to replace original rowList
+	 */
 	public void setRowList(ArrayList<ArrayList<String>> rowlist) {
 		rowList = new String[rowlist.size()][rowlist.get(0).size()];
 		for(int i = 0; i < rowlist.size(); i++) {
@@ -244,6 +286,11 @@ public class Transform implements Cloneable {
 		}
 		filteredList = rowList.clone();
 	}
+	
+	/**
+	 * convert the 2D filtered list without title to 1D list with title
+	 * @return List of table with title
+	 */
 	public List<String> toListwTitle(){
 		List<String> list = new ArrayList<String> ();
 		for(int i = 1; i<colName.length;i++)
@@ -256,10 +303,9 @@ public class Transform implements Cloneable {
 		
 		return list;
 	}
+	
 	private DataTable selectedTable;
 	private ArrayList<ArrayList<String>> splitedOne, splitedTwo;
-	private String sCol, sComparison; 
-	private Double sValue, sPercentage;
 	private String[] colName;
 	private ArrayList<String> numColName;
 	private String[][] rowList, filteredList;	
