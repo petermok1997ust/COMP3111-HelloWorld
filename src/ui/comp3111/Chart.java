@@ -1,22 +1,6 @@
 package ui.comp3111;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
-import javafx.scene.chart.PieChart;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-
 import java.lang.Math;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,95 +9,124 @@ import core.comp3111.DataColumn;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 
-import java.util.Random;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.layout.HBox;
 
+/**
+ * 
+ * Chart is to help displaying difference type of chart to UI
+ * 
+ * @author lotusfa
+ *
+ */
 public class Chart implements Serializable{
 	
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * This array store all chart type label
+	 */
 	public static String[] chartTypes = {
 			"Line Chart",
 			"Pie Chart",
 			"Animation Line Chart"
 			};
 	
+	/**
+	 * This array store the input label for each type of chart
+	 */
 	public static String[][]chart_labels = {
 			{"X-Axis","Y-Axis"},
 			{"Label","Value"},
 			{"X-Axis","Y-Axis"}
 			};
 	
+	/**
+	 * This array store the input data type for each type of chart
+	 */
 	public static String[][]chart_col_types = {
 			{DataType.TYPE_NUMBER , DataType.TYPE_NUMBER },
 			{ DataType.TYPE_STRING ,DataType.TYPE_NUMBER},
 			{ DataType.TYPE_NUMBER ,DataType.TYPE_NUMBER}
 			};
-	
+
 	/**
-	 * 
+	 * This is UI component which have a children of chart object. 
 	 */
-	private static final long serialVersionUID = 1L;
-	private static Chart chart_instance = null;
 	private static HBox chart_container =  new HBox(20);
 	
-	//Line Chart
-	private NumberAxis xAxis = new NumberAxis();
-	private NumberAxis yAxis = new NumberAxis();
-	private LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-
+	/**
+	 * To store which chart is displaying
+	 */
+	private static int show_chart_index;
 	
-	//Pie Chart
-	private PieChart pieChart = new PieChart();
+	/**
+	 * Variable for plotting line chart
+	 */
+	private static NumberAxis xAxis = new NumberAxis();
+	private static NumberAxis yAxis = new NumberAxis();
+	private static LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+
+	/**
+	 * Variable for plotting pie chart
+	 */
+	private static PieChart pieChart = new PieChart();
 	ObservableList<PieChart.Data> pieChartData;
 	
-	//Animated Line Chart
+	/**
+	 * Variable for plotting Animated Line Chart
+	 */
 	private static NumberAxis ani_xAxis = new NumberAxis();
 	private static NumberAxis ani_yAxis = new NumberAxis();
 	private final static LineChart<Number, Number> ani_lineChart = new LineChart<Number, Number>(ani_xAxis, ani_yAxis);
-	private static Runnable runnable;
 	private final static XYChart.Series anim_series = new XYChart.Series();
-	private static Thread thread;
-	private XYChart.Series series;
 	private static Timer timer = null;
-	private static long delay = 0;
 	private final static long intevalPeriod = 1* 1000; 
-	private static TimerTask task;
-	    
-	public static Chart getInstance()
-	{
-		if (chart_instance == null)
-			chart_instance = new Chart();
-		return chart_instance;
-	}
 	
-	//constructor
+	/**
+	 * Constructor. Create a Chart Object
+	 */
 	private Chart() {
-		XYChart.Series series = new XYChart.Series();
-		lineChart.getData().add(series);
+		lineChart.getData().add(new XYChart.Series());
 		ani_lineChart.getData().add(anim_series);
 		chart_container.setAlignment(Pos.CENTER);
 	}
 	
-	public String [] getChartType() {
+	/**
+	 * Get all chart type string
+	 * 
+	 * @return chartTypes
+	 * 		- a array of all chart labels
+	 */
+	public static String [] getChartType() {
 		return chartTypes;
 	}
 	
-	public LineChart lineChart() {
-		return lineChart;
-	}
-	
-	public PieChart pieChart() {
-		return pieChart;
-	}
-	
-	public LineChart ani_lineChart() {
-		return ani_lineChart;
-	}
-	
+	/**
+	 * Get the UI container of chart
+	 * @return chart_container
+	 * 		- UI component which have a children of a chart. 
+	 */
 	public static HBox container() {
 		return chart_container;
 	}
 	
-	public void setVisble(int chart_type, boolean isVisible ) {
+	/**
+	 * To display one chart to UI
+	 * @param chart_type
+	 * 		- index of chart type
+	 */
+	public static void show_chart(int chart_type) {
 		switch(chart_type) {
         case 0 :
         	chart_container.getChildren().clear();
@@ -132,16 +145,21 @@ public class Chart implements Serializable{
      }
 	}
 	
-	public int getChartTypeIndex(String type) {
-		int x = 0; 
-		for (String chartType : chartTypes) {
-			if (chartType == type ) return x;
-			x++;
-		}
-		return -1;
-	}
-	
-	public void update_chart (int chart_type, String tittle ,DataTable table,  String col1Name ,String col2Name) {
+	/**
+	 * Input data to the chart and update it
+	 * @param chart_type
+	 * 		- index of chart type
+	 * @param tittle
+	 * 		- tittle of chart
+	 * @param table
+	 * 		- DataTable of data 
+	 * @param col1Name
+	 * 		- first column name of data in table
+	 * @param col2Name
+	 * 		- second column name of data in table
+	 */
+	public static void update_chart (int chart_type, String tittle ,DataTable table,  String col1Name ,String col2Name) {
+		show_chart_index = chart_type;
 		switch(chart_type) {
         case 0 :
         	lineChart_update( tittle , table,   col1Name , col2Name);
@@ -151,15 +169,25 @@ public class Chart implements Serializable{
            break;
         case 2 :
         	Chart.ani_lineChart_update( tittle , table,   col1Name , col2Name);
-	  	    
         	break;
         default :
            System.out.println("Invalid chart_type");
 		}
-		setVisble(chart_type, true );
+		show_chart(chart_type);
 	}
-	
-	public void lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
+
+	/**
+	 * Input data to the line chart and update it
+	 * @param tittle
+	 * 		- tittle of chart
+	 * @param table
+	 * 		- DataTable of data 
+	 * @param col1Name
+	 * 		- first column name of data in table
+	 * @param col2Name
+	 * 		- second column name of data in table
+	 */
+	private static void lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		
 		System.out.println("line chart update" + tittle + table + col1Name + col2Name);
 		xAxis.setLabel(col1Name);
@@ -202,12 +230,28 @@ public class Chart implements Serializable{
 		}
 	}
 	
-	public void stop_animate() {
-		timer.cancel();
-		timer.purge();
+	/**
+	 * 	the function to stop the animation for animation line chart
+	 */
+	public static void stop_animate() {
+		if(show_chart_index == 2) {
+			timer.cancel();
+			timer.purge();
+		}
 	}
 	
-	public static void ani_lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
+	/**
+	 * Input data to the animation line chart and update it
+	 * @param tittle
+	 * 		- tittle of chart
+	 * @param table
+	 * 		- DataTable of data 
+	 * @param col1Name
+	 * 		- first column name of data in table
+	 * @param col2Name
+	 * 		- second column name of data in table
+	 */
+	private static void ani_lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		
 		ani_xAxis.setLabel(col1Name);
 		ani_yAxis.setLabel(col2Name);
@@ -220,7 +264,7 @@ public class Chart implements Serializable{
     	// Ensure both columns exist and the type is number
   		if (xCol != null && yCol != null && xCol.getTypeName().equals(DataType.TYPE_NUMBER)
   				&& yCol.getTypeName().equals(DataType.TYPE_NUMBER)) {
-  				
+
   			anim_series.setName(tittle);
 
   			// populating the series with data
@@ -230,15 +274,8 @@ public class Chart implements Serializable{
 
   			// In DataTable structure, both length must be the same
   			final int len = xValues.length;
-
-  			for (int i = 0; i < len; i++) {
-  				if (xValues[i] != null && yValues[i] != null) {
-  					anim_series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-  					//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
-  				}
-  			}
             
-  			task = new TimerTask() {
+  			TimerTask task = new TimerTask() {
   		      @Override
   		      public void run() {
   		    	  
@@ -247,7 +284,7 @@ public class Chart implements Serializable{
   					for (int i = 0; i < len; i++) {
   						if (xValues[i] != null && yValues[i] != null) {
   							anim_series.getData().add(new XYChart.Data(xValues[i], yValues[i]));
-  							//System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
+  							System.out.println("X: " + xValues[i]+ "Y: " + yValues[i]  );
   						}
   					}
   		    	});
@@ -256,11 +293,26 @@ public class Chart implements Serializable{
   		    
   		    timer = new Timer();
   		    // schedules the task to be run in an interval 
-  		    timer.scheduleAtFixedRate(task, delay, intevalPeriod);
+  		    timer.scheduleAtFixedRate(task, 0, intevalPeriod);
+
+  		    // add the new series as the only one series for this line chart
+  		    if(ani_lineChart.getData().isEmpty()) 
+  		    	ani_lineChart.getData().add(anim_series);
   		}
 	}
 	
-	public void pieChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
+	/**
+	 * Input data to the pie chart and update it
+	 * @param tittle
+	 * 		- tittle of chart
+	 * @param table
+	 * 		- DataTable of data 
+	 * @param col1Name
+	 * 		- first column name of data in table
+	 * @param col2Name
+	 * 		- second column name of data in table
+	 */
+	private static void pieChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
 		
 		pieChart.setTitle(tittle);
 		
@@ -293,6 +345,5 @@ public class Chart implements Serializable{
 			// add the new series as the only one series for this line chart
 			pieChart.setData(pieChartData);
 		}
-		
 	}
 }
