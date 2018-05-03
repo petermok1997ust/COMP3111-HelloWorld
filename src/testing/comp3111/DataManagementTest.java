@@ -42,11 +42,10 @@ class DataManagementTest {
 	
 	@Test
 	void testDataManagementTestConstructor() {
-//		assert (dc.getChartArray() != null);
 		assert (dc.getTableName() != null);
+		assert (new DataManagement().getTableName() == null);
 		assert (dc.getDataTables() != null);
 		assert (dc.getNumTable() == dc.getDataTables().size());
-//		assert (dc.getNumChart() == dc.getChartArray().size());
 	}
 	
 	@Test
@@ -66,7 +65,7 @@ class DataManagementTest {
 	@Test
 	void testDataManagementImportEmptyCsv() throws IOException, DataTableException{
 		//null file
-		assert(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath()))==null);
+		assert(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath())) == null);
 	}
 	@Test
 	void testDataManagementImportNullFileCsv() throws IOException, DataTableException{
@@ -126,21 +125,21 @@ class DataManagementTest {
 
 	@Test
 	void testDataManagementImportNullNumCsv() throws IOException, DataTableException{
-		System.out.println("null number");
+		System.out.println("missing number");
 				String text = "dnqwij, ewqewq, 123, dqw \n dnqwij,dsa,59, dqw \n dnqwij,das,, dqw \n dnqwij, ewqewq,, dqw";
 				FileWriter fileWriter = new FileWriter(file);
 				fileWriter.write(text);
 				fileWriter.close();
-				assert(dc.importCSV(file)!=null);
+				assert(dc.importCSV(file) != null);
 	}
 	
 	@Test
-	void testDataManagementTestExportEmptyCSV() throws DataTableException {
+	void testDataManagementTestExportEmptyCSV() throws DataTableException, IOException {
 		//empty
 		assert(dc.exportTableToCSV(d, file) == true);
 	}
 	@Test
-	void testDataManagementTestExportOnlyHeadersCSV() throws DataTableException {
+	void testDataManagementTestExportOnlyHeadersCSV() throws DataTableException, IOException {
 		//empty
 		DataTable d = new DataTable();
 		d.addCol("header", new DataColumn(DataType.TYPE_OBJECT, null));
@@ -148,7 +147,7 @@ class DataManagementTest {
 	}
 
 	@Test
-	void testDataManagementTestExportOneRowCSV() throws DataTableException {
+	void testDataManagementTestExportOneRowCSV() throws DataTableException, IOException {
 		//one column
 		Number[] xvalues = new Integer[] { 1 };
 		d.addCol("col1", new DataColumn(DataType.TYPE_NUMBER, xvalues));
@@ -156,7 +155,7 @@ class DataManagementTest {
 		assert(dc.exportTableToCSV(d, file) == true);
 	}
 	@Test
-	void testDataManagementTestExportRowsCSV() throws DataTableException {
+	void testDataManagementTestExportRowsCSV() throws DataTableException, IOException {
 		//one column
 		Number[] xvalues = new Integer[] { 1,2,3,4, 5 };
 		String[] labels = new String[] { "P1", "P2", "P3", "P4", "P5" };
@@ -179,19 +178,19 @@ class DataManagementTest {
 	
 	
 	@Test
-	void testDataManagementTestSaveProject() {
+	void testDataManagementTestSaveProject() throws IOException {
 		assert(dc.saveProject(file)!=null);
 	}
 	
 	@Test
-	void testDataManagementTestLoadProject() {
+	void testDataManagementTestLoadProject() throws ClassNotFoundException, IOException {
 		assert(dc.loadProject(dc.saveProject(file)) != null);
 	}
 	
 	@Test
-	void testDataManagementTestLoadNullProject() {
+	void testDataManagementTestLoadNullProject() throws ClassNotFoundException, IOException {
 		//exception
-		assertEquals(null, dc.loadProject(null));
+		assert(dc.loadProject(null) == null);
 
 	}
 //	@Test
@@ -204,7 +203,7 @@ class DataManagementTest {
 	@Test
 	void testDataManagementTestSaveNullProject() {
 		//exception
-		assertEquals(dc.saveProject(null), null);
+		assertThrows(IOException.class, ()->dc.saveProject(null));
 
 	}
 	

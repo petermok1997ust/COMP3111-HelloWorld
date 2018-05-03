@@ -15,7 +15,11 @@ import java.util.Scanner;
 import java.util.Set;
 
 import ui.comp3111.UIController;
-
+/**
+ * An implementation of Data Import, Export , Save and Load
+ * @author mok00
+ *
+ */
 public class DataManagement implements Serializable{
 	/**
 	 *
@@ -39,9 +43,7 @@ public class DataManagement implements Serializable{
 		num_table = 0;
 		num_chart = 0;
 		table_array = null;
-//		chart_array = null;
 		table_array = new ArrayList<DataTable>();
-//		chart_array = new ArrayList<Chart>();
 		table_name = new ArrayList<String>();
 	}
 
@@ -59,8 +61,10 @@ public class DataManagement implements Serializable{
 	/**
 	 * Import the CSV from file
 	 * @param file
+	 *	- CSV file to import
 	 * @return Name of the dataset
 	 * @throws DataTableException
+	 * - Fail to scan csv file
 	 */
 	public String importCSV(File file) throws DataTableException {
 		if(file == null)
@@ -100,28 +104,31 @@ public class DataManagement implements Serializable{
 			table_name.add(name);
 			System.out.println("Finished create Table");
 			return name;
-		}
-		return null;
+		}else
+			return null;
 	}
 
 	/**
 	 * Export the table to the csv to the directory of file
 	 * @param table
+	 * - DataTable to export
 	 * @param file
+	 * - File DIrectory to export
 	 * @return
+	 * - Fail to write csv file
+	 * @throws IOException 
 	 */
-	public boolean exportTableToCSV(DataTable table, File file) {
+	public boolean exportTableToCSV(DataTable table, File file) throws IOException {
 		//write to csv
-	
+		if(file == null)
+			return false;
 		int num_row = table.getNumRow();
 		int num_col = table.getNumCol();
 		Set<String> keys = table.getKeys();
 		String[] headers = keys.toArray(new String[keys.size()]);
 //		System.out.println("Export CSV "+file.getAbsolutePath()+" with rows = "+num_row+"columns = "+num_col);
 		FileWriter fileWriter = null;
-		try {
-			if(file == null)
-				throw new IOException();
+		System.out.println("num_row"+num_row);
 			fileWriter = new FileWriter(file);
 			//add headers
 			for(int i = 0; i< num_col; i++) {
@@ -131,14 +138,16 @@ public class DataManagement implements Serializable{
 			}
 			fileWriter.append(NEW_LINE);
 			//add content(-1 because without header)
-			for(int i = 0; i<num_row -1;i++) {
+			for(int i = 0; i<num_row;i++) {
 				for(int j=0;j<num_col;j++) {
 					try {
 						String row_ele = (String)(table.getCol(headers[j]).getData())[i];
 						fileWriter.append(row_ele);
+						System.out.println(row_ele);
 					}catch(ClassCastException e) {
 						Number row_ele = (Number)(table.getCol(headers[j]).getData())[i];
 						fileWriter.append(row_ele.toString());
+						System.out.println(row_ele);
 					}
 					if(j != num_col-1)
 						fileWriter.append(COMMA);
@@ -149,23 +158,19 @@ public class DataManagement implements Serializable{
 			fileWriter.flush();
 			fileWriter.close();
 			return true;
-		} catch(IOException e) {
-			System.out.println("Error in exporting");
-			e.printStackTrace();
-			return false;
-		} 
+
 		
 	}
 
 	/**
 	 * Save the project into .3111 extension
 	 * @param file
+	 * - Save this project to .3111 file
 	 * @return file to be saved
 	 */
-	public File saveProject(File file) {
-		try {
-			if(file == null)
-				throw new IOException();
+	public File saveProject(File file)throws IOException {
+		if(file == null)
+			throw new IOException();
 			DataManagement projectObj = null;
 			System.out.println("Copying DataObject");
 			projectObj = DataManagement.getInstance();
@@ -176,23 +181,18 @@ public class DataManagement implements Serializable{
 			oos.close();
 			System.out.println("Successfully saved in "+ file.getAbsolutePath());
 			return file;
-		} catch (IOException e) {
-			System.out.println("Error while Saving");
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	/**
 	 * Load the project from the file
 	 * @param file
+	 * - Load .3111 file to project
 	 * @return DataManagement Object loaded from the project file
 	 */
-	public DataManagement loadProject(File file) {
-		try {
+	public DataManagement loadProject(File file)throws IOException,  ClassNotFoundException{
+			if(file ==null)
+				return null;
 			DataManagement load_object;
-			if(file == null)
-				throw new IOException();
 			System.out.println("Loading DataObject");
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
@@ -206,20 +206,20 @@ public class DataManagement implements Serializable{
 			ois.close();
 			System.out.println("Object is already loaded");
 			return load_object;
-		} catch (IOException | ClassNotFoundException e) {
-			System.out.println("Error while loading Project");
-			e.printStackTrace();
-		}
-		return null;
+
 	}
 	
 	/**
 	 * Create Data Table from the data list
 	 * @param list
+	 * - List of data from the CSV
 	 * @param num_row
+	 * - number of row of csv(not including header)
 	 * @param num_col
+	 * - number of column of csv
 	 * @return The datatable created from the data list
 	 * @throws DataTableException
+	 * - Fail to create columns of table
 	 */
 	public DataTable createDataTable(List<String> list, int num_row, int num_col) throws DataTableException {
 			//make column
@@ -264,11 +264,10 @@ public class DataManagement implements Serializable{
 				}
 				System.out.println("num_problem: "+num_problem);
 				if(num_problem>0) {
-						UIController.handleMissingData(columns, problematic_col);
+						columns = UIController.handleMissingData(columns, problematic_col);
 						System.out.println("Finished Handling");	
 				}
 				//create column
-				
 				for(int i=0; i <columns.size(); i++) {
 					DataColumn col = null;
 					if(isNum[i])
@@ -276,7 +275,6 @@ public class DataManagement implements Serializable{
 					else
 						col = new DataColumn(DataType.TYPE_STRING, (String[])columns.get(i));
 					t.addCol(list.get(i), col);
-					
 				}	
 			}else {
 				for(int i=0; i <num_col; i++) {
@@ -294,7 +292,9 @@ public class DataManagement implements Serializable{
 	/**
 	 * To get the columns that are number
 	 * @param list
+	 * - list of data from the csv
 	 * @param numCol
+	 * - number of columns of csv
 	 * @return array of boolean(number is true)
 	 */
 	public boolean[] isColumnNum(List<String> list, int numCol) {
@@ -306,6 +306,7 @@ public class DataManagement implements Serializable{
 					Float.parseFloat(list.get(j));
 				}catch (NumberFormatException e){
 					isNum[j%numCol] = false;
+					System.out.println(j+": "+list.get(j)+" is str");
 				}
 			}
 		}
@@ -332,19 +333,12 @@ public class DataManagement implements Serializable{
 	/**
 	 * Get the data table from the index n
 	 * @param n
+	 * - The index position from the data list
 	 * @return DataTable from the index n
 	 */
 	public DataTable getDataTableByIndex(int n){
 		return table_array.get(n);
 	}
-	
-//	/**
-//	 * 	Get the array of chart
-//	 * @return array of chart
-//	 */
-//	public List<Chart> getChartArray() {
-//		return chart_array;
-//	}
 	
 	/**
 	 * 	Get the number of tables
@@ -355,12 +349,12 @@ public class DataManagement implements Serializable{
 	}
 
 	
-	/**
-	 * Get number of charts
-	 * @return number of charts
-	 */
-	public int getNumChart() {
-		return num_chart;
-	}
+//	/**
+//	 * Get number of charts
+//	 * @return number of charts
+//	 */
+//	public int getNumChart() {
+//		return num_chart;
+//	}
 
 }

@@ -27,7 +27,7 @@ class DataTransformTest {
 	Transform t;
 	@BeforeEach
 	void init() {
-		t = new Transform();
+//		t = new Transform();
 	}
 	
 	@Test
