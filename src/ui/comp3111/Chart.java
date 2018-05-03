@@ -21,6 +21,11 @@ import javafx.scene.layout.HBox;
 
 public class Chart implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static String[] chartTypes = {
 			"Line Chart",
 			"Pie Chart",
@@ -41,6 +46,7 @@ public class Chart implements Serializable{
 	
 	private static Chart chart_instance = null;
 	private static HBox chart_container =  new HBox(20);
+	private static int show_chart_index;
 	
 	//Line Chart
 	private NumberAxis xAxis = new NumberAxis();
@@ -76,7 +82,6 @@ public class Chart implements Serializable{
 	 * Constructor. Create a Chart Object
 	 */
 	private Chart() {
-
 		lineChart.getData().add(new XYChart.Series());
 		ani_lineChart.getData().add(anim_series);
 		chart_container.setAlignment(Pos.CENTER);
@@ -121,16 +126,8 @@ public class Chart implements Serializable{
      }
 	}
 	
-//	public int getChartTypeIndex(String type) {
-//		int x = 0; 
-//		for (String chartType : chartTypes) {
-//			if (chartType == type ) return x;
-//			x++;
-//		}
-//		return -1;
-//	}
-	
 	public void update_chart (int chart_type, String tittle ,DataTable table,  String col1Name ,String col2Name) {
+		show_chart_index = chart_type;
 		switch(chart_type) {
         case 0 :
         	lineChart_update( tittle , table,   col1Name , col2Name);
@@ -191,8 +188,10 @@ public class Chart implements Serializable{
 	}
 	
 	public void stop_animate() {
-		timer.cancel();
-		timer.purge();
+		if(show_chart_index == 2) {
+			timer.cancel();
+			timer.purge();
+		}
 	}
 	
 	public static void ani_lineChart_update (String tittle ,DataTable table,  String col1Name ,String col2Name) {
