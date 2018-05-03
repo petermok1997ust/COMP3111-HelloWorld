@@ -10,13 +10,16 @@ import javafx.event.EventHandler;
 import core.comp3111.DataColumn;
 import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
+import core.comp3111.DataTableException;
 import core.comp3111.Transform;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -99,7 +102,7 @@ public class Main extends Application {
 	private ObservableList<TableView> dataSetItems;
 	private TableView dataTableView;
 	private Separator transformSeparator, percentageSeparator;
-	private Label split, filter, filterError, percentageLTxt, percentageRTxt, splitError;
+	private Label split, filter, filterError, percentageLTxt, percentageRTxt, splitError, OKError;
 	private ComboBox<String> columnSelect, comparison;
 	private TextField compareValue;
 	private Slider percentage;
@@ -368,6 +371,10 @@ public class Main extends Application {
 		        dataTableView.getColumns().add(tc);
 			}
 			dataTableView.setItems(data);
+			dataTableView.setFixedCellSize(25);
+			dataTableView.prefHeightProperty().bind(dataTableView.fixedCellSizeProperty().multiply(Bindings.size(dataTableView.getItems()).add(1.01)));
+			dataTableView.minHeightProperty().bind(dataTableView.prefHeightProperty());
+			dataTableView.maxHeightProperty().bind(dataTableView.prefHeightProperty());
 
 	        //list
 			dataSetItems.add(dataTableView);
@@ -394,13 +401,14 @@ public class Main extends Application {
 		applyFilter = new Button("Apply");
 		applySplit	= new Button("Apply");
 		transformOK = new Button("OK");
+		OKError = new Label();
 		replace = new ToggleButton("Replace current dataset");
 		create = new ToggleButton("Create new dataset");
 		rcGroup = new ToggleGroup();
 		backFromTransform = new Button("Back");
 		
 		//list view
-		splitedDataset.setPrefHeight(500);
+//		splitedDataset.setPrefSize(500, 500);
 
 		//Button
 		applyFilter.setOnAction(new EventHandler<ActionEvent>() {
@@ -442,52 +450,145 @@ public class Main extends Application {
 		applySplit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	if(!t.get(0).splitData(percentage.getValue())) {
-            		splitError.setText("Percentage not valid.");
-            		splitError.setVisible(true);
-            	}
-            	else {
-	            	ArrayList<ArrayList<String>> one = t.get(0).getFirstSplitedT();
-	            	ArrayList<ArrayList<String>> two = t.get(0).getSecondSplitedT();
-	            	Transform onet = null;
-					try {
-						onet = t.get(0).clone();
-					} catch (CloneNotSupportedException e) {
-						System.out.println("clone failed");
-						e.printStackTrace();					
-					}
-	            	onet.setRowList(one);
-	            	t.add(onet);
-	            	Transform twot = null;
-					try {
-						twot = t.get(0).clone();
-					} catch (CloneNotSupportedException e) {
-						System.out.println("clone 2 failed");
-						e.printStackTrace();
-					}
-	            	twot.setRowList(two);
-	            	t.add(twot);
-	            	t.remove(0);
-	            	settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
-	            	splitError.setVisible(false);
-	            }
+            	splitError.setVisible(false);
+            	if(splitedDataset.getItems().size() == 1) {
+                	if(!t.get(0).splitData(percentage.getValue())) {
+                		splitError.setText("Percentage not valid.");
+                		splitError.setVisible(true);
+                	}
+                	else {
+    	            	ArrayList<ArrayList<String>> one = t.get(0).getFirstSplitedT();
+    	            	ArrayList<ArrayList<String>> two = t.get(0).getSecondSplitedT();
+    	            	Transform onet = null;
+    					try {
+    						onet = t.get(0).clone();
+    					} catch (CloneNotSupportedException e) {
+    						System.out.println("clone failed");
+    						e.printStackTrace();					
+    					}
+    	            	onet.setRowList(one);
+    	            	t.add(onet);
+    	            	Transform twot = null;
+    					try {
+    						twot = t.get(0).clone();
+    					} catch (CloneNotSupportedException e) {
+    						System.out.println("clone 2 failed");
+    						e.printStackTrace();
+    					}
+    	            	twot.setRowList(two);
+    	            	t.add(twot);
+    	            	t.remove(0);
+    	            	settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
+    	            }
+    			}
+    			else if(splitedDataset.getSelectionModel().isEmpty()){
+    				splitError.setText("Please select at list one table.");
+    				splitError.setVisible(true);
+    			}
+    			else {
+    				boolean allPValid = true;
+    				for(int x : splitedDataset.getSelectionModel().getSelectedIndices())
+                    	if(!t.get(x).splitData(percentage.getValue())) {
+                    		splitError.setText("Percentage not valid.");
+                    		splitError.setVisible(true);
+                    		allPValid = false;
+                    		break;
+                    	}
+    				if(allPValid) {
+    					int count = 0;
+        				for(int x : splitedDataset.getSelectionModel().getSelectedIndices()) {
+        					ArrayList<ArrayList<String>> one = t.get(x+count).getFirstSplitedT();
+        	            	ArrayList<ArrayList<String>> two = t.get(x+count).getSecondSplitedT();
+        	            	Transform onet = null;
+        					try {
+        						onet = t.get(x+count).clone();
+        					} catch (CloneNotSupportedException e) {
+        						System.out.println("clone failed");
+        						e.printStackTrace();					
+        					}
+        	            	onet.setRowList(one);
+        	            	t.add(x+1+count, onet);
+        	            	Transform twot = null;
+        					try {
+        						twot = t.get(x+count).clone();
+        					} catch (CloneNotSupportedException e) {
+        						System.out.println("clone 2 failed");
+        						e.printStackTrace();
+        					}
+        	            	twot.setRowList(two);
+        	            	t.add(x+2+count, twot);
+        	            	t.remove(x+count);
+        	            	count++;
+        				}
+    					settingDatasetView(t, t.get(0).getColName(), t.get(0).getNumColName());
+    				}
+    			}
+            	
             }
         });
  
 		transformOK.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	rcGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
-            	    public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
-						if (rcGroup.getSelectedToggle() == null) {
-							rcChoice = null;
-						}
-						if (rcGroup.getSelectedToggle() != null) {
-							rcChoice = rcGroup.getSelectedToggle().getUserData().toString();
-						}
-            	    }
-            	});
-            	UIController.onClickTransformOKBtn(rcChoice);
+            	OKError.setVisible(false);
+            	if (rcGroup.getSelectedToggle() == null) {
+					rcChoice = null;
+					OKError.setText("Please select one choice. Replace/Create? ");
+    				OKError.setVisible(true);
+				} else {
+					rcChoice = rcGroup.getSelectedToggle().getUserData().toString();
+        			if(splitedDataset.getItems().size() == 1) {
+        				if(t.get(0).getFilteredList().length == 0) {
+        					OKError.setText("Cannot create an empty dataset.");
+            				OKError.setVisible(true);
+        				}else {
+	        				try {
+	        					if(rcChoice == "replace") {
+	        						dataManagementInstance.removeTable(selected_dataset_index);
+									removeDataItem(selected_dataset_index);
+									renameDataItem();
+	        					}
+								dataManagementInstance.createDataTable(t.get(0).toListwTitle(), t.get(0).getNumRowOfFilteredList(), t.get(0).getNumColOfFilteredList()-1);
+								String name = dataManagementInstance.addTable();
+								setDataItem(name);	        						
+	        				} catch (DataTableException e) {
+								e.printStackTrace();
+							}
+	                    	putSceneOnStage(SCENE_INIT_SCREEN);
+        				}
+        			}
+        			else if(splitedDataset.getSelectionModel().isEmpty()){
+        				OKError.setText("Please select at list one table.");
+        				OKError.setVisible(true);
+        			}
+        			else {
+        				boolean allDValid = true;
+        				for(int x : splitedDataset.getSelectionModel().getSelectedIndices()) {	
+	        				if(t.get(x).getFilteredList().length == 0) {
+	        					OKError.setText("Cannot create an empty dataset.");
+	            				OKError.setVisible(true);
+	            				allDValid = false;
+	            				break;
+	        				}
+        				}
+        				if(allDValid) {
+        					if(rcChoice == "replace") {
+        						dataManagementInstance.removeTable(selected_dataset_index);
+								removeDataItem(selected_dataset_index);
+								renameDataItem();
+        					}
+        					for(int x : splitedDataset.getSelectionModel().getSelectedIndices())
+		        				try {
+	        						dataManagementInstance.createDataTable(t.get(x).toListwTitle(), t.get(x).getNumRowOfFilteredList(), t.get(x).getNumColOfFilteredList()-1);
+									String name = dataManagementInstance.addTable();
+									setDataItem(name);
+		        				} catch (DataTableException e) {
+									e.printStackTrace();
+								}
+	                    	putSceneOnStage(SCENE_INIT_SCREEN);
+        				}
+        			}
+				}
             }
         });
 
@@ -505,6 +606,20 @@ public class Main extends Application {
 		replace.setToggleGroup(rcGroup);
 		create.setToggleGroup(rcGroup);
 		create.setSelected(true);	//default Create new datasets
+		OKError.setVisible(false);
+    	rcGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+    	    public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
+            	if (rcGroup.getSelectedToggle() == null) {
+					rcChoice = null;
+					OKError.setText("Please select one choice. Replace/Create? ");
+    				OKError.setVisible(true);
+				} else {
+					rcChoice = rcGroup.getSelectedToggle().getUserData().toString();
+					OKError.setVisible(false);
+				}
+    	    }
+    	});
+
 		//comboBox		
 		comparison.getItems().addAll("<","<=","==","!=",">=",">");
 		
@@ -559,7 +674,7 @@ public class Main extends Application {
 		hb2.getChildren().addAll(split, percentage, percentageLTxt, percentageSeparator, percentageRTxt, applySplit);
 //		hb2.setAlignment(Pos.CENTER);
 		HBox hb3 = new HBox(20);
-		hb3.getChildren().addAll(replace, create, transformOK);
+		hb3.getChildren().addAll(replace, create, transformOK, OKError);
 //		hb3.setAlignment(Pos.CENTER);
 		HBox hb4 = new HBox(20);
 		hb4.getChildren().addAll(backFromTransform);
@@ -571,10 +686,10 @@ public class Main extends Application {
 		VBox vb1 = new VBox(10);
 		vb1.getChildren().addAll(hb2,splitError);
 		
-		VBox vb2 = new VBox(30);
+		VBox vb2 = new VBox(10);
 		vb2.getChildren().addAll(vb ,vb1, hb3, hb4);
 		
-		VBox positionBox = new VBox(30);
+		VBox positionBox = new VBox(10);
 		positionBox.getChildren().addAll(splitedDataset, vb2);
 		
 		BorderPane pane = new BorderPane();
@@ -630,8 +745,18 @@ public class Main extends Application {
 	public static void setDataItem(String name) {
 			dataItems.add(name);
 	}
+
+	public static void removeDataItem(int x) {
+		dataItems.remove(x);
+	}
 	
-	public static void setDataObj(DataManagement dataObj) {
+	public static void renameDataItem() {
+		for(int i =0 ; i< dataItems.size();i++) {
+			dataItems.set(i, "dataset"+(i+1));
+		}
+	}
+
+  public static void setDataObj(DataManagement dataObj) {
 		dataManagementInstance = dataObj;
 		setDataItem(dataObj.getTableName());
 	}

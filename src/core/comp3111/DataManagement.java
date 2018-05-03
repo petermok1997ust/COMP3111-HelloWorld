@@ -108,7 +108,7 @@ public class DataManagement implements Serializable{
 	 * Export the table to the csv to the directory of file
 	 * @param table
 	 * @param file
-	 * @return
+	 * @return status of exporting
 	 */
 	public boolean exportTableToCSV(DataTable table, File file) {
 		//write to csv
@@ -313,6 +313,34 @@ public class DataManagement implements Serializable{
 
 	}
 	
+	/**
+	 * Add DataTable to the array
+	 * @return name of newly added table
+	 */
+	public String addTable() {
+		num_table++;
+		String name = "dataset"+num_table;
+		table_name.add(name);
+		System.out.println("Finished creating Table");
+		return name;
+	}
+
+	/**
+	 * Remove DataTable by index in the array
+	 * @param DataTable index to be removed
+	 * @return
+	 */
+	public void removeTable(int x) {
+		num_table--;
+		table_name.remove(x);
+		table_array.remove(x);
+		for(int i = 0; i < table_name.size(); i++) {
+			String n = "dataset"+(i+1);
+			table_name.set(i, n);
+		}
+		System.out.println("Finished removing Table");
+	}
+
 	/**
 	 * Get the array of table name
 	 * @return List of table name
