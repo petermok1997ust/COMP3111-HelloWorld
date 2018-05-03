@@ -1,6 +1,7 @@
 package ui.comp3111;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +51,7 @@ public class UIController {
 			
 	}
 	
-	public static void onClickInitExportBtn(){
+	public static void onClickInitExportBtn() throws IOException{
 		int idx = Main.getSelectedDataIdx();
 		if(idx>=0){
 			File directoryObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, true);
@@ -60,7 +61,7 @@ public class UIController {
 			System.out.println("Nothing is selected");
 	}
 	
-	public static void onClickInitLoadBtn(){
+	public static void onClickInitLoadBtn() throws ClassNotFoundException, IOException{
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, false);
 		if(fileObtained != null) {
 			DataManagement load_object = dataManagementInstance.loadProject(fileObtained);
@@ -94,7 +95,7 @@ public class UIController {
 		}
 
 	}
-	public static void onClickInitSaveBtn(){
+	public static void onClickInitSaveBtn() throws IOException{
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, true);
 		if(fileObtained != null)
 			dataManagementInstance.saveProject(fileObtained);
@@ -102,7 +103,9 @@ public class UIController {
 		
 	public static void handleNumColumnByCase(Number[] numbers) {
 		
-		String handleType = null;
+		String handleType = Main.string_zero;
+		System.out.println("started: "+ started);
+		if(started)
 			handleType = Main.getSelectedNumHandle();
 		
 		switch(handleType) {
@@ -141,6 +144,7 @@ public class UIController {
 			break;
 				
 		}
+		
 	}
 
 	public static void fillAllMissingWith(Number[] numbers, double num) {
@@ -150,14 +154,14 @@ public class UIController {
 		}
 	}
 
-	public static void handleMissingData(List<Object> columns, boolean[] problematic_col) {
+	public static List<Object> handleMissingData(List<Object> columns, boolean[] problematic_col) {
 //		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
 		for(int i=0; i<problematic_col.length;i++) {
 			if(problematic_col[i]) {
-				if(started)
-					handleNumColumnByCase((Number[])columns.get(i));
+				handleNumColumnByCase((Number[])columns.get(i));
 			}
 		}
+		return columns;
 	}
 	
 }
