@@ -278,6 +278,7 @@ public class Main extends Application {
 		
 		btLineChartBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_INIT_SCREEN);
+			chartInstance.stop_animate();
 		});
 
 		return pane;
