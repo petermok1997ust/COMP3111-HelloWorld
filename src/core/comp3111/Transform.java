@@ -16,8 +16,8 @@ import core.comp3111.SampleDataGenerator;
 public class Transform implements Cloneable {
 	
 	/**
-	 * Construct - Create an Transform object by DataTable
-	 * one Transform object is responsible for one DataTable
+	 * Constructor - Create an Transform object by DataTable.
+	 * One Transform object is responsible for only one DataTable.
 	 * @param selectedTable
 	 *            - DataTable for making Transformation
 	 */
@@ -29,7 +29,7 @@ public class Transform implements Cloneable {
 	}
 
 	/**
-	 * clone the Transform object
+	 * Clone the whole Transform object.
 	 * @return the cloned Transform object
 	 * @throws CloneNotSupportedException
 	 * 					- throws exception if there are elements that clone does not support
@@ -48,7 +48,7 @@ public class Transform implements Cloneable {
 	/**
 	 * Convert selected DataTable to rowList.
 	 * Used only in constructor.
-	 * @return the rowList, 2D array corresponding to the DataTable
+	 * @return rowList - the 2D array corresponding to the DataTable
 	 */
 	public String[][] colToRow() {
 	        DataColumn[] columnList = new DataColumn[selectedTable.getNumCol()];
@@ -89,12 +89,13 @@ public class Transform implements Cloneable {
 		}
 	
 	/**
-	 * Filter the data.
-	 * Keep the row if row value in [cSelected] column [comparison] v.
+	 * Filter the data by inputed conditions.
+	 * Keep the row if the row value in [cSelected] column [comparison] [v].
+	 * E.g. Keep the row if the row value in column with title "age" &gt; 18, for cSelected = "age", comparison = "&gt;" and v = 18.
 	 * @param cSelected - column which the filter based on
 	 * @param comparison - comparison operator
 	 * @param v - value for comparison
-	 * @return the filtered list
+	 * @return the filtered list of data
 	 */
 	public String[][] filterData(String cSelected, String comparison, double v){
 		ArrayList<ArrayList<String>> filteredRowList = new ArrayList<ArrayList<String>>();
@@ -145,10 +146,11 @@ public class Transform implements Cloneable {
 	}
 	
 	/**
-	 * Split the data into 2 sets with percentage:100-percentage.
-	 * If there is case such as only one column, the data cannot be split and return false
+	 * Split the data into 2 sets with ratio [percentage : 100-percentage].
+	 * Save the 2 sets of data into splitedOne and splitedTwo array.
+	 * If there is case such as only one column, the data cannot be split and return false.
 	 * @param percentage  - the percentage for splitting
-	 * @return true if the data set can be split corresponding to the percentage
+	 * @return true if the data set can be split corresponding to the percentage.
 	 */
 	public boolean splitData(double percentage){
 		int p = (int) Math.round(percentage);
@@ -227,8 +229,11 @@ public class Transform implements Cloneable {
 	}
 	
 	/**
-	 * Get the 2d list of selected data from init screen
-	 * It will not be changed even if filtering has applied
+	 * Get the 2d list of selected data from init screen.
+	 * It will not be changed even if filtering has applied.
+	 * If split is performed, this Transform object will be deleted after split.
+	 * Two new Transform objects will be created.
+	 * 2 rowList of the 2 new Transform objects will be changed to the splitedOne and splitedTwo respectively.
 	 * @return 2d list of original data
 	 */	
 	public String[][] getRowList(){
@@ -236,8 +241,9 @@ public class Transform implements Cloneable {
 	}
 	
 	/**
-	 * Get the 2d list of data after applying filter
-	 * It will be equal to rowList if filtering has not yet applied
+	 * Get the 2d list of data after applying filter.
+	 * It will be equal to rowList if filtering has not yet applied.
+	 * It will be equal to rowList after split has been applied and before filter has been applied.
 	 * @return 2d list of filtered data
 	 */
 	public String[][] getFilteredList(){
@@ -277,7 +283,7 @@ public class Transform implements Cloneable {
 	}
 	
 	/**
-	 * setting rowList to para rowlist
+	 * Set obeject's rowList to inputed rowlist.
 	 * @param rowlist - 2D ArrayList of data to replace original rowList
 	 */
 	public void setRowList(ArrayList<ArrayList<String>> rowlist) {
@@ -291,7 +297,7 @@ public class Transform implements Cloneable {
 	}
 	
 	/**
-	 * convert the 2D filtered list without title to 1D list with title
+	 * onvert the 2D filtered list without title to 1D list with title.
 	 * @return List of table with title
 	 */
 	public List<String> toListwTitle(){

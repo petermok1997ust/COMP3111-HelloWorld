@@ -21,9 +21,7 @@ import ui.comp3111.UIController;
  *
  */
 public class DataManagement implements Serializable{
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = -2309027075882808422L;
 	private int num_table;
 	private int num_chart;
@@ -81,15 +79,19 @@ public class DataManagement implements Serializable{
 				String line = inputStream.nextLine();
 				System.out.print(line);
 				String[] line_split = line.split(",",-1);
-				if(num_row == 0)
+				if(num_row == 0) {
 					num_col = line_split.length;
+				}
 				if(line_split.length != num_col) {
 					inputStream.close();
 					return null;
 				}	
 				for(int c=0; c<line_split.length; c++) {
-					String input = line_split[c].isEmpty()?null:line_split[c];
-//					System.out.print(input + " ");
+					String input = line_split[c].trim().isEmpty()?null:line_split[c];
+					if(num_row == 0 && line_split[c].trim().isEmpty()) {
+						inputStream.close();
+						return null;
+					}
 					list.add(input);
 				}
 				num_row++;
@@ -122,6 +124,7 @@ public class DataManagement implements Serializable{
 	 * @return
 	 * - Fail to write csv file
 	 * @throws IOException 
+	 * - Fail to export file because of IOException
 	 */
 	public boolean exportTableToCSV(DataTable table, File file) throws IOException {
 		//write to csv
@@ -165,12 +168,15 @@ public class DataManagement implements Serializable{
 			return true;		
 	}
 
-	/**
-	 * Save the project into .3111 extension
-	 * @param file
-	 * - Save this project to .3111 file
-	 * @return file to be saved
-	 */
+/**
+ *Save the project into .3111 extension
+ * @param file
+ * - Save this project to .3111 file
+ * @return file to be saved
+ * @param file - file with chosen directory for saving
+ * @return file - file saved
+ * @throws IOException - when the file path does not exist
+ */
 	public File saveProject(File file)throws IOException {
 		if(file == null)
 			throw new IOException();
@@ -191,6 +197,8 @@ public class DataManagement implements Serializable{
 	 * @param file
 	 * - Load .3111 file to project
 	 * @return DataManagement Object loaded from the project file
+	 * @throws IOException - file is not obtained from the path
+	 * @throws ClassNotFoundException -the object does not match the project
 	 */
 	public DataManagement loadProject(File file)throws IOException,  ClassNotFoundException{
 			if(file ==null)
@@ -221,7 +229,7 @@ public class DataManagement implements Serializable{
 	 * - number of column of csv
 	 * @return The datatable created from the data list
 	 * @throws DataTableException
-	 * - Fail to create columns of table
+	 * - Fail to create columns of table and throw DataTableException
 	 */
 	public DataTable createDataTable(List<String> list, int num_row, int num_col) throws DataTableException {
 			//make column
@@ -297,13 +305,13 @@ public class DataManagement implements Serializable{
 	 * - list of data from the csv
 	 * @param numCol
 	 * - number of columns of csv
-	 * @return array of boolean(number is true)
+	 * @return array of boolean which indicate one of the columns is with number or string type
 	 */
 	public boolean[] isColumnNum(List<String> list, int numCol) {
 		boolean[] isNum = new boolean[numCol];
 		Arrays.fill(isNum, true);
 		for(int j = numCol; j < list.size(); j++) {
-			if(list.get(j) != null) {
+			if(list.get(j) != null && !list.get(j).trim().isEmpty()) {
 				try{
 					Float.parseFloat(list.get(j));
 				}catch (NumberFormatException e){
@@ -319,6 +327,7 @@ public class DataManagement implements Serializable{
 	/**
 	 * Add DataTable to the array
 	 * @return name of newly added table
+	 * - it is named as "dataset"
 	 */
 	public String addTable() {
 		num_table++;
@@ -330,7 +339,8 @@ public class DataManagement implements Serializable{
 
 	/**
 	 * Remove DataTable by index in the array
-	 * @param x - DataTable index to be removed
+	 * @param x 
+	 * - DataTable index to be removed
 	 */
 	public void removeTable(int x) {
 		num_table--;
@@ -346,6 +356,7 @@ public class DataManagement implements Serializable{
 	/**
 	 * Get the array of table name
 	 * @return List of table name
+	 *
 	 */
 	public List<String> getTableName() {
 		return table_name;
