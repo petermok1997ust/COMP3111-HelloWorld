@@ -25,6 +25,18 @@ public class UIController {
 	private static final String EXT_NAME_CSV = "CSV file(.csv)";
 	public static boolean started = false;
 	
+	
+	/**
+	 * 
+	 * @param extName
+	 * - the typename of the extension of a folder e.g. (.csv)
+	 * @param ext
+	 * - the extension type
+	 * @param isSave
+	 * - True means to save a file into the directory, false means to open a file from the file chooser
+	 * @return
+	 * - The file or directory selected from the file chooser
+	 */
 	public static File openFileChooser(String extName, String ext, boolean isSave) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new ExtensionFilter(extName,ext));
@@ -36,7 +48,9 @@ public class UIController {
 		return selectedFile;
 	}
 	
-	
+	/**
+	 * The handling when the InitImport button is clicked in UI
+	 */
 	public static void onClickInitImportBtn(){
 		File fileObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, false);
 		if(fileObtained != null) {
@@ -46,7 +60,7 @@ public class UIController {
 				if(name != null)
 					JOptionPane.showMessageDialog(null, "Data is imported successfully");
 				else
-					JOptionPane.showMessageDialog(null, "there may be inconsistent number of column and data is not imported");
+					JOptionPane.showMessageDialog(null, "there may be inconsistent number of column or empty header ,so data is not imported");
 			} catch (DataTableException e) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, "There is column duplication, data cannot be imported");
@@ -56,7 +70,10 @@ public class UIController {
 		}
 			
 	}
-	
+	/**
+	 * The handling when the InitExport button is clicked in UI
+	 * @throws IOException -when the file is unable to export(e.g. directory does not exist)
+	 */
 	public static void onClickInitExportBtn() throws IOException{
 		int idx = Main.getSelectedDataIdx();
 		if(idx>=0){
@@ -69,6 +86,11 @@ public class UIController {
 			JOptionPane.showMessageDialog(null, "Please first select a dataset");
 	}
 	
+	/**
+	 * The handling when the InitLoad button is clicked in UI
+	 * @throws ClassNotFoundException -when the .comp3111 file is not from the same application
+	 * @throws IOException -when the file is not loaded into the application (e.g. non-exist directory)
+	 */
 	public static void onClickInitLoadBtn() throws ClassNotFoundException, IOException{
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, false);
 		if(fileObtained != null) {
@@ -80,38 +102,50 @@ public class UIController {
 		JOptionPane.showMessageDialog(null, "the file is null");
 			
 	}
-	public static void printDT(DataTable s) {
-		DataColumn[] columnList = new DataColumn[s.getNumCol()];
-		String[] tmpStrCol = new String[s.getNumRow()];
-		String[][] rowList = new String[s.getNumRow()][s.getNumCol()];
-		for(int i = 0; i<s.getNumCol(); i++) {
-			String a = s.getKeys().toArray()[i].toString();
-	        columnList[i] = s.getCol(a);
-		}
-		for(int i = 0; i < s.getNumRow(); i++) {
-			for(int j = 0; j < s.getNumCol(); j++) {
-	        	if(columnList[j].getTypeName().equals("java.lang.Number")) {
-	        		tmpStrCol = Arrays.toString(columnList[j].getData()).split("[\\[\\]]")[1].split(", ");
-	        	}
-	        	else tmpStrCol = (String[])columnList[j].getData();
-	        	rowList[i][j] = tmpStrCol[i];
-			}
-		}
-		for(int i = 0; i < s.getNumRow(); i++) {
-			for(int j = 0; j < s.getNumCol(); j++) {
-	        	System.out.print(rowList[i][j]);
-			}
-			System.out.println(" "+i);
-		}
-
-	}
+	
+//	
+//	public static void printDT(DataTable s) {
+//		DataColumn[] columnList = new DataColumn[s.getNumCol()];
+//		String[] tmpStrCol = new String[s.getNumRow()];
+//		String[][] rowList = new String[s.getNumRow()][s.getNumCol()];
+//		for(int i = 0; i<s.getNumCol(); i++) {
+//			String a = s.getKeys().toArray()[i].toString();
+//	        columnList[i] = s.getCol(a);
+//		}
+//		for(int i = 0; i < s.getNumRow(); i++) {
+//			for(int j = 0; j < s.getNumCol(); j++) {
+//	        	if(columnList[j].getTypeName().equals("java.lang.Number")) {
+//	        		tmpStrCol = Arrays.toString(columnList[j].getData()).split("[\\[\\]]")[1].split(", ");
+//	        	}
+//	        	else tmpStrCol = (String[])columnList[j].getData();
+//	        	rowList[i][j] = tmpStrCol[i];
+//			}
+//		}
+//		for(int i = 0; i < s.getNumRow(); i++) {
+//			for(int j = 0; j < s.getNumCol(); j++) {
+//	        	System.out.print(rowList[i][j]);
+//			}
+//			System.out.println(" "+i);
+//		}
+//
+//	}
+	/**
+	 * The handling when the InitSave button is clicked in UI
+	 * @throws IOException
+	 * - when the file save failed
+	 */
 	public static void onClickInitSaveBtn() throws IOException{
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, true);
 		if(fileObtained != null)
 			dataManagementInstance.saveProject(fileObtained);
 		JOptionPane.showMessageDialog(null, "Data is saved to "+fileObtained.getAbsolutePath());
 	}
-		
+	
+	/**
+	 * Handling of columns with missing data and fill them with zero, mean or median
+	 * @param numbers
+	 * - The column which has missing data
+	 */
 	public static void handleNumColumnByCase(Number[] numbers) {
 		
 		String handleType = Main.string_zero;
@@ -158,6 +192,14 @@ public class UIController {
 		
 	}
 
+	
+	/**
+	 * Fill the missing column with a input number
+	 * @param numbers
+	 * - The column which has missing data
+	 * @param num
+	 * - the number to fill into the missing place
+	 */
 	public static void fillAllMissingWith(Number[] numbers, double num) {
 		for(int i =0; i<numbers.length;i++) {
 			if(numbers[i] == null)
@@ -165,6 +207,15 @@ public class UIController {
 		}
 	}
 
+	/**
+	 * To handle the missing data of Columns
+	 * @param columns
+	 * - List of all columns
+	 * @param problematic_col
+	 * - Indication of the columns which has missing data
+	 * @return
+	 * - The List of columns with missing data handling
+	 */
 	public static List<Object> handleMissingData(List<Object> columns, boolean[] problematic_col) {
 //		System.out.println("Handle Missing Number with "+ Main.getSelectedNumHandle());
 		for(int i=0; i<problematic_col.length;i++) {
