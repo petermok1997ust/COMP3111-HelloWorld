@@ -81,7 +81,12 @@ public class DataManagement implements Serializable{
 				String line = inputStream.nextLine();
 				System.out.print(line);
 				String[] line_split = line.split(",",-1);
-				num_col = line_split.length;
+				if(num_row == 0)
+					num_col = line_split.length;
+				if(line_split.length != num_col) {
+					inputStream.close();
+					return null;
+				}	
 				for(int c=0; c<line_split.length; c++) {
 					String input = line_split[c].isEmpty()?null:line_split[c];
 //					System.out.print(input + " ");
