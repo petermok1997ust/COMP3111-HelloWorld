@@ -101,7 +101,7 @@ public class DataTable implements Serializable{
 	/**
 	 * Check whether the column exists by the given column name
 	 * 
-	 * @param colName
+	 * @param colName - the column name that the user wants to check
 	 * @return true if the column exists, false otherwise
 	 */
 	public boolean containsColumn(String colName) {
