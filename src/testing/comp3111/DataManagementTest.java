@@ -42,10 +42,7 @@ class DataManagementTest {
 	
 	@Test
 	void testDataManagementTestConstructor() {
-		assert (dc.getTableName() != null);
-		assert (new DataManagement().getTableName() == null);
-		assert (dc.getDataTables() != null);
-		assert (dc.getNumTable() == dc.getDataTables().size());
+		assert (dc.getTableName() != null && dc.getDataTables() != null);
 	}
 	
 	@Test
@@ -58,15 +55,28 @@ class DataManagementTest {
 	@Test
 	void testDataManagementImportNotFoundCsv() throws IOException, DataTableException{
 		//null file
-		System.out.println("Null file");
-		assertEquals(dc.importCSV(null), null);
+		assert(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath())) == null);
+//		assertThrows(FileNotFoundException.class,()->dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath())));
 	}
 	
 	@Test
 	void testDataManagementImportEmptyCsv() throws IOException, DataTableException{
-		//null file
-		assert(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath())) == null);
+		//num row and col !>0
+		FileWriter fileWriter = new FileWriter(file);
+		fileWriter.write("");
+		fileWriter.close();
+		assert(dc.importCSV(file) == null);
 	}
+	
+	@Test
+	void testDataManagementImportZeroRowCsv() throws IOException, DataTableException{
+		//num row and col !>0
+		FileWriter fileWriter = new FileWriter(file);
+		fileWriter.write("1");
+		fileWriter.close();
+		assert(dc.importCSV(file) != null);
+	}
+
 	@Test
 	void testDataManagementImportNullFileCsv() throws IOException, DataTableException{
 		//null file
@@ -193,12 +203,7 @@ class DataManagementTest {
 		assert(dc.loadProject(null) == null);
 
 	}
-//	@Test
-//	void testDataManagementTestSaveNullProject() {
-//		//exception
-//		assertThrows(NullPointerException.class, ()->dc.saveProject(null));
-//
-//	}
+
 	
 	@Test
 	void testDataManagementTestSaveNullProject() {
@@ -214,4 +219,24 @@ class DataManagementTest {
 	}
 	
 
+	@Test
+	void testDataManagementAddTable() throws DataTableException{
+		dc.addTable();
+		assert(dc.getNumTable()>0);
+	}
+	
+	@Test
+	void testDataManagementRemoveTable() throws DataTableException, IOException{
+		FileWriter fileWriter = new FileWriter(file);
+		String text = " dnqwij, ewqewq, 2, dqw";
+		fileWriter.write(text);
+		fileWriter.close();
+		dc.importCSV(file);
+		int num = dc.getNumTable();
+		dc.removeTable(0);
+		assert(num - dc.getNumTable() == 1);
+	}
+	
+	
+	
 }
