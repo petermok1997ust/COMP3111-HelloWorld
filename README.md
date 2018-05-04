@@ -24,9 +24,9 @@ The project source codes with the following packages<br>
 core.comp3111: non-UI codes <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/src/core/comp3111">URL</a><br> 
 ui.comp3111: UI-related codes <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/src/testing/comp3111">URL</a><br>
 testing.comp3111: Unit testing <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/src/ui/comp3111">URL</a><br>
-These items are required and suggested to be upload after your team finishes the project:<br>
-A folder named "uml" with the finalized UML diagrams <br>
-A folder named "meeting" with all the meeting minutes<br>
-A folder named "gantt" with the final Gantt chart<br>
-A folder named "doc" with the documentation generated via JavaDoc<br>
-A folder named "dataset". It will be useful during the Peer Assessment<br>
+
+A folder named "uml" with the finalized UML diagrams: <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/uml">URL</a><br>
+A folder named "meeting" with all the meeting minutes <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/meeting">URL</a><br>
+A folder named "gantt" with the final Gantt chart <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/gantt">URL</a><br>
+A folder named "doc" with the documentation generated via JavaDoc <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/doc">URL</a><br>
+A folder named "dataset". It will be useful during the Peer Assessment 
