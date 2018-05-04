@@ -245,7 +245,7 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	if (selected_dataset_index > -1 && selected_chart_index > -1) {
+            	if (selected_dataset_index > -1 && selected_chart_index > -1 && chartDataColName1.getValue() != null && chartDataColName1.getValue() != null) {
 	            	update_chart ();
 	            	putSceneOnStage(SCENE_CHART); 
             	}
@@ -876,7 +876,7 @@ public class Main extends Application {
 	 * To help to pass the selected data to Chart in order to update it. 
 	 */
 	private void update_chart () {
-		if (selected_table != null ) {
+		if (selected_table != null  && chartDataColName1.getValue() != null && chartDataColName1.getValue() != null) {
 			String Name = dataManagementInstance.getTableName().get(selected_dataset_index);
 			Chart.update_chart(selected_chart_index, Name,selected_table, selected_col1, selected_col2); 
 		}
