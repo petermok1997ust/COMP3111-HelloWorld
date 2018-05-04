@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import core.comp3111.DataColumn;
@@ -189,10 +191,12 @@ public class Main extends Application {
 					UIController.onClickInitLoadBtn();
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "The project file does not match the class of the application");
+//					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "The project file failed to import with IOException");
+//					e.printStackTrace();
 				}
             }
         });
@@ -204,7 +208,8 @@ public class Main extends Application {
 					UIController.onClickInitSaveBtn();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "The project file failed to save with IOException");
+//					e.printStackTrace();
 				}
             }
         });
@@ -215,6 +220,7 @@ public class Main extends Application {
 					UIController.onClickInitExportBtn();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(null, "The project file failed to export with IOException");
 					e.printStackTrace();
 				}
             }
