@@ -32,8 +32,8 @@ class DataTableTest {
 	
 	@Test
 	void testCoverageEmptyDataTableConstructor() {
-		assert(table.getNumCol()==0);
-		assert(table.getNumRow()==0);
+		assertEquals(table.getNumCol(),0);
+		assertEquals(table.getNumRow(),0);
 	}
 	
 	@Test
@@ -75,8 +75,8 @@ class DataTableTest {
 		DataColumn xvaluesCol = new DataColumn(DataType.TYPE_NUMBER, xvalues);
 		table.addCol("col 1", xvaluesCol);
 		table.addCol("col 2", xvaluesCol);
-		assert(table.getNumCol()==2);
-		assert(table.getNumRow()==5);
+		assertEquals(table.getNumCol(),2);
+		assertEquals(table.getNumRow(),5);
 	}
 	
 	@Test
@@ -84,7 +84,7 @@ class DataTableTest {
 		Number[] xvalues = new Integer[] { 1, 2, 3, 4, 5 };
 		DataColumn xvaluesCol = new DataColumn(DataType.TYPE_NUMBER, xvalues);
 		table.addCol("col 1", xvaluesCol);
-		assert(table.getCol("col 1").getSize()== 5);
+		assertEquals(table.getCol("col 1").getSize(), 5);
 	}
 
 	@Test
@@ -92,7 +92,7 @@ class DataTableTest {
 		Number[] xvalues = new Integer[] { 1, 2, 3, 4, 5 };
 		DataColumn xvaluesCol = new DataColumn(DataType.TYPE_NUMBER, xvalues);
 		table.addCol("col 1", xvaluesCol);
-		assert(table.getKeys().contains("col 1"));
+		assertEquals(table.getKeys().contains("col 1"),true);
 	}
 
 	

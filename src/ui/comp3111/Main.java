@@ -49,7 +49,7 @@ import javafx.util.Callback;
 /**
  * The Main class of this GUI application
  * 
- * @author Lotusfa & Peter & Kelvin
+ * @author Lotusfa and Peter and Kelvin
  *
  */
 public class Main extends Application {
@@ -333,9 +333,9 @@ public class Main extends Application {
 	
   /**
 	 * Setting up TableView in Transform pane with table list
-	 * @param tList: list of table to be shown
-	 * @param colName: list of all column name
-	 * @param numColName: list of column name which column type is Number
+	 * @param tList - list of table to be shown
+	 * @param colName - list of all column name
+	 * @param numColName - list of column name which column type is Number
 	 */
 	private void settingDatasetView(ArrayList<Transform> tList, String[] colName, ArrayList<String> numColName) {
 		dataSetItems = FXCollections.observableArrayList();
@@ -769,7 +769,7 @@ public class Main extends Application {
 
  	/**
 	 * Set data item to be shown on init screen with data list
-	 * @param list of data item name
+	 * @param list - list of data item name
 	 */
 	public static void setDataItem(List<String> list) {
 		dataItems.clear();
@@ -779,7 +779,7 @@ public class Main extends Application {
 	
  	/**
 	 * Add data item to be shown on init screen with data name
-	 * @param a data item name
+	 * @param name - a data item name
 	 */
 	public static void setDataItem(String name) {
 			dataItems.add(name);
@@ -787,7 +787,7 @@ public class Main extends Application {
   
 	/**
 	 * Remove specific data item in the list
-	 * @param a data item index
+	 * @param x - a data item index
 	 */
 	public static void removeDataItem(int x) {
 		dataItems.remove(x);
@@ -804,7 +804,7 @@ public class Main extends Application {
 
  	/**
 	 * Change the dataManagementInstace to the specified one
-	 * @param DataMangement object to be changed
+	 * @param dataObj - DataMangement object to be changed
 	 */
   public static void setDataObj(DataManagement dataObj) {
 		dataManagementInstance = dataObj;
@@ -879,7 +879,7 @@ public class Main extends Application {
 	/**
 	 * main method - only use if running via command line
 	 * 
-	 * @param args
+	 * @param args - arguments for main
 	 */
 	public static void main(String[] args) {
 		UIController.started = true;
