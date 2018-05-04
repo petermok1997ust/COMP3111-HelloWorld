@@ -239,8 +239,10 @@ public class Main extends Application {
 		initPlot.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	update_chart ();
-            	putSceneOnStage(SCENE_CHART); 
+            	if (selected_dataset_index > -1 && selected_chart_index > -1) {
+	            	update_chart ();
+	            	putSceneOnStage(SCENE_CHART); 
+            	}
             }
         });
 		
@@ -329,6 +331,12 @@ public class Main extends Application {
 		return pane;
 	}
 	
+  /**
+	 * Setting up TableView in Transform pane with table list
+	 * @param tList: list of table to be shown
+	 * @param colName: list of all column name
+	 * @param numColName: list of column name which column type is Number
+	 */
 	private void settingDatasetView(ArrayList<Transform> tList, String[] colName, ArrayList<String> numColName) {
 		dataSetItems = FXCollections.observableArrayList();
 		String prevCS = columnSelect.getSelectionModel().getSelectedItem();
@@ -402,7 +410,11 @@ public class Main extends Application {
 		splitedDataset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
-
+	/**
+	 * Create the transform screen and layout its UI components
+	 * 
+	 * @return a Pane component to be displayed on a scene
+	 */
 	private Pane paneTransformScreen() {
 		splitedDataset = new ListView<TableView>();
 		transformSeparator = new Separator();
@@ -755,36 +767,63 @@ public class Main extends Application {
 		}
 	}
 
+ 	/**
+	 * Set data item to be shown on init screen with data list
+	 * @param list of data item name
+	 */
 	public static void setDataItem(List<String> list) {
 		dataItems.clear();
 		for(int i = 0; i<list.size();i++)
 			dataItems.add(list.get(i));
 	}
 	
+ 	/**
+	 * Add data item to be shown on init screen with data name
+	 * @param a data item name
+	 */
 	public static void setDataItem(String name) {
 			dataItems.add(name);
 	}
-
+  
+	/**
+	 * Remove specific data item in the list
+	 * @param a data item index
+	 */
 	public static void removeDataItem(int x) {
 		dataItems.remove(x);
 	}
-	
+  
+	/**
+	 * Rename all the data item to ensure the order and no duplicate name
+	 */	
 	public static void renameDataItem() {
 		for(int i =0 ; i< dataItems.size();i++) {
 			dataItems.set(i, "dataset"+(i+1));
 		}
 	}
 
+ 	/**
+	 * Change the dataManagementInstace to the specified one
+	 * @param DataMangement object to be changed
+	 */
   public static void setDataObj(DataManagement dataObj) {
 		dataManagementInstance = dataObj;
 		setDataItem(dataObj.getTableName());
 	}
-	
+
+  /**
+	 * Get selected data set index in init screen
+	 * @return selected data set index in init screen
+	 */
 	public static int getSelectedDataIdx() {
 		System.out.println("Selected dataset index: "+dataList.getSelectionModel().getSelectedIndex());
 		return dataList.getSelectionModel().getSelectedIndex();
 	}
-	
+
+ 	/**
+	 * Get selected option in the comboBox in init screen
+	 * @return selected option in the comboBox in init screen
+	 */
 	public static String getSelectedNumHandle() {
 		System.out.println("Selected number handling: "+comboBox.getSelectionModel().getSelectedItem());
 		return comboBox.getSelectionModel().getSelectedItem();
@@ -816,10 +855,10 @@ public class Main extends Application {
 				DataColumn col = selected_table.getCol((String)k);
 				String type = col.getTypeName();
 
-				if(type == Chart.chart_col_types[selected_chart_index][0])
+				if(type.equals(Chart.chart_col_types[selected_chart_index][0]))
 					chartDataColName1.getItems().add((String) k);
 				
-				if(type == Chart.chart_col_types[selected_chart_index][1])
+				if(type.equals(Chart.chart_col_types[selected_chart_index][1]))
 					chartDataColName2.getItems().add((String)k);
 			}
 		}

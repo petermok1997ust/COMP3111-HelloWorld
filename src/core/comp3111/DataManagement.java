@@ -328,7 +328,6 @@ public class DataManagement implements Serializable{
 	/**
 	 * Remove DataTable by index in the array
 	 * @param DataTable index to be removed
-	 * @return
 	 */
 	public void removeTable(int x) {
 		num_table--;
