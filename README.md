@@ -13,11 +13,11 @@ Team Member 1 Features: 3, 5(Transformation and UI)<br>
 Team Member 1 Best 3 commits URLs (<a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/72cac00714824619159be1572e847b461878591f">URL1</a>, <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/42ede8f9071479bc0595941ab3fdeef9aad2a054">URL2</a>, <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/bdb07066d220104f6ddef48f14f00e244c6146ae">URL3</a>)<br>
 Team Member 1 Best pull request <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/6a1cd9f539fb24e2ee1bc83b1a5d0355452852d8">URL</a><br>
 <br>
-Team Member 2 Name<br>
-Team Member 2 ITSC email (@connect.ust.hk)<br>
-Team Member 2 Features<br>
-Team Member 2 Best 3 commits URLs (URL1, URL2, URL3)<br>
-Team Member 2 Best pull request URL<br>
+Team Member 2 Name Ho Tin Long<br>
+Team Member 2 ITSC email (tlhoae@connect.ust.hk)<br>
+Team Member 2 Features: 2, 6(Charts and Animated Chart)<br>
+Team Member 2 Best 3 commits URLs (<a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/305082c874113ed15c49b335fee0712e61ed379c">URL1</a>, <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/c156f34d8011f9aa1aa7acfb3427914feec2eaa9">URL2</a>, <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/f4916c1b4042d8b189d27701d7486987033a496b">URL3</a>)<br>
+Team Member 2 Best pull request <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/commit/cce7ab6790add779685dbea46199c9d598b11387">URL</a><br>
 
 
 The project source codes with the following packages<br>
