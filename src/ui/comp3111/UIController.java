@@ -43,7 +43,10 @@ public class UIController {
 			String name = null;
 			try {
 				name = dataManagementInstance.importCSV(fileObtained);
-				JOptionPane.showMessageDialog(null, "Data is imported successfully");
+				if(name != null)
+					JOptionPane.showMessageDialog(null, "Data is imported successfully");
+				else
+					JOptionPane.showMessageDialog(null, "there may be inconsistent number of column and data is not imported");
 			} catch (DataTableException e) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, "There is column duplication, data cannot be imported");
