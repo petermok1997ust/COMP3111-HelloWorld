@@ -99,7 +99,7 @@ public class UIController {
 				Main.setDataObj(load_object);
 			JOptionPane.showMessageDialog(null, "Data is loaded into the project");
 		}
-		JOptionPane.showMessageDialog(null, "the file is null");
+		else JOptionPane.showMessageDialog(null, "the file is null");
 			
 	}
 	
