@@ -127,7 +127,16 @@ class DataManagementTest {
 				fileWriter.close();
 				assertNotNull(dc.importCSV(file));
 	}
-
+	@Test
+	void testDataManagementImportDifferentRow() throws IOException, DataTableException{
+		System.out.println("missing number");
+				String text = "dnqwij, ewqewq, 123, dqw \n dnqwij,dsa,59, dqw \n dnqwij,das,,, dqw \n dnqwij, ewqewq,, dqw";
+				FileWriter fileWriter = new FileWriter(file);
+				fileWriter.write(text);
+				fileWriter.close();
+				assertNull(dc.importCSV(file));
+	}
+	
 	@Test
 	void testDataManagementImportNullNumCsv() throws IOException, DataTableException{
 		System.out.println("missing number");
@@ -141,7 +150,7 @@ class DataManagementTest {
 	@Test
 	void testDataManagementTestExportEmptyCSV() throws DataTableException, IOException {
 		//empty
-		assert(dc.exportTableToCSV(d, file) == true);
+		assertTrue(dc.exportTableToCSV(d, file));
 	}
 	@Test
 	void testDataManagementTestExportOnlyHeadersCSV() throws DataTableException, IOException {

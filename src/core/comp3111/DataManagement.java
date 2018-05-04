@@ -162,9 +162,7 @@ public class DataManagement implements Serializable{
 			System.out.println("CSV file was created in "+ file.getAbsolutePath());
 			fileWriter.flush();
 			fileWriter.close();
-			return true;
-
-		
+			return true;		
 	}
 
 	/**
