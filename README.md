@@ -1,5 +1,5 @@
 # HKUST COMP3111 Software Engineering (Spring 2018)
-Team Name: HelloWorld<br>
+Team Name: HelloWorld - group 07<br>
 <br>
 Team Leader Name : Mok Tsz Hei<br>
 Team Leader ITSC email (thmokaa@connect.ust.hk)<br>
