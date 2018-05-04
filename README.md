@@ -29,4 +29,4 @@ A folder named "uml" with the finalized UML diagrams: <a href="https://github.co
 A folder named "meeting" with all the meeting minutes <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/meeting">URL</a><br>
 A folder named "gantt" with the final Gantt chart <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/gantt">URL</a><br>
 A folder named "doc" with the documentation generated via JavaDoc <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/doc">URL</a><br>
-A folder named "dataset". It will be useful during the Peer Assessment 
+A folder named "dataset". It will be useful during the Peer Assessment <a href="https://github.com/petermok1997ust/COMP3111-HelloWorld/tree/master/dataset">URL</a><br>
