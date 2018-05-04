@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import core.comp3111.DataColumn;
 import core.comp3111.DataManagement;
 import core.comp3111.DataTable;
@@ -41,9 +43,10 @@ public class UIController {
 			String name = null;
 			try {
 				name = dataManagementInstance.importCSV(fileObtained);
+				JOptionPane.showMessageDialog(null, "Data is imported successfully");
 			} catch (DataTableException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "There is column duplication, data cannot be imported");
 			}
 			if(name != null)
 				Main.setDataItem(name);
@@ -55,10 +58,12 @@ public class UIController {
 		int idx = Main.getSelectedDataIdx();
 		if(idx>=0){
 			File directoryObtained = openFileChooser(EXT_NAME_CSV, EXT_CSV, true);
+			boolean isExported = false;
 			if(directoryObtained != null)
-				dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(idx), directoryObtained);
+				isExported = dataManagementInstance.exportTableToCSV(dataManagementInstance.getDataTables().get(idx), directoryObtained);
+			JOptionPane.showMessageDialog(null, "Data is exported with result:"+isExported+" to "+directoryObtained.getAbsolutePath());
 		}else
-			System.out.println("Nothing is selected");
+			JOptionPane.showMessageDialog(null, "Please first select a dataset");
 	}
 	
 	public static void onClickInitLoadBtn() throws ClassNotFoundException, IOException{
@@ -67,7 +72,9 @@ public class UIController {
 			DataManagement load_object = dataManagementInstance.loadProject(fileObtained);
 			if(load_object != null)
 				Main.setDataObj(load_object);
+			JOptionPane.showMessageDialog(null, "Data is loaded into the project");
 		}
+		JOptionPane.showMessageDialog(null, "the file is null");
 			
 	}
 	public static void printDT(DataTable s) {
@@ -99,6 +106,7 @@ public class UIController {
 		File fileObtained = openFileChooser(EXT_NAME_3111, EXT_3111, true);
 		if(fileObtained != null)
 			dataManagementInstance.saveProject(fileObtained);
+		JOptionPane.showMessageDialog(null, "Data is saved to "+fileObtained.getAbsolutePath());
 	}
 		
 	public static void handleNumColumnByCase(Number[] numbers) {
