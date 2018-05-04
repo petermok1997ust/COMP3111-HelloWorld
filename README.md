@@ -1,48 +1,32 @@
 # HKUST COMP3111 Software Engineering (Spring 2018)
+Team Name: HelloWorld
 
-Quick reference links:
+Team Leader Name
+Team Leader ITSC email (@connect.ust.hk)
+Team Leader Features
+Team Leader Best 3 commits URLs (URL1, URL2, URL3)
+Team Leader Best pull request URL
 
-- [Project Sign Up](https://docs.google.com/spreadsheets/d/1NKxQflvfnRKmjrX8E_HLnRCC6kr4spUST_9fcyZIgFo/edit#gid=0)
-- [Project Description](https://course.cse.ust.hk/comp3111/Project/comp3111-project-s2018.pdf)
-- [Project FAQs](faq.md)
-    - Please contact Peter (cspeter@cse.ust.hk) sent by your ITSC email account (@ust.hk)
-    - Email title format: [COMP3111 Project] `Write your question in short`
-    - Email messages other than the above format will not be answered
+Team Member 1 Name
+Team Member 1 ITSC email (@connect.ust.hk)
+Team Member 1 Features
+Team Member 1 Best 3 commits URLs (URL1, URL2, URL3)
+Team Member 1 Best pull request URL
 
-This GitHub repo hosts the base code of COMP3111 group project. The following features are provided
-
-- A Java codebase which can be imported to `Eclipse IDE`. 
-- Sample data handling classes are implemented in `core.comp3111` package
-- A sample JUnit test (DataColumnTest) is implemented in `testing.comp3111` package (with 100% test coverage on DataColumn)
-- A sample JavaFx GUI component is implemented in `ui.comp3111` package
-
-Instructions to clone this GitHub project:
-
-- Follow the instructions to [install JavaFx](https://www.eclipse.org/efxclipse/install.html) to your `Eclipse IDE`
-- Restart `Eclipse IDE`
-- Select `File > Import...`
-- Select `Git > Projects` 
-- Select `Clone URI` and then click `Next >`
-- Copy and paste the URL from the web browser to the text box of `URI`
-- Click `Next >` buttons a few times. Accept all default settings.
-- Click `Finish` at the end
-
-After importing this GitHub repo, the Eclipse project explorer should be displayed as follows: 
-
-![Eclipse Project Explorer](eclipse_project.png)
-
-Steps to run the Java GUI application
-- Right-click the project folder
-- Select `Run As > Java Application`
-
-Steps to run the unit test and generate the coverage report
-- Right-click the project folder
-- Select `Coverage As > JUnit Test`
-- All unit tests in `testing.comp3111` should be executed 
-- A coverage report should be generated as follows:
-
-![A sample coverage report](sample_coverage.png)
+Team Member 2 Name
+Team Member 2 ITSC email (@connect.ust.hk)
+Team Member 2 Features
+Team Member 2 Best 3 commits URLs (URL1, URL2, URL3)
+Team Member 2 Best pull request URL
 
 
-
-
+The project source codes with the following packages
+core.comp3111: non-UI codes
+ui.comp3111: UI-related codes
+testing.comp3111: Unit testing
+These items are required and suggested to be upload after your team finishes the project:
+A folder named "uml" with the finalized UML diagrams
+A folder named "meeting" with all the meeting minutes
+A folder named "gantt" with the final Gantt chart
+A folder named "doc" with the documentation generated via JavaDoc
+A folder named "dataset". It will be useful during the Peer Assessment
