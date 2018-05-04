@@ -1,6 +1,10 @@
 package testing.comp3111;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
@@ -42,10 +46,10 @@ class DataManagementTest {
 	
 	@Test
 	void testDataManagementTestConstructor() {
-		assert (dc.getTableName() != null);
-		assert (new DataManagement().getTableName() == null);
-		assert (dc.getDataTables() != null);
-		assert (dc.getNumTable() == dc.getDataTables().size());
+		assertNotNull (dc.getTableName());
+		assertNull (new DataManagement().getTableName());
+		assertNotNull (dc.getDataTables() );
+		assertEquals (dc.getNumTable(), dc.getDataTables().size());
 	}
 	
 	@Test
@@ -65,12 +69,12 @@ class DataManagementTest {
 	@Test
 	void testDataManagementImportEmptyCsv() throws IOException, DataTableException{
 		//null file
-		assert(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath())) == null);
+		assertNull(dc.importCSV(new File("ndjiwqni"+file.getAbsolutePath())));
 	}
 	@Test
 	void testDataManagementImportNullFileCsv() throws IOException, DataTableException{
 		//null file
-		assert(dc.importCSV(null) == null);
+		assertNull(dc.importCSV(null));
 	}
 	
 
@@ -83,7 +87,7 @@ class DataManagementTest {
 				FileWriter fileWriter = new FileWriter(file);
 				fileWriter.write(text);
 				fileWriter.close();
-				assert(dc.importCSV(file) != null);
+				assertNotNull(dc.importCSV(file));
 	}
 	
 	@Test
@@ -95,7 +99,7 @@ class DataManagementTest {
 				text += " \n dnqwij, ewqewq, 2, dqw";
 				fileWriter.write(text);
 				fileWriter.close();
-				assert(dc.importCSV(file) != null);
+				assertNotNull(dc.importCSV(file));
 	}
 	
 	@Test
@@ -108,7 +112,7 @@ class DataManagementTest {
 				}
 				fileWriter.write(text);
 				fileWriter.close();
-				assert(dc.importCSV(file) != null);
+				assertNotNull(dc.importCSV(file));
 	}
 	
 	@Test
@@ -120,7 +124,7 @@ class DataManagementTest {
 				text += " \n dnqwij, ewqewq, 2, dqw";
 				fileWriter.write(text);
 				fileWriter.close();
-				assert(dc.importCSV(file) != null);
+				assertNotNull(dc.importCSV(file));
 	}
 
 	@Test
@@ -130,7 +134,7 @@ class DataManagementTest {
 				FileWriter fileWriter = new FileWriter(file);
 				fileWriter.write(text);
 				fileWriter.close();
-				assert(dc.importCSV(file) != null);
+				assertNotNull(dc.importCSV(file));
 	}
 	
 	@Test
@@ -143,7 +147,7 @@ class DataManagementTest {
 		//empty
 		DataTable d = new DataTable();
 		d.addCol("header", new DataColumn(DataType.TYPE_OBJECT, null));
-		assert(dc.exportTableToCSV(d, file) == true);
+		assertTrue(dc.exportTableToCSV(d, file));
 	}
 
 	@Test
@@ -152,7 +156,7 @@ class DataManagementTest {
 		Number[] xvalues = new Integer[] { 1 };
 		d.addCol("col1", new DataColumn(DataType.TYPE_NUMBER, xvalues));
 		d.addCol("col2", new DataColumn(DataType.TYPE_NUMBER, xvalues));
-		assert(dc.exportTableToCSV(d, file) == true);
+		assertTrue(dc.exportTableToCSV(d, file));
 	}
 	@Test
 	void testDataManagementTestExportRowsCSV() throws DataTableException, IOException {
@@ -161,13 +165,13 @@ class DataManagementTest {
 		String[] labels = new String[] { "P1", "P2", "P3", "P4", "P5" };
 		d.addCol("col1", new DataColumn(DataType.TYPE_NUMBER, xvalues));
 		d.addCol("col2", new DataColumn(DataType.TYPE_STRING, labels));
-		assert(dc.exportTableToCSV(d, file) == true);
+		assertTrue(dc.exportTableToCSV(d, file));
 	}
 	
 	@Test
 	void testDataManagementExportNullFileCsv() throws IOException{
 		//null file
-		assert(dc.exportTableToCSV(d, null) == false);
+		assertFalse(dc.exportTableToCSV(d, null));
 	}
 	
 //	@Test
@@ -179,18 +183,18 @@ class DataManagementTest {
 	
 	@Test
 	void testDataManagementTestSaveProject() throws IOException {
-		assert(dc.saveProject(file)!=null);
+		assertNotNull(dc.saveProject(file));
 	}
 	
 	@Test
 	void testDataManagementTestLoadProject() throws ClassNotFoundException, IOException {
-		assert(dc.loadProject(dc.saveProject(file)) != null);
+		assertNotNull(dc.loadProject(dc.saveProject(file)));
 	}
 	
 	@Test
 	void testDataManagementTestLoadNullProject() throws ClassNotFoundException, IOException {
 		//exception
-		assert(dc.loadProject(null) == null);
+		assertNull(dc.loadProject(null));
 
 	}
 //	@Test
@@ -210,7 +214,7 @@ class DataManagementTest {
 	@Test
 	void testDataManagementGetIdx() throws DataTableException{
 		dc.importCSV(file);
-		assert(dc.getDataTableByIndex(0) != null);
+		assertNotNull(dc.getDataTableByIndex(0));
 	}
 	
 

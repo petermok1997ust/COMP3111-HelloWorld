@@ -18,7 +18,8 @@ public class Transform implements Cloneable {
 	/**
 	 * Construct - Create an Transform object by DataTable
 	 * one Transform object is responsible for one DataTable
-	 * @param DataTable for making Transformation
+	 * @param selectedTable
+	 *            - DataTable for making Transformation
 	 */
 	public Transform(DataTable selectedTable){
 		this.selectedTable = selectedTable;
@@ -30,6 +31,8 @@ public class Transform implements Cloneable {
 	/**
 	 * clone the Transform object
 	 * @return the cloned Transform object
+	 * @throws CloneNotSupportedException
+	 * 					- throws exception if there are elements that clone does not support
 	 */
 	public Transform clone() throws CloneNotSupportedException {
 		Transform clonedObj = (Transform) super.clone();
@@ -87,10 +90,10 @@ public class Transform implements Cloneable {
 	
 	/**
 	 * Filter the data.
-	 * Keep the row if row value in <cSelected> column <comparison> v.
-	 * @param cSelected: column which the filter based on
-	 * @param comparison: comparison operator
-	 * @param v: value for comparison
+	 * Keep the row if row value in [cSelected] column [comparison] v.
+	 * @param cSelected - column which the filter based on
+	 * @param comparison - comparison operator
+	 * @param v - value for comparison
 	 * @return the filtered list
 	 */
 	public String[][] filterData(String cSelected, String comparison, double v){
@@ -144,8 +147,8 @@ public class Transform implements Cloneable {
 	/**
 	 * Split the data into 2 sets with percentage:100-percentage.
 	 * If there is case such as only one column, the data cannot be split and return false
-	 * @param percentage for splitting
-	 * @return true if the data set can be split corrsponding to the percentage
+	 * @param percentage  - the percentage for splitting
+	 * @return true if the data set can be split corresponding to the percentage
 	 */
 	public boolean splitData(double percentage){
 		int p = (int) Math.round(percentage);
@@ -275,7 +278,7 @@ public class Transform implements Cloneable {
 	
 	/**
 	 * setting rowList to para rowlist
-	 * @param 2D ArrayList of data to replace original rowList
+	 * @param rowlist - 2D ArrayList of data to replace original rowList
 	 */
 	public void setRowList(ArrayList<ArrayList<String>> rowlist) {
 		rowList = new String[rowlist.size()][rowlist.get(0).size()];
