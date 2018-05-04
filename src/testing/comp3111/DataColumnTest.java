@@ -19,7 +19,8 @@ class DataColumnTest {
 
 		DataColumn dc = new DataColumn();
 		assert (dc.getSize() == 0);
-
+		assert (dc.getData() == null);
+		assert (dc.getTypeName() == "");
 	}
 
 	@Test

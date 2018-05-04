@@ -47,9 +47,10 @@ class DataManagementTest {
 	@Test
 	void testDataManagementTestConstructor() {
 		assertNotNull (dc.getTableName());
-		assertNull (new DataManagement().getTableName());
+//		assertNull (new DataManagement().getTableName());
 		assertNotNull (dc.getDataTables() );
-		assertEquals (dc.getNumTable(), dc.getDataTables().size());
+		assertNotNull  (dc.getNumTable());
+//		assertNotNull(dc.getDataTables());
 	}
 	
 	@Test
@@ -218,4 +219,23 @@ class DataManagementTest {
 	}
 	
 
+	@Test
+	void testDataManagementAddTable() throws DataTableException{
+		dc.addTable();
+		assertNotNull(dc.getNumTable());
+	}
+	
+	@Test
+	void testDataManagementRemoveTable() throws DataTableException, IOException{
+		FileWriter fileWriter = new FileWriter(file);
+		String text = " dnqwij, ewqewq, 2, dqw";
+		fileWriter.write(text);
+		fileWriter.close();
+		dc.importCSV(file);
+		int num = dc.getNumTable();
+		dc.removeTable(0);
+		assertEquals(num - dc.getNumTable(),1);
+	}
+	
+	
 }

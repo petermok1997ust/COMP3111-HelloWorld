@@ -96,7 +96,7 @@ public class DataManagement implements Serializable{
 			e.printStackTrace();
 		}
 		System.out.println("Finished importing CSV with "+ num_row+" rows and "+ num_col+" columns");
-		if(num_row >0 && num_col >0) {
+		if(list.size() > 0) {
 			System.out.println("Creating Table");
 			createDataTable(list, num_row-1, num_col);	
 			num_table++;
@@ -199,7 +199,6 @@ public class DataManagement implements Serializable{
 			load_object = (DataManagement) ois.readObject();
 			System.out.println("Copying DataObject");
 			table_array = load_object.table_array;
-//			chart_array = load_object.chart_array;
 			num_chart = load_object.num_chart;
 			num_table = load_object.num_table;
 			table_name = load_object.table_name;
@@ -375,13 +374,6 @@ public class DataManagement implements Serializable{
 		return num_table;
 	}
 
-	
-//	/**
-//	 * Get number of charts
-//	 * @return number of charts
-//	 */
-//	public int getNumChart() {
-//		return num_chart;
-//	}
+
 
 }
