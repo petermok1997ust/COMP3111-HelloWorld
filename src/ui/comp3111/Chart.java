@@ -21,7 +21,12 @@ import javafx.scene.layout.HBox;
 
 /**
  * 
- * Chart is to help displaying difference type of chart to UI
+ * Chart is to help displaying difference type of chart to UI.
+ * 
+ * This class work closely with UI and have the following feature. 
+ * 		1. At start, Main.java will update the chartList by get the array of chartTypes.
+ * 		2. During init the Scenes, Main will get "chart_container" and make it as the chrildren of it's scenes. 
+ * 		3. When click "plot" button in "SCENE_INIT_SCREEN", main will input the chart data by call Chart's function. 
  * 
  * @author lotusfa
  *
@@ -113,7 +118,7 @@ public class Chart implements Serializable{
 	}
 	
 	/**
-	 * Get the UI container of chart
+	 * Get "chart_container" - the UI container of chart 
 	 * @return chart_container
 	 * 		- UI component which have a children of a chart. 
 	 */
@@ -122,7 +127,9 @@ public class Chart implements Serializable{
 	}
 	
 	/**
-	 * To display one chart to UI
+	 * To display one chart to UI by adding the chart object to "chart_container"
+	 * 		chart object ( eg. "lineChart", "pieChart", "ani_lineChart" )
+	 * 		
 	 * @param chart_type
 	 * 		- index of chart type
 	 */
@@ -146,7 +153,9 @@ public class Chart implements Serializable{
 	}
 	
 	/**
-	 * Input data to the chart and update it
+	 * Input data to the chart and call the corresponding function base on it's chart type.
+	 * 		(ie. When chart_type is 0, this function will pass the input data to "lineChart_update()" )
+	 * 
 	 * @param chart_type
 	 * 		- index of chart type
 	 * @param tittle
@@ -177,7 +186,8 @@ public class Chart implements Serializable{
 	}
 
 	/**
-	 * Input data to the line chart and update it
+	 * Update "lineChart" with the data
+	 * 
 	 * @param tittle
 	 * 		- tittle of chart
 	 * @param table
@@ -241,7 +251,8 @@ public class Chart implements Serializable{
 	}
 	
 	/**
-	 * Input data to the animation line chart and update it
+	 * Update "ani_lineChart" with the data
+	 * 
 	 * @param tittle
 	 * 		- tittle of chart
 	 * @param table
@@ -302,7 +313,8 @@ public class Chart implements Serializable{
 	}
 	
 	/**
-	 * Input data to the pie chart and update it
+	 * Update "pieChart" with the data
+	 * 
 	 * @param tittle
 	 * 		- tittle of chart
 	 * @param table
