@@ -50,6 +50,7 @@ import javafx.util.Callback;
 
 /**
  * The Main class of this GUI application
+ * Nice!!
  * 
  * @author Lotusfa and Peter and Kelvin
  *
